@@ -42,3 +42,15 @@ I noticed that most AniList-based trackers either:
 As a German programming student, I took inspiration from the word **"Lexikon"** (meaning encyclopedia or dictionary).  
 Combining that with **"Ani"** for anime, I came up with **AniLex** – a name that reflects both structure and focus: an organized place for all your anime data.
 
+---
+
+## 🤝 Contributing
+
+AniLex is a personal learning project, but I'm always happy if someone wants to contribute!
+
+If you're interested in helping out – whether it's writing better code, improving the UI, suggesting features, or just fixing typos – feel free to open issues or send pull requests.
+
+I'm still learning, so please be patient if I ask questions or need a bit of help understanding your code 😄
+
+Any contribution, no matter how small, is welcome!
+
