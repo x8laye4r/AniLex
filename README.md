@@ -54,3 +54,6 @@ I'm still learning, so please be patient if I ask questions or need a bit of hel
 
 Any contribution, no matter how small, is welcome!
 
+Contact me via this E-Mail:
+**x8laye4-contact.bribe262@passinbox.com**
+
