@@ -8,6 +8,7 @@ url = "https://graphql.anilist.co"
 username = get_username()
 user_id = get_id()
 
+# First try in getting some data
 def get_all_airing_anime():
     query = '''
     query ($page: Int, $perPage: Int) {
