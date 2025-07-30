@@ -40,7 +40,6 @@ def get_auth_key():
     return token
 
 
-
 def db_get_all_anime():
     return db.search(QUERY.type == TYPE_ANIME)
 
