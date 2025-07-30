@@ -1,0 +1,13 @@
+{
+    "auth": {
+        "username": "x8laye4r",
+        "user_id": 7318923,
+        "user_token": "saved"
+    },
+    "auth_key": {
+        "service_name": "UNOFICIAL-ANILEX",
+        "user_token_key": "x8laye4r-7318923-AniLex",
+        "user_data_path": "C:\\Users\\eisel\\\\PycharmProjects\\\\UNOFICIAL-ANILEX\\\\cache\\\\user_data.json",
+        "keyring_backend": "Windows"
+    }
+}
