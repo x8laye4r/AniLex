@@ -39,47 +39,44 @@ def get_auth_key():
     token = keyring.get_password(get_service_name(), get_user_token_key())
     return token
 
-def db_get_all_anime_id():
+
+
+def db_get_all_anime():
     return db.search(QUERY.type == TYPE_ANIME)
 
-def db_get_anime_by_id(id):
+def db_get_all_manga():
+    return db.search(QUERY.type == TYPE_MANGA)
+
+def db_get_anime_by_id(id: int):
     found = db.search((QUERY.id == id) & (QUERY.type == TYPE_ANIME))
     return found[0] if found else None
 
+def db_get_manga_by_id(id: int):
+    found = db.search((QUERY.id == id) & (QUERY.type == TYPE_MANGA))
+    return found[0] if found else None
 
-def db_add_anime(id, title, type):
+def db_add(id: int, title: str, type: str):
     query = {'id': id, 'title': title, 'type': type}
     db.insert(query)
 
-def db_remove_anime(id):
+def db_remove_anime(id: int):
     db.remove((QUERY.id == id) & (QUERY.type == TYPE_ANIME))
+
+def db_remove_manga(id: int):
+    db.remove((QUERY.id == id) & (QUERY.type == TYPE_MANGA))
 
 def db_delete_all():
     db.truncate()
 
-def db_get_all_manga_id():
-    return db.search(QUERY.type == TYPE_MANGA)
-
-def db_get_manga_by_id(id):
-    found = db.search((QUERY.id == id) & (QUERY.type == TYPE_MANGA))
-    return found[0] if found else None
-
-def db_add_manga(id, title, type):
-    query = {'id': id, 'title': title, 'type': type}
-    db.insert(query)
-
-def db_remove_manga(id):
-    db.remove((QUERY.id == id) & (QUERY.type == TYPE_MANGA))
-
-def anime_set_priority(id: int, title: str, status: str, priority: str):
+def set_priority(id: int, title: str, status: str, priority: str, type: str):
     if status.lower() != "planning":
         return
     else:
-        query = {'id': id, 'title': title, 'priority': priority, 'type': TYPE_ANIME}
+        query = {'id': id, 'title': title, 'priority': priority, 'type': type}
         db2.insert(query)
 
-def anime_update_priority(id: int, priority: str):
+def update_priority(id: int, priority: str):
     db2.update({'priority': priority}, QUERY.id == id)
 
-def anime_remove_priority(id: int):
+def remove_priority(id: int):
     db2.remove(QUERY.id == id)
