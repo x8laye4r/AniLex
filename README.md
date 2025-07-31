@@ -10,6 +10,8 @@ It’s designed specifically for Windows users (for now) who want a clean, moder
 > 🧪 **Note:** Currently only tested on **Windows**.  
 > **Linux support is planned** once the core functionality is finished.
 
+> ❗**Important:** As you already know this is my first ever project for an app and I'm still learning how to make an app and programm with python. So be prepared to see a lot of shit happening while I'm coding this. 
+
 ---
 
 ## 💡 Why AniLex?
