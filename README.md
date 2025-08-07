@@ -36,6 +36,7 @@ I noticed that most AniList-based trackers either:
 - 🗂 Support for tracking progress and watchlists
 - 📄 Detailed info: descriptions, covers, status, episodes/chapters, ratings
 - 🧩 Support for multiple media types (Animes and Mangas)
+- 🤖 OpenAI support for custom Anime/Manga recomendations
 
 ---
 
