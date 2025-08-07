@@ -148,3 +148,12 @@ def clear_all_priorities():
     except TinyDBException as e:
         raise RuntimeError(f"Error while deleting databases data: {e}")
 
+def get_api_key():
+    pw = keyring.get_password("OPENAI", get_username())
+    if pw is None:
+        print("No API-Key found in keyring. Please enter your API-Key.")
+        key = input("Enter API Key: ")
+        keyring.set_password("OPENAI", get_username(), key.strip())
+        return key
+    else:
+        return pw
