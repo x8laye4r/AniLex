@@ -2,10 +2,12 @@ import json
 import keyring
 import os
 from tinydb import TinyDB, Query
+import yaml
 
 STATUS_PATH = r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache/anime_data/custom_status_db.json"
 PRIORITY_PATH = r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache/anime_data/priority_db.json"
 USER_DATA_PATH = r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache\user_data.json"
+SETTINGS_PATH = r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache\settings.yaml"
 TYPE_ANIME = "Anime"
 TYPE_MANGA = "Manga"
 QUERY = Query()
@@ -25,6 +27,13 @@ def _load_user_data():
             return json.load(file)
     except json.JSONDecodeError:
         raise ValueError("User data are corrupt or in a not valid JSON format.")
+
+def _load_settings():
+    try:
+        with open(SETTINGS_PATH, "r") as file:
+            return yaml.safe_load(file) or None
+    except FileNotFoundError:
+        return {}
 
 def get_id():
     data = _load_user_data()
