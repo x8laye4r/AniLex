@@ -4,10 +4,18 @@ import os
 from tinydb import TinyDB, Query
 import yaml
 
-STATUS_PATH = r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache/anime_data/custom_status_db.json"
-PRIORITY_PATH = r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache/anime_data/priority_db.json"
-USER_DATA_PATH = r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache\user_data.json"
-SETTINGS_PATH = r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache\settings.yaml"
+def get_cache_path():
+    aktuell = os.path.abspath(os.path.dirname(__file__))
+    parent = os.path.dirname(aktuell)
+    cache_pfad = os.path.join(parent, "cache")
+    return cache_pfad
+
+STANDARD_PATH = get_cache_path()
+
+STATUS_PATH = os.path.join(STANDARD_PATH, "anime_data", "custom_status_db.json")
+PRIORITY_PATH = os.path.join(STANDARD_PATH, "anime_data", "custom_priority_db.json")
+USER_DATA_PATH = os.path.join(STANDARD_PATH, "user_data.json")
+SETTINGS_PATH = os.path.join(STANDARD_PATH, "settings.yaml")
 TYPE_ANIME = "Anime"
 TYPE_MANGA = "Manga"
 QUERY = Query()

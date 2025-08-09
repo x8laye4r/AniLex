@@ -5,7 +5,7 @@
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout,
-    QLabel, QTabWidget, QPushButton
+    QLabel, QTabWidget, QPushButton, QSpacerItem, QSizePolicy
 )
 from PySide6.QtCore import Qt
 
@@ -16,10 +16,6 @@ class Discover(QWidget):
         label = QLabel("Das ist Tab 1", alignment=Qt.AlignCenter)
         layout.addWidget(label)
 
-        button = QPushButton("Klick mich in Tab 1")
-        button.clicked.connect(lambda: label.setText("Tab 1 Button geklickt!"))
-        layout.addWidget(button)
-
         self.setLayout(layout)
 
 class ListAnime(QWidget):
@@ -28,10 +24,6 @@ class ListAnime(QWidget):
         layout = QVBoxLayout()
         label = QLabel("Das ist Tab 2", alignment=Qt.AlignCenter)
         layout.addWidget(label)
-
-        button = QPushButton("Klick mich in Tab 2")
-        button.clicked.connect(lambda: label.setText("Tab 2 Button geklickt!"))
-        layout.addWidget(button)
 
         self.setLayout(layout)
 
@@ -42,10 +34,6 @@ class ListManga(QWidget):
         label = QLabel("Das ist Tab 3", alignment=Qt.AlignCenter)
         layout.addWidget(label)
 
-        button = QPushButton("Klick mich in Tab 3")
-        button.clicked.connect(lambda: label.setText("Tab 3 Button geklickt!"))
-        layout.addWidget(button)
-
         self.setLayout(layout)
 
 class Profile(QWidget):
@@ -54,10 +42,6 @@ class Profile(QWidget):
         layout = QVBoxLayout()
         label = QLabel("Das ist Tab 4", alignment=Qt.AlignCenter)
         layout.addWidget(label)
-
-        button = QPushButton("Click mich in Tab 4")
-        button.clicked.connect(lambda: label.setText("Tab 4 Button geklickt!"))
-        layout.addWidget(button)
 
         self.setLayout(layout)
 
@@ -68,10 +52,6 @@ class ChatBot(QWidget):
         label = QLabel("Das ist Tab 5", alignment=Qt.AlignCenter)
         layout.addWidget(label)
 
-        button = QPushButton("Click mich in Tab 5")
-        button.clicked.connect(lambda: label.setText("Tab 5 Button geklickt!"))
-        layout.addWidget(button)
-
         self.setLayout(layout)
 
 class Recommendations(QWidget):
@@ -80,10 +60,6 @@ class Recommendations(QWidget):
         layout = QVBoxLayout()
         label = QLabel("Das ist Tab 6", alignment=Qt.AlignCenter)
         layout.addWidget(label)
-
-        button = QPushButton("Click mich in Tab 6")
-        button.clicked.connect(lambda: label.setText("Tab 6 Button geklickt!"))
-        layout.addWidget(button)
 
         self.setLayout(layout)
 
@@ -97,7 +73,8 @@ class MainWindow(QMainWindow):
         tabs = QTabWidget()
         tabs.setStyleSheet("""
             QTabBar::tab {
-                min-width: 150px;
+                min-width: 200px;
+                display: flex;
                 height: 40px;
                 font-size: 18pt;
                 padding: 8px;
@@ -111,14 +88,15 @@ class MainWindow(QMainWindow):
                 background: #3399ff;
             }
         """)
+
         self.setCentralWidget(tabs)
 
         tabs.addTab(Discover(), "Discover")
         tabs.addTab(ListAnime(), "List Anime")
         tabs.addTab(ListManga(), "List Manga")
-        tabs.addTab(Profile(), "Profile")
         tabs.addTab(ChatBot(), "ChatBot")
-        tabs.addTab(Recommendations(), "Recommendations")
+        tabs.addTab(Recommendations(), "Recom")
+        tabs.addTab(Profile(), "Profile")
 
 
 if __name__ == "__main__":

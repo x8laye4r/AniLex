@@ -13,12 +13,16 @@ from urllib.parse import urlparse, parse_qs
 import keyring
 import sys
 import os
+from utils.helpers import get_cache_path
 
 '''
     Check if file exists and if the files are already saved
 '''
-if os.path.exists(r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache\user_data.json"):
-    with open(r"C:\Users\eisel\PycharmProjects\UNOFICIAL-ANILEX\cache\user_data.json", "r") as file:
+
+PATH = os.path.join(get_cache_path(), "user_data.json")
+
+if os.path.exists(PATH):
+    with open(PATH, "r") as file:
         data = json.load(file)
 
     if data["auth"]["user_token"] == "saved":
@@ -217,7 +221,6 @@ user_token = received_code
 del received_code
 
 # Defining path
-PATH = os.path.expanduser(r"~\\PycharmProjects\\UNOFICIAL-ANILEX\\cache\\user_data.json")
 SERVICE_NAME = "UNOFICIAL-ANILEX"
 USER_TOKEN_KEY = f"{username}-{user_id}-AniLex"
 
