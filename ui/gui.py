@@ -4,7 +4,7 @@
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QStackedWidget, QPushButton, QSizePolicy, QScrollArea
+    QLabel, QStackedWidget, QPushButton, QSizePolicy, QScrollArea, QDialog, QCheckBox
 )
 from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, Property, QSize
 from PySide6.QtGui import QEnterEvent, QPixmap, QIcon
@@ -160,32 +160,94 @@ class Discover(QWidget):
         label = QLabel("Das ist Tab 1", alignment=Qt.AlignCenter)
         layout.addWidget(label)
 
+class HoverButton(QPushButton):
+    def __init__(self, icon, parent=None):
+        super().__init__(parent)
+        self.default_size = QSize(30, 30)
+        self.hover_size = QSize(35, 35)
+        self.setIcon(icon)
+        self.setIconSize(self.default_size)
+        self.setStyleSheet("background: transparent; border: 0;")
+
+    def enterEvent(self, event):
+        self.setIconSize(self.hover_size)
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self.setIconSize(self.default_size)
+        super().leaveEvent(event)
+
+class FilterPopUp(QDialog):
+    def __init__(self):
+        super().__init__()
+        check_boxes = []
+        self.setWindowTitle("Filter")
+        self.setFixedSize(200, 100)
+        layout = QVBoxLayout(self)
+
+        self.checkbox1 = QCheckBox("Anime")
+        self.checkbox2 = QCheckBox("Manga")
+        check_boxes.append(self.checkbox1)
+        check_boxes.append(self.checkbox2)
+        layout.addWidget(self.checkbox1)
+        layout.addWidget(self.checkbox2)
+
+        btn = QPushButton("Apply")
+        btn.clicked.connect(self.accept)
+        layout.addWidget(btn)
+
+        def get_filters(self):
+            checked = []
+            if self.checkbox1.isChecked():
+                checked.append(self.checkbox1.text())
+            if self.checkbox2.isChecked():
+                checked.append(self.checkbox2.text())
+            return checked if checked else None
+'''
+    class FilterDropDown(QDialog):
+        print("Will be added in the future!")
+'''
+
+
 class ListAnime(QWidget):
     def __init__(self):
         super().__init__()
 
-        layout = QVBoxLayout(self)  # Main Windows
+        # Main Window
+        layout = QVBoxLayout(self)
 
-        # Vertical Row
-        top_row = QHBoxLayout()
+        # Container
+        container = QWidget()
+        container.setFixedHeight(35)
+        container.setStyleSheet("background: transparent; border: 0;")
+
+        # Container Layout
+        container_layout = QHBoxLayout(container)
+        container_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Label
         label = QLabel("Anime: ", alignment=Qt.AlignVCenter | Qt.AlignLeft)
         label.setStyleSheet("font-size: 20px; font-weight: bold;")
-        top_row.addWidget(label)
 
-        button = QPushButton()
+        # Button with Animation
         icon = QIcon(path.join(get_cache_path(), "images", "filter.png"))
-        button.setIcon(icon)
-        button.setIconSize(QSize(30, 30))
+        button = HoverButton(icon)
         button.setStyleSheet("background: transparent; border: 0;")
-        top_row.addStretch(1)   # Spacer between button and label
-        top_row.addWidget(button)
+        button.clicked.connect(lambda: FilterPopUp().exec())
+
 
         # ScrollArea
         scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("background: transparent; border: 0;")
+        scroll.setWidget(QWidget())
+        scroll.setWidgetResizable(False)
 
-        # Set layout
-        layout.addLayout(top_row)
+        container_layout.addWidget(label)
+        container_layout.addStretch(1)
+        container_layout.addWidget(button)
+
+        # Add to the Layout
+        layout.addWidget(container)
         layout.addWidget(scroll)
 
 
@@ -236,10 +298,3 @@ class MainWindow(QMainWindow):
         tabs.tabbar.setStyleSheet("background: transparent;")
 
         self.setCentralWidget(tabs)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.showMaximized()
-    sys.exit(app.exec())
