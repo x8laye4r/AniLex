@@ -4,10 +4,12 @@
 import sys
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QStackedWidget, QPushButton, QSizePolicy
+    QLabel, QStackedWidget, QPushButton, QSizePolicy, QScrollArea
 )
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, Property
-from PySide6.QtGui import QEnterEvent
+from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, Property, QSize
+from PySide6.QtGui import QEnterEvent, QPixmap, QIcon
+from utils.helpers import get_cache_path
+from os import path
 
 # Custom TabButton which scales automatically and has animations
 class TabButton(QPushButton):
@@ -117,6 +119,39 @@ class CustomTabWidget(QWidget):
     def widget(self, index):
         return self._pages.widget(index)
 
+    @property
+    def tabbar(self):
+        return self._tabbar
+
+class Card(QWidget):
+    def __init__(self, image_path, title, description, parent=None):
+        super().__init__(parent)
+
+        self.image_label = QPixmap(image_path)
+        self.image_label.setPixmap(pixmap.scaled(200, 300, aspectRatioMode=1))
+
+        self.title = QLabel(title)
+        self.title.styleSheet = "font-size: 20px; font-weight: bold;"
+
+        self.description = QLabel(description)
+        self.description_label.setWordWrap(True)
+        self.description_label.setStyleSheet("font-size: 12px;")
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.image_label)
+        layout.addWidget(self.title)
+        layout.addWidget(self.description)
+        self.setLayout(layout)
+
+    def resize_event(self, event):
+        w = self.width()
+        h = int(w * 1.5)
+        pixmap = self.image_label.pixmap()
+        if pixmap:
+            self.image_label.setPixmap(pixmap.scaled(w, h, aspectRatioMode=1))
+        super().resizeEvent(event)
+
+
 
 class Discover(QWidget):
     def __init__(self):
@@ -128,9 +163,31 @@ class Discover(QWidget):
 class ListAnime(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout(self)
-        label = QLabel("Das ist Tab 2", alignment=Qt.AlignCenter)
-        layout.addWidget(label)
+
+        layout = QVBoxLayout(self)  # Main Windows
+
+        # Vertical Row
+        top_row = QHBoxLayout()
+        label = QLabel("Anime: ", alignment=Qt.AlignVCenter | Qt.AlignLeft)
+        label.setStyleSheet("font-size: 20px; font-weight: bold;")
+        top_row.addWidget(label)
+
+        button = QPushButton()
+        icon = QIcon(path.join(get_cache_path(), "images", "filter.png"))
+        button.setIcon(icon)
+        button.setIconSize(QSize(30, 30))
+        button.setStyleSheet("background: transparent; border: 0;")
+        top_row.addStretch(1)   # Spacer between button and label
+        top_row.addWidget(button)
+
+        # ScrollArea
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+
+        # Set layout
+        layout.addLayout(top_row)
+        layout.addWidget(scroll)
+
 
 class ListManga(QWidget):
     def __init__(self):
@@ -176,7 +233,7 @@ class MainWindow(QMainWindow):
         tabs.addTab(Recommendations(), "Recom")
         tabs.addTab(Profile(), "Profile")
 
-        tabs._tabbar.setStyleSheet("background: transparent;")
+        tabs.tabbar.setStyleSheet("background: transparent;")
 
         self.setCentralWidget(tabs)
 
