@@ -2,6 +2,9 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/x8laye4r/AniLex)
 ![GitHub stars](https://img.shields.io/github/stars/x8laye4r/AniLex?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/x8laye4r/AniLex?style=social)
+
+---
+
 # AniLex – Your Personal Anime Tracker
 First of all, I want to say it's **UNOFFICIAL** and not supported by **AniList**!
 
