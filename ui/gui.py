@@ -9,7 +9,16 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, Property, QSize
 from PySide6.QtGui import QEnterEvent, QPixmap, QIcon
 from utils.helpers import get_cache_path
+from ui.card import CutCornerCardLeft, CutCornerCardRight
 from os import path
+
+'''
+    To Do:
+        1) Make QScrollArea arrangement from top left to bottom right
+        2) Make scroll bar better
+        3) Make a drop down for the filter button
+        4) Make tabs color in a better colors
+'''
 
 # Custom TabButton which scales automatically and has animations
 class TabButton(QPushButton):
@@ -43,19 +52,18 @@ class TabButton(QPushButton):
         style = f"""
             QPushButton {{
                 background: transparent;
-                border: 0;
                 font-weight: bold;
                 font-size: {font_pt}pt;
+                border: 0;
+                border-radius: 3px;
             }}
             QPushButton:checked {{
                 background: #1f6fb5;
                 color: white;
                 border-radius: 3px;
-                border: 2px solid black;
             }}
-            QPushButton: hover {{
-                background: #1c65a5;
-                border: 2px solid #1a609e;
+            QPushButton:hover {{
+                background: black;
                 border-radius: 3px;
             }}
         """
@@ -78,8 +86,6 @@ class TabButton(QPushButton):
         anim.setStartValue(self._scale)
         anim.setEndValue(target)
         anim.start()
-
-
 
 # Custom Tab Widget
 class CustomTabWidget(QWidget):
@@ -128,36 +134,6 @@ class CustomTabWidget(QWidget):
     @property
     def tabbar(self):
         return self._tabbar
-
-class Card(QWidget):
-    def __init__(self, image_path, title, description, parent=None):
-        super().__init__(parent)
-
-        self.image_label = QPixmap(image_path)
-        self.image_label.setPixmap(pixmap.scaled(200, 300, aspectRatioMode=1))
-
-        self.title = QLabel(title)
-        self.title.styleSheet = "font-size: 20px; font-weight: bold;"
-
-        self.description = QLabel(description)
-        self.description_label.setWordWrap(True)
-        self.description_label.setStyleSheet("font-size: 12px;")
-
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.image_label)
-        layout.addWidget(self.title)
-        layout.addWidget(self.description)
-        self.setLayout(layout)
-
-    def resize_event(self, event):
-        w = self.width()
-        h = int(w * 1.5)
-        pixmap = self.image_label.pixmap()
-        if pixmap:
-            self.image_label.setPixmap(pixmap.scaled(w, h, aspectRatioMode=1))
-        super().resizeEvent(event)
-
-
 
 class Discover(QWidget):
     def __init__(self):
@@ -246,7 +222,7 @@ class ListAnime(QWidget):
         scroll = QScrollArea()
         scroll.setStyleSheet("background: transparent; border: 0;")
         scroll.setWidget(QWidget())
-        scroll.setWidgetResizable(False)
+        scroll.setWidgetResizable(True)
 
         container_layout.addWidget(label)
         container_layout.addStretch(1)
@@ -255,6 +231,22 @@ class ListAnime(QWidget):
         # Add to the Layout
         layout.addWidget(container)
         layout.addWidget(scroll)
+
+        # Container to add cards
+        card_container = QWidget()
+        card_layout = QVBoxLayout(card_container)
+        card_layout.setContentsMargins(0, 0, 0, 0)
+        card_layout.setSpacing(10)
+
+        scroll.setWidget(card_container)
+        layout.addWidget(scroll)
+
+        def add_card(self, title: str, img_path: str, desc: str):
+            card = CutCornerCardLeft()
+            card.set_title(title)
+            card.set_description(desc)
+            card.set_image(img_path)
+            card_layout.addWidget(card)
 
 
 class ListManga(QWidget):
@@ -304,3 +296,9 @@ class MainWindow(QMainWindow):
         tabs.tabbar.setStyleSheet("background: transparent;")
 
         self.setCentralWidget(tabs)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.showMaximized()
+    sys.exit(app.exec())
