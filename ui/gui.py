@@ -51,6 +51,12 @@ class TabButton(QPushButton):
                 background: #1f6fb5;
                 color: white;
                 border-radius: 3px;
+                border: 2px solid black;
+            }}
+            QPushButton: hover {{
+                background: #1c65a5;
+                border: 2px solid #1a609e;
+                border-radius: 3px;
             }}
         """
         self.setStyleSheet(style)
