@@ -1,3 +1,7 @@
+[![GitHub top language](https://img.shields.io/github/languages/top/x8laye4r/AniLex?logo=github)](https://github.com/x8laye4r/AniLex) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/x8laye4r/AniLex?logo=github)](https://github.com/x8laye4r/AniLex) [![GitHub issues](https://img.shields.io/github/issues/x8laye4r/AniLex?logo=github)](https://github.com/x8laye4r/AniLex/issues)
+![GitHub repo size](https://img.shields.io/github/repo-size/x8laye4r/AniLex)
+![GitHub stars](https://img.shields.io/github/stars/x8lay4r/AniLex?style=social)
+![GitHub forks](https://img.shields.io/github/forks/x8laye4r/AniLex?style=social)
 # AniLex – Your Personal Anime Tracker
 First of all, I want to say it's **UNOFFICIAL** and not supported by **AniList**!
 
