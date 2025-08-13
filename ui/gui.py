@@ -138,9 +138,48 @@ class CustomTabWidget(QWidget):
 class Discover(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout(self)
-        label = QLabel("Das ist Tab 1", alignment=Qt.AlignCenter)
-        layout.addWidget(label)
+
+        main_layout = QVBoxLayout(self)
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        main_layout.addWidget(scroll_area)
+
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
+
+        # Dictionary für einfachen Zugriff
+        self.sections = {}
+
+        def add_section(title):
+            section_layout = QVBoxLayout()
+            label = QLabel(title)
+            label.setStyleSheet("font-size: 20px; font-weight: bold;")
+            inner_scroll = QScrollArea()
+            inner_scroll.setWidgetResizable(True)
+            inner_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            inner_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            inner_scroll.setFixedHeight(150)
+            inner_scroll.setStyleSheet("background: transparent; border: 0;")
+
+            content = QWidget()
+
+            inner_scroll.setWidget(content)
+
+            section_layout.addWidget(label)
+            section_layout.addWidget(inner_scroll)
+
+            container_layout.addLayout(section_layout)
+
+            self.sections[title] = inner_scroll
+
+        add_section("Airing Anime")
+        add_section("Trending Now")
+        add_section("Releasing this season")
+        add_section("Trending Manga")
+        add_section("Next Season")
+
+        scroll_area.setWidget(container)
 
 class HoverButton(QPushButton):
     def __init__(self, icon, parent=None):
@@ -195,15 +234,16 @@ class ListAnime(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Main Window
+        self.right = True
+        self.temp_left_card = None
+
+        # Main Layout
         layout = QVBoxLayout(self)
 
-        # Container
+        # Header Container
         container = QWidget()
         container.setFixedHeight(35)
         container.setStyleSheet("background: transparent; border: 0;")
-
-        # Container Layout
         container_layout = QHBoxLayout(container)
         container_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -211,42 +251,62 @@ class ListAnime(QWidget):
         label = QLabel("Anime: ", alignment=Qt.AlignVCenter | Qt.AlignLeft)
         label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
-        # Button with Animation
+        # Button mit Icon
         icon = QIcon(path.join(get_cache_path(), "images", "filter.png"))
         button = HoverButton(icon)
         button.setStyleSheet("background: transparent; border: 0;")
         button.clicked.connect(lambda: FilterPopUp().exec())
 
-
-        # ScrollArea
-        scroll = QScrollArea()
-        scroll.setStyleSheet("background: transparent; border: 0;")
-        scroll.setWidget(QWidget())
-        scroll.setWidgetResizable(True)
-
         container_layout.addWidget(label)
         container_layout.addStretch(1)
         container_layout.addWidget(button)
 
-        # Add to the Layout
+        # ScrollArea
+        scroll = QScrollArea()
+        scroll.setStyleSheet("background: transparent; border: 0;")
+        scroll.setWidgetResizable(True)
+
+        # Container für Karten
+        card_container = QWidget()
+        self.card_layout = QVBoxLayout(card_container)
+        self.card_layout.setContentsMargins(0, 0, 0, 0)
+        self.card_layout.setSpacing(10)
+
+        scroll.setWidget(card_container)
+
+        # Add to main layout
         layout.addWidget(container)
         layout.addWidget(scroll)
 
-        # Container to add cards
-        card_container = QWidget()
-        card_layout = QVBoxLayout(card_container)
-        card_layout.setContentsMargins(0, 0, 0, 0)
-        card_layout.setSpacing(10)
+        # Testeinträge
+        self.add_card("Test L", "Test", "Test")
+        self.add_card("Test R", "Test", "Test")
+        self.add_card("Test L 2", "Test", "Test")
+        self.add_card("Test R 2", "Test", "Test")
 
-        scroll.setWidget(card_container)
-        layout.addWidget(scroll)
+    def add_card(self, title: str, img_path: str, desc: str):
+        if self.right:
+            self.temp_left_card = CutCornerCardLeft()
+            self.temp_left_card.set_title(title)
+            self.temp_left_card.set_description(desc)
+            self.temp_left_card.set_image(img_path)
+            self.right = False
+        else:
+            right_card = CutCornerCardRight()
+            right_card.set_title(title)
+            right_card.set_description(desc)
+            right_card.set_image(img_path)
 
-        def add_card(self, title: str, img_path: str, desc: str):
-            card = CutCornerCardLeft()
-            card.set_title(title)
-            card.set_description(desc)
-            card.set_image(img_path)
-            card_layout.addWidget(card)
+            row_widget = QWidget()
+            row_layout = QHBoxLayout(row_widget)
+            row_layout.setContentsMargins(0, 0, 0, 0)
+            row_layout.setSpacing(0)
+
+            row_layout.addWidget(self.temp_left_card)
+            row_layout.addWidget(right_card)
+
+            self.card_layout.addWidget(row_widget)
+            self.right = True
 
 
 class ListManga(QWidget):
