@@ -8,221 +8,71 @@ from PySide6.QtGui import QPainter, QPainterPath, QColor, QPen, QFont, QPixmap
         1) Make the card colors better
         3) Fix cut corner 
 '''
-class CutCornerCardLeft(QWidget):
-    clicked = Signal()
-    def __init__(self, parent=None):
+
+class Card(QWidget):
+    def __init__(self, id: int = None, image_url: str = "", title: str = "None...", description: str = "None..", parent=None):
         super().__init__(parent)
+        self.id = id
+        self.image_url = image_url
+        self.title = title
+        self.description = description
 
-        screen = QApplication.primaryScreen()
-        screen_size = screen.size()
-        width = screen_size.width() // 2
-        height = 150
+        # Main layout (horizontal): Bild | Textstack
+        layout = QHBoxLayout()
+        layout.setContentsMargins(8, 8, 8, 8)
+        layout.setSpacing(12)
 
-        self.normal_size = (width, height)
-        self.hover_size = (width + 20, height + 10)
+        # Text layout (vertical)
+        layout2 = QVBoxLayout()
+        layout2.setContentsMargins(0, 0, 0, 0)
+        layout2.setSpacing(2)         # kleinen Abstand zwischen title und desc
 
-        self.resize(*self.normal_size)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.setMaximumSize(QSize(*self.normal_size))
+        # Title + Description
+        label_title = QLabel(self.title)
+        label_desc = QLabel(self.description)
 
-        self.bg_color = QColor("#f0f0f0")
-        self.border_color = QColor("#888")
-        self.corner_cut_x = 150
-        self.corner_cut_y = 150
-        self.hover = False
-        self._path = None
+        # Styling
+        label_title.setStyleSheet('font-size: 20pt; font-weight: bold;')
+        label_desc.setWordWrap(True)  # wenn längere Beschreibungen, umbrechen statt extra höhe
 
-        self.size_anim = QPropertyAnimation(self, b"maximumSize")
-        self.size_anim.setDuration(150)
-        self.size_anim.setEasingCurve(QEasingCurve.OutCubic)
+        # Wichtig: Größe / Policy so setzen, dass Labels nicht vertical "expand" und Platz auseinanderziehen
+        label_title.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        label_desc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
-        main_layout = QHBoxLayout(self)
-        main_layout.setContentsMargins(10, 10, 10, 10)
-        main_layout.setSpacing(10)
+        # Optional: Ausrichtung der Texte (links, zentriert zur Bildhöhe)
+        label_title.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        label_desc.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        self.image_label = QLabel()
-        img_size = height - 20
-        self.image_label.setFixedSize(img_size, img_size)
-        self.image_label.setAlignment(Qt.AlignCenter)
+        layout2.addWidget(label_title)
+        layout2.addWidget(label_desc)
 
-        text_layout = QVBoxLayout()
-        self.title_label = QLabel("No Title Found...")
-        self.title_label.setFont(QFont("Arial", 14, QFont.Bold))
-        self.desc_label = QLabel("No Description Found...")
-        self.desc_label.setWordWrap(True)
+        # Picture
+        self.label_pic = QLabel()
+        self.label_pic.setFixedSize(120, 170)
+        self.label_pic.setAlignment(Qt.AlignCenter)
 
-        text_layout.addWidget(self.title_label)
-        text_layout.addWidget(self.desc_label)
+        # Bild und Text zum Hauptlayout hinzufügen; Text-Layout vertikal zentrieren
+        layout.addWidget(self.label_pic, 0, Qt.AlignLeft | Qt.AlignVCenter)
+        layout.addLayout(layout2)
+        layout.setAlignment(layout2, Qt.AlignVCenter)
 
-        main_layout.addWidget(self.image_label)
-        main_layout.addLayout(text_layout)
+        # Network Manager (wie gehabt)
+        self.manager = QNetworkAccessManager()
+        if self.image_url:
+            request = QNetworkRequest(QUrl(self.image_url))
+            reply = self.manager.get(request)
+            reply.finished.connect(lambda r=reply: self.handle_reply(r))
 
-        self.setMouseTracking(True)
+        self.setLayout(layout)
 
-    def set_image(self, path: str):
-        pixmap = QPixmap(path)
-        if not pixmap.isNull():
-            scaled = pixmap.scaled(self.image_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.image_label.setPixmap(scaled)
-        else:
-            self.image_label.clear()
-
-    def set_title(self, text: str):
-        self.title_label.setText(text)
-
-    def set_description(self, text: str):
-        self.desc_label.setText(text)
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        rect = self.rect()
-
-        path = QPainterPath()
-        path.moveTo(rect.topLeft())
-        path.lineTo(rect.topRight().x() - self.corner_cut_x, rect.top())
-        path.lineTo(rect.topRight().x(), rect.top() + self.corner_cut_y)
-        path.lineTo(rect.bottomRight())
-        path.lineTo(rect.bottomLeft())
-        path.closeSubpath()
-
-        self._path = path
-
-        fill_color = QColor("#dcdcdc") if self.hover else self.bg_color
-        painter.fillPath(path, fill_color)
-
-        pen = QPen(self.border_color)
-        pen.setWidth(2)
-        painter.setPen(pen)
-        painter.drawPath(path)
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton and self._path and self._path.contains(event.position()):
-            self.clicked.emit()
-
-    def enterEvent(self, event):
-        self.hover = True
-        self.update()
-        self.size_anim.stop()
-        self.size_anim.setStartValue(self.maximumSize())
-        self.size_anim.setEndValue(QSize(*self.hover_size))
-        self.size_anim.start()
-
-    def leaveEvent(self, event):
-        self.hover = False
-        self.update()
-        self.size_anim.stop()
-        self.size_anim.setStartValue(self.maximumSize())
-        self.size_anim.setEndValue(QSize(*self.normal_size))
-        self.size_anim.start()
-
-class CutCornerCardRight(QWidget):
-    clicked = Signal()
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        screen = QApplication.primaryScreen()
-        screen_size = screen.size()
-        width = screen_size.width() // 2
-        height = 150
-
-        self.normal_size = (width, height)
-        self.hover_size = (width + 20, height + 10)
-
-        self.resize(*self.normal_size)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.setMaximumSize(QSize(*self.normal_size))
-
-        self.bg_color = QColor("#f0f0f0")
-        self.border_color = QColor("#888")
-        self.corner_cut_x = 150
-        self.corner_cut_y = 150
-        self.hover = False
-        self._path = None
-
-        self.size_anim = QPropertyAnimation(self, b"maximumSize")
-        self.size_anim.setDuration(150)
-        self.size_anim.setEasingCurve(QEasingCurve.OutCubic)
-
-        main_layout = QHBoxLayout(self)
-        main_layout.setContentsMargins(10, 10, 10, 10)
-        main_layout.setSpacing(10)
-
-        text_layout = QVBoxLayout()
-        self.title_label = QLabel("No Title Found...")
-        self.title_label.setFont(QFont("Arial", 14, QFont.Bold))
-        self.desc_label = QLabel("No Description Found...")
-        self.desc_label.setWordWrap(True)
-
-        self.image_label = QLabel()
-        img_size = height - 20
-        self.image_label.setFixedSize(img_size, img_size)
-        self.image_label.setAlignment(Qt.AlignCenter)
-
-        text_layout.addWidget(self.title_label)
-        text_layout.addWidget(self.desc_label)
-
-        main_layout.addLayout(text_layout)
-        main_layout.addWidget(self.image_label)
-
-        self.setMouseTracking(True)
-
-    def set_image(self, path: str):
-        pixmap = QPixmap(path)
-        if not pixmap.isNull():
-            scaled = pixmap.scaled(self.image_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.image_label.setPixmap(scaled)
-        else:
-            self.image_label.clear()
-
-    def set_title(self, text: str):
-        self.title_label.setText(text)
-
-    def set_description(self, text: str):
-        self.desc_label.setText(text)
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        rect = self.rect()
-
-        path = QPainterPath()
-        path.moveTo(rect.topLeft())
-        path.lineTo(rect.topRight())
-        path.lineTo(rect.bottomRight())
-        path.lineTo(rect.bottomLeft().x() + self.corner_cut_x, rect.bottom())
-        path.lineTo(rect.bottomLeft().x(), rect.bottomLeft().y() - self.corner_cut_y)
-        path.closeSubpath()
-
-        self._path = path
-
-        fill_color = QColor("#dcdcdc") if self.hover else self.bg_color
-        painter.fillPath(path, fill_color)
-
-        pen = QPen(self.border_color)
-        pen.setWidth(2)
-        painter.setPen(pen)
-        painter.drawPath(path)
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton and self._path and self._path.contains(event.position()):
-            self.clicked.emit()
-
-    def enterEvent(self, event):
-        self.hover = True
-        self.update()
-        self.size_anim.stop()
-        self.size_anim.setStartValue(self.maximumSize())
-        self.size_anim.setEndValue(QSize(*self.hover_size))
-        self.size_anim.start()
-
-    def leaveEvent(self, event):
-        self.hover = False
-        self.update()
-        self.size_anim.stop()
-        self.size_anim.setStartValue(self.maximumSize())
-        self.size_anim.setEndValue(QSize(*self.normal_size))
-        self.size_anim.start()
+    def handle_reply(self, reply):
+        pixmap = QPixmap()
+        pixmap.loadFromData(reply.readAll())
+        self.label_pic.setPixmap(
+            pixmap.scaled(
+                self.label_pic.size(),
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+        )
 
