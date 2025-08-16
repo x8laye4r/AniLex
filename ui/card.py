@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy, QApplication
 from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QEasingCurve, QSize
 from PySide6.QtGui import QPainter, QPainterPath, QColor, QPen, QFont, QPixmap
-
+from utils.helpers import _get_card_settings
 
 '''
     To-Do:
@@ -12,6 +12,7 @@ from PySide6.QtGui import QPainter, QPainterPath, QColor, QPen, QFont, QPixmap
 class Card(QWidget):
     def __init__(self, id: int = None, image_url: str = "", title: str = "None...", description: str = "None..", parent=None):
         super().__init__(parent)
+        settings = _get_card_settings()
         self.id = id
         self.image_url = image_url
         self.title = title

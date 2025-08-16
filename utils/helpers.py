@@ -43,6 +43,13 @@ def _load_settings():
     except FileNotFoundError:
         return {}
 
+def _get_card_settings():
+    settings = _load_settings()
+    try:
+        return settings["CARD_OPTIONS"]
+    except KeyError:
+        raise KeyError("Key 'CARD_OPTIONS' is missing in the settings.")
+
 def get_id():
     data = _load_user_data()
     try:
