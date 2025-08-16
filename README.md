@@ -44,6 +44,7 @@ I noticed that most AniList-based trackers either:
 - 📄 Detailed info: descriptions, covers, status, episodes/chapters, ratings
 - 🧩 Support for multiple media types (Animes and Mangas)
 - 🤖 OpenAI support for custom Anime/Manga recomendations
+- 📑 Individually customizable Anime/Manga cards with freely chosen info — planned, as long as I can get it working the way I want
 
 ---
 
