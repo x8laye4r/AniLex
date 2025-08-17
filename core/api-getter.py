@@ -45,16 +45,13 @@ def get_all_airing_anime():
 
 
 
-def get_full_card_info_anime(id):
+def get_full_card_anime(anime_id: int):
     query = f'''
     query {{
-        Media(id: {id}, type: ANIME) {{
+        Media(id: {anime_id}, type: ANIME) {{
+            # ==== BASIC INFO ====
             id
-            title {{
-                english
-                romaji
-                native
-            }}
+            title {{ english romaji native }}
             description
             episodes
             duration
@@ -62,117 +59,149 @@ def get_full_card_info_anime(id):
             genres
             averageScore
             meanScore
-            coverImage {{
-                large
-            }}
+            season
+            hashtag
+            startDate {{ day month year }}
+            endDate {{ day month year }}
+
+            # ==== IMAGES ====
+            coverImage {{ large }}
             bannerImage
-            nextAiringEpisode {{
-                episode
-                airingAt
-                timeUntilAiring
-            }}
+
+            # ==== AIRING ====
+            nextAiringEpisode {{ episode airingAt timeUntilAiring }}
+
+            # ==== ADDITIONAL INFO ====
             format
             popularity
             favourites
-            startDate {{
-                day
-                month
-                year
-            }}
-            endDate {{
-                day
-                month
-                year
-            }}
-            season
             source
+
+            # ==== STAFF ====
             staff {{
                 edges {{
                     role
                     node {{
                         id
-                        name {{
-                            full
-                        }}
-                        image {{
-                            medium
-                        }}
+                        name {{ full }}
+                        image {{ medium }}
                     }}
                 }}
             }}
+
+            # ==== CHARACTERS ====
             characters {{
                 edges {{
                     role
                     node {{
                         id
-                        name {{
-                            full
-                        }}
-                        image {{
-                            medium
-                        }}
+                        name {{ full }}
+                        image {{ medium }}
                     }}
                 }}
             }}
+
+            # ==== RELATIONS ====
             relations {{
                 edges {{
                     relationType
                     node {{
                         id
-                        title {{
-                            romaji
-                            english
-                            native
-                        }}
-                        coverImage {{
-                            medium
-                        }}
+                        title {{ romaji english native }}
+                        coverImage {{ medium }}
                     }}
                 }}
             }}
-            rankings {{
-                context
-                rank
-                year
-                allTime
-            }}
+
+            # ==== RANKINGS & STATS ====
+            rankings {{ context rank year allTime }}
             stats {{
-                statusDistribution {{
-                    status
-                    amount
-                }}
-                scoreDistribution {{
-                    score
-                    amount
-                }}
+                statusDistribution {{ status amount }}
+                scoreDistribution {{ score amount }}
             }}
+
+            # ==== STUDIOS, TAGS, TRAILER ====
             studios {{
                 edges {{
                     isMain
-                    node {{
-                        id
-                        name
-                    }}
+                    node {{ id name }}
                 }}
             }}
-            tags {{
-                category
-                name
-            }}
-            trailer {{
-                site
-                id
-                thumbnail
-            }}
+            tags {{ category name }}
+            trailer {{ site id thumbnail }}
         }}
     }}
     '''
-    response = requests.post(URL, json={"query": query})
-    data = response.json()
-    if "errors" in data:
-        print("Fehler:", data["errors"])
-        return None
-    return data
+    response = requests.post(URL, json={'query': query})
+    data = response.json()['data']['Media']
 
-# Beispiel
-print(get_full_card_info_anime(179966))
+    # Build Card structure
+    card = {
+        "basic": {
+            "id": data['id'],
+            "title": data['title'],
+            "description": data['description'],
+            "episodes": data['episodes'],
+            "duration": data['duration'],
+            "status": data['status'],
+            "genres": data['genres'],
+            "scores": {
+                "average": data['averageScore'],
+                "mean": data['meanScore']
+            },
+            "season": data['season'],
+            "startDate": data['startDate'],
+            "endDate": data['endDate'],
+            "format": data['format'],
+            "popularity": data['popularity'],
+            "favourites": data['favourites'],
+            "source": data['source'],
+            "hashtag": data['hashtag']
+        },
+        "images": {
+            "cover": data['coverImage']['large'],
+            "banner": data['bannerImage']
+        },
+        "airing": data.get('nextAiringEpisode', None),
+        "staff": [
+            {
+                "role": edge['role'],
+                "id": edge['node']['id'],
+                "name": edge['node']['name']['full'],
+                "image": edge['node'].get('image', {}).get('medium')
+            } for edge in data['staff']['edges']
+        ],
+        "characters": [
+            {
+                "role": edge['role'],
+                "id": edge['node']['id'],
+                "name": edge['node']['name']['full'],
+                "image": edge['node'].get('image', {}).get('medium')
+            } for edge in data['characters']['edges']
+        ],
+        "relations": [
+            {
+                "relationType": edge['relationType'],
+                "id": edge['node']['id'],
+                "title": edge['node']['title'],
+                "coverImage": edge['node']['coverImage']['medium']
+            } for edge in data['relations']['edges']
+        ],
+        "rankings": data.get('rankings', []),
+        "stats": data.get('stats', {}),
+        "studios": [
+            {
+                "isMain": edge['isMain'],
+                "id": edge['node']['id'],
+                "name": edge['node']['name']
+            } for edge in data['studios']['edges']
+        ],
+        "tags": data.get('tags', []),
+        "trailer": data.get('trailer', None)
+    }
+
+    return card
+
+def get_user_anime_list_with_own_info(info: list):
+    USERNAME = get_username()
+    OAUTH_KEY = get_auth_key()
