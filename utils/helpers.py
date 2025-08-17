@@ -3,6 +3,7 @@ import keyring
 import os
 from tinydb import TinyDB, Query
 import yaml
+import requests
 
 def get_cache_path():
     aktuell = os.path.abspath(os.path.dirname(__file__))
@@ -35,6 +36,25 @@ def _load_user_data():
             return json.load(file)
     except json.JSONDecodeError:
         raise ValueError("User data are corrupt or in a not valid JSON format.")
+
+
+def get_mal_id(id, type_):
+    URL = "https://graphql.anilist.co"
+    query = f"""
+    query {{
+        Media(id: {id}, type: {type_}) {{
+            idMal
+        }}
+    }}
+    """
+    response = requests.post(URL, json={"query": query})
+    data = response.json()
+
+    if "errors" in data:
+        print("Error:", data["errors"])
+        return None
+
+    return data["data"]["Media"]["idMal"]
 
 def _load_settings():
     try:

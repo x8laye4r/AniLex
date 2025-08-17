@@ -9,10 +9,16 @@ from utils.helpers import _get_card_settings
         3) Fix cut corner 
 '''
 
+def get_true(settings):
+    trues = []
+    for k, v in settings.items():
+        if v:
+            trues.append(k)
+    return trues
+
 class Card(QWidget):
     def __init__(self, id: int = None, image_url: str = "", title: str = "None...", description: str = "None..", parent=None):
         super().__init__(parent)
-        settings = _get_card_settings()
         self.id = id
         self.image_url = image_url
         self.title = title

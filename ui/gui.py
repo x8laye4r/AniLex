@@ -120,9 +120,6 @@ class ListAnime(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.right = True
-        self.temp_left_card = None
-
         # Main Layout
         layout = QVBoxLayout(self)
 
@@ -167,9 +164,7 @@ class ListAnime(QWidget):
 class ListManga(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout(self)
-        label = QLabel("Das ist Tab 3", alignment=Qt.AlignCenter)
-        layout.addWidget(label)
+
 
 class Profile(QWidget):
     def __init__(self):
