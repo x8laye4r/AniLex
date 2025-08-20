@@ -1,0 +1,34 @@
+USER_SETTINGS:
+  title:
+    english: false
+    romaji: false
+    native: true
+  list: page_system
+CARD_OPTIONS:
+  ANIME:
+    description: true
+    episodes: true
+    status: false
+    score: false
+    studios: true
+    genres: false
+    external_links: false
+    airing: false
+    start_end: false
+    popularity: false
+    favorites: false
+    source: false
+  MANGA:
+    description: true
+    chapters: true
+    volumes: false
+    status: false
+    score: true
+    genres: false
+    external_link: false
+    start_end: false
+    popularity: false
+    favorite: false
+    source: false
+    external_links: false
+    favorites: false

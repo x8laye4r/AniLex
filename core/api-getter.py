@@ -202,6 +202,6 @@ def get_full_card_anime(anime_id: int):
 
     return card
 
-def get_user_anime_list_with_own_info(info: list):
+def get_user_anime_list_with_own_info(info):
     USERNAME = get_username()
     OAUTH_KEY = get_auth_key()

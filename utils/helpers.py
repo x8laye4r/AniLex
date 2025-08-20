@@ -56,15 +56,15 @@ def get_mal_id(id, type_):
 
     return data["data"]["Media"]["idMal"]
 
-def _load_settings():
+def load_settings():
     try:
-        with open(SETTINGS_PATH, "r") as file:
+        with open(SETTINGS_PATH, "r", encoding="utf-8") as file:
             return yaml.safe_load(file) or None
     except FileNotFoundError:
         return {}
 
-def _get_card_settings():
-    settings = _load_settings()
+def get_card_settings():
+    settings = load_settings()
     try:
         return settings["CARD_OPTIONS"]
     except KeyError:
