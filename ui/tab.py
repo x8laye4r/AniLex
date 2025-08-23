@@ -1,8 +1,7 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QSizePolicy, QStackedWidget, QHBoxLayout, QVBoxLayout
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, Property, QSize
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QSizePolicy, QStackedWidget, QHBoxLayout, QVBoxLayout, QTabBar
+from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QEasingCurve, Property, QSize
 from PySide6.QtGui import QEnterEvent
 
-# Custom TabButton which scales automatically and has animations
 class TabButton(QPushButton):
     def __init__(self, text, base_font_pt=20, parent=None):
         super().__init__(text, parent)
@@ -10,9 +9,7 @@ class TabButton(QPushButton):
         self.base_font_pt = base_font_pt
         self.setCheckable(True)
         self.setCursor(Qt.PointingHandCursor)
-
-        # Fixed height so the TabBar isn't moving by when hovered over a button
-        fixed_height = int(self.base_font_pt * 2.6) # some extra place for bigger text
+        fixed_height = int(self.base_font_pt * 2.6)
         self.setFixedHeight(fixed_height)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self._update_style()
@@ -44,75 +41,92 @@ class TabButton(QPushButton):
                 color: white;
                 border-radius: 3px;
             }}
-            QPushButton:hover {{
-                background: black;
-                border-radius: 3px;
+            QPushButton:checked:hover {{
+                background: #1f6fb5;  /* Gleich wie checked, kein Hover-Effekt */
+                color: white;
             }}
         """
         self.setStyleSheet(style)
 
     def enterEvent(self, event: QEnterEvent):
-        # Bigger Text
+        if self.isChecked():
+            return
         self._start_animation(target=1.15)
         super().enterEvent(event)
 
     # Reset
     def leaveEvent(self, event):
+        if self.isChecked():
+            return
         self._start_animation(target=1.0)
         super().leaveEvent(event)
 
-    def _start_animation(self, target=1.0, duration=180):
-        anim = QPropertyAnimation(self, b"scale", self)
-        anim.setDuration(duration)
-        anim.setEasingCurve(QEasingCurve.OutCubic)
-        anim.setStartValue(self._scale)
-        anim.setEndValue(target)
-        anim.start()
+    def _start_animation(self, target, duration=80):
+        self.animation = QPropertyAnimation(self, b"scale")
+        self.animation.setDuration(duration)
+        self.animation.setEasingCurve(QEasingCurve.OutCubic)
+        self.animation.setEndValue(target)
+        self.animation.start()
 
-# Custom Tab Widget
-class CustomTabWidget(QWidget):
-    def __init__(self, parent=None):
+    def mousePressEvent(self, event):
+        if self.isChecked():
+            return
+        self._start_animation(target=0.95)
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, e):
+        if self.isChecked():
+            return
+        self._start_animation(target=1.0)
+        super().mouseReleaseEvent(e)
+
+    def isChecked(self):
+        return super().isChecked()
+
+    def setChecked(self, checked):
+        super().setChecked(checked)
+        if checked:
+            self._start_animation(target=1.25)
+        else:
+            self._start_animation(target=1.0)
+
+class TabBar(QWidget):
+    currentChanged = Signal(int)
+
+    def __init__(self, tabs: list[str], parent=None):
         super().__init__(parent)
-        self._buttons = []
-        self._pages = QStackedWidget()
-        self._tabbar = QWidget()
-        tab_layout = QHBoxLayout(self._tabbar)
-        tab_layout.setContentsMargins(6, 6, 6, 6)
-        tab_layout.setSpacing(6)
-        self._tab_layout = tab_layout
 
-        main = QVBoxLayout(self)
-        main.setContentsMargins(0, 0, 0, 0)
-        main.setSpacing(0)
-        main.addWidget(self._tabbar)
-        main.addWidget(self._pages)
+        self._buttons: list[TabButton] = []
+        self._current_index: int = -1
 
-    def addTab(self, widget: QWidget, title: str):
-        index = self._pages.addWidget(widget)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
-        btn = TabButton(title, base_font_pt=18, parent=self._tabbar)
-        btn.clicked.connect(lambda checked, i=index: self.setCurrentIndex(i))
-        if index == 0:
-            btn.setChecked(True)
+        for i, text in enumerate(tabs):
+            btn = TabButton(text)
+            btn.clicked.connect(lambda checked, idx=i: self._on_tab_clicked(idx))
+            layout.addWidget(btn)
+            self._buttons.append(btn)
 
-        self._buttons.append(btn)
-        self._tab_layout.addWidget(btn)
-        return index
+        # optional: ersten Tab aktivieren
+        if self._buttons:
+            self.setCurrentIndex(0)
+
+    def _on_tab_clicked(self, index: int):
+        self.setCurrentIndex(index)
 
     def setCurrentIndex(self, index: int):
-        self._pages.setCurrentIndex(index)
-        for i, b in enumerate(self._buttons):
-            b.setChecked(i == index)
+        if index == self._current_index:
+            return
+        # Reset alle Buttons
+        for i, btn in enumerate(self._buttons):
+            btn.setChecked(i == index)
+        self._current_index = index
+        self.currentChanged.emit(index)
 
-    def currentIndex(self):
-        return self._pages.currentIndex()
+    def currentIndex(self) -> int:
+        return self._current_index
 
-    def count(self):
-        return self._pages.count()
-
-    def widget(self, index):
-        return self._pages.widget(index)
-
-    @property
-    def tabbar(self):
-        return self._tabbar
+    def buttons(self) -> list[TabButton]:
+        return self._buttons
