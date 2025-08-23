@@ -18,11 +18,13 @@ CARD_OPTIONS:
     popularity: false
     favorites: false
     source: false
+    external links: false
+    start end: false
   MANGA:
-    description: true
-    chapters: true
+    description: false
+    chapters: false
     volumes: false
-    status: false
+    status: true
     score: true
     genres: false
     external_link: false
@@ -32,3 +34,5 @@ CARD_OPTIONS:
     source: false
     external_links: false
     favorites: false
+    external links: false
+    start end: false
