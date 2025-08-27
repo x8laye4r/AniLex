@@ -1,5 +1,6 @@
 import json
 import keyring
+from kryring.errors import KeyringError, PasswordGetError, PasswordSetError, PasswordDeleteError, Initerror
 import os
 from tinydb import TinyDB, Query
 import yaml
@@ -13,7 +14,6 @@ def get_cache_path():
 
 STANDARD_PATH = get_cache_path()
 
-STATUS_PATH = os.path.join(STANDARD_PATH, "anime_data", "custom_status_db.json")
 PRIORITY_PATH = os.path.join(STANDARD_PATH, "anime_data", "custom_priority_db.json")
 USER_DATA_PATH = os.path.join(STANDARD_PATH, "user_data.json")
 SETTINGS_PATH = os.path.join(STANDARD_PATH, "settings.yaml")
@@ -22,8 +22,17 @@ TYPE_MANGA = "Manga"
 QUERY = Query()
 
 
+if not os.path.exists(PRIORITY_PATH):
+    with open(PRIORITY_PATH, "r", encoding="utf-8"):
+        pass
+if not os.path.exists(USER_DATA_PATH):
+    with open(USER_DATA_PATH, "r", encoding="utf-8"):
+        pass
+if not os.path.exists(SETTINGS_PATH):
+    with open(SETTINGS_PATH, "r", encoding="utf-8"):
+        pass
+
 try:
-    db = TinyDB(STATUS_PATH)
     db2 = TinyDB(PRIORITY_PATH)
 except TinyDBException as e:
     raise RuntimeError(f"Error to initialize database: {e}")
@@ -140,12 +149,26 @@ def clear_all_priorities():
     except TinyDBException as e:
         raise RuntimeError(f"Error while deleting databases data: {e}")
 
+def set_api_key(key: str):
+    try: 
+        keyring.set("UNOFICIAL-ANILEX", "OPENAI", key)
+        return True
+    except KeyringSetError as e:
+        print("Error setting keyring:", e)
+        return False
+
 def get_api_key():
-    pw = keyring.get_password("OPENAI", get_username())
-    if pw is None:
-        print("No API-Key found in keyring. Please enter your API-Key.")
-        key = input("Enter API Key: ")
-        keyring.set_password("OPENAI", get_username(), key.strip())
-        return key
-    else:
+    try:
+        pw = keyring.get_password("UNOFICIAL-ANILEX", "OPENAI")
         return pw
+    except KeyringGetError as e:
+        print("Error accessing keyring:", e)
+        return None
+
+def delete_api_key():
+    try:
+        keyring.delete("UNOFICIAL-ANILEX", "OPENAI")
+        return True
+    except KeyringDeleteError as e:
+        print("Error deleting keyring:", e)
+        return False
