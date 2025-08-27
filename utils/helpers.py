@@ -106,58 +106,6 @@ def get_auth_key():
         raise ValueError(f"No Auth-Token in keyring for Service '{service}' and User-Key '{user_key}' found.")
     return token
 
-def db_get_all_anime():
-    try:
-        return db.search(QUERY.type == TYPE_ANIME)
-    except TinyDBException as e:
-        raise RuntimeError(f"Error reading all anime: {e}")
-
-def db_get_all_manga():
-    try:
-        return db.search(QUERY.type == TYPE_MANGA)
-    except TinyDBException as e:
-        raise RuntimeError(f"Error reading all manga: {e}")
-
-def db_get_anime_by_id(id: int):
-    try:
-        found = db.search((QUERY.id == id) & (QUERY.type == TYPE_ANIME))
-        return found[0] if found else None
-    except TinyDBException as e:
-        raise RuntimeError(f"Error reading anime with id {id}: {e}")
-
-def db_get_manga_by_id(id: int):
-    try:
-        found = db.search((QUERY.id == id) & (QUERY.type == TYPE_MANGA))
-        return found[0] if found else None
-    except TinyDBException as e:
-        raise RuntimeError(f"Error reading manga with id {id}: {e}")
-
-def db_add(id: int, title: str, type: str):
-    try:
-        if db.search((QUERY.id == id) & (QUERY.type == type)):
-            raise ValueError(f"Entry with ID {id} and type '{type}' exists already.")
-        db.insert({'id': id, 'title': title, 'type': type})
-    except TinyDBException as e:
-        raise RuntimeError(f"Error while appending data: {e}")
-
-def db_remove_anime(id: int):
-    try:
-        db.remove((QUERY.id == id) & (QUERY.type == TYPE_ANIME))
-    except TinyDBException as e:
-        raise RuntimeError(f"Error while deleting anime with id {id}: {e}")
-
-def db_remove_manga(id: int):
-    try:
-        db.remove((QUERY.id == id) & (QUERY.type == TYPE_MANGA))
-    except TinyDBException as e:
-        raise RuntimeError(f"Error while deleting manga with id {id}: {e}")
-
-def db_delete_all():
-    try:
-        db.truncate()
-    except TinyDBException as e:
-        raise RuntimeError(f"Error while deleting databases data: {e}")
-
 def set_priority(id: int, title: str, status: str, priority: str, type: str):
     if status.lower() != "planning":
         return
