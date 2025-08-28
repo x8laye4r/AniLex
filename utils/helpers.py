@@ -1,6 +1,5 @@
 import json
 import keyring
-from kryring.errors import KeyringError, PasswordGetError, PasswordSetError, PasswordDeleteError, Initerror
 import os
 from tinydb import TinyDB, Query
 import yaml
@@ -14,6 +13,7 @@ def get_cache_path():
 
 STANDARD_PATH = get_cache_path()
 
+STATUS_PATH = os.path.join(STANDARD_PATH, "anime_data", "custom_status_db.json")
 PRIORITY_PATH = os.path.join(STANDARD_PATH, "anime_data", "custom_priority_db.json")
 USER_DATA_PATH = os.path.join(STANDARD_PATH, "user_data.json")
 SETTINGS_PATH = os.path.join(STANDARD_PATH, "settings.yaml")
@@ -22,17 +22,8 @@ TYPE_MANGA = "Manga"
 QUERY = Query()
 
 
-if not os.path.exists(PRIORITY_PATH):
-    with open(PRIORITY_PATH, "r", encoding="utf-8"):
-        pass
-if not os.path.exists(USER_DATA_PATH):
-    with open(USER_DATA_PATH, "r", encoding="utf-8"):
-        pass
-if not os.path.exists(SETTINGS_PATH):
-    with open(SETTINGS_PATH, "r", encoding="utf-8"):
-        pass
-
 try:
+    db = TinyDB(STATUS_PATH)
     db2 = TinyDB(PRIORITY_PATH)
 except TinyDBException as e:
     raise RuntimeError(f"Error to initialize database: {e}")
@@ -115,6 +106,58 @@ def get_auth_key():
         raise ValueError(f"No Auth-Token in keyring for Service '{service}' and User-Key '{user_key}' found.")
     return token
 
+def db_get_all_anime():
+    try:
+        return db.search(QUERY.type == TYPE_ANIME)
+    except TinyDBException as e:
+        raise RuntimeError(f"Error reading all anime: {e}")
+
+def db_get_all_manga():
+    try:
+        return db.search(QUERY.type == TYPE_MANGA)
+    except TinyDBException as e:
+        raise RuntimeError(f"Error reading all manga: {e}")
+
+def db_get_anime_by_id(id: int):
+    try:
+        found = db.search((QUERY.id == id) & (QUERY.type == TYPE_ANIME))
+        return found[0] if found else None
+    except TinyDBException as e:
+        raise RuntimeError(f"Error reading anime with id {id}: {e}")
+
+def db_get_manga_by_id(id: int):
+    try:
+        found = db.search((QUERY.id == id) & (QUERY.type == TYPE_MANGA))
+        return found[0] if found else None
+    except TinyDBException as e:
+        raise RuntimeError(f"Error reading manga with id {id}: {e}")
+
+def db_add(id: int, title: str, type: str):
+    try:
+        if db.search((QUERY.id == id) & (QUERY.type == type)):
+            raise ValueError(f"Entry with ID {id} and type '{type}' exists already.")
+        db.insert({'id': id, 'title': title, 'type': type})
+    except TinyDBException as e:
+        raise RuntimeError(f"Error while appending data: {e}")
+
+def db_remove_anime(id: int):
+    try:
+        db.remove((QUERY.id == id) & (QUERY.type == TYPE_ANIME))
+    except TinyDBException as e:
+        raise RuntimeError(f"Error while deleting anime with id {id}: {e}")
+
+def db_remove_manga(id: int):
+    try:
+        db.remove((QUERY.id == id) & (QUERY.type == TYPE_MANGA))
+    except TinyDBException as e:
+        raise RuntimeError(f"Error while deleting manga with id {id}: {e}")
+
+def db_delete_all():
+    try:
+        db.truncate()
+    except TinyDBException as e:
+        raise RuntimeError(f"Error while deleting databases data: {e}")
+
 def set_priority(id: int, title: str, status: str, priority: str, type: str):
     if status.lower() != "planning":
         return
@@ -149,26 +192,12 @@ def clear_all_priorities():
     except TinyDBException as e:
         raise RuntimeError(f"Error while deleting databases data: {e}")
 
-def set_api_key(key: str):
-    try: 
-        keyring.set("UNOFICIAL-ANILEX", "OPENAI", key)
-        return True
-    except KeyringSetError as e:
-        print("Error setting keyring:", e)
-        return False
-
 def get_api_key():
-    try:
-        pw = keyring.get_password("UNOFICIAL-ANILEX", "OPENAI")
+    pw = keyring.get_password("OPENAI", get_username())
+    if pw is None:
+        print("No API-Key found in keyring. Please enter your API-Key.")
+        key = input("Enter API Key: ")
+        keyring.set_password("OPENAI", get_username(), key.strip())
+        return key
+    else:
         return pw
-    except KeyringGetError as e:
-        print("Error accessing keyring:", e)
-        return None
-
-def delete_api_key():
-    try:
-        keyring.delete("UNOFICIAL-ANILEX", "OPENAI")
-        return True
-    except KeyringDeleteError as e:
-        print("Error deleting keyring:", e)
-        return False
