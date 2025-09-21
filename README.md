@@ -33,6 +33,7 @@ I noticed that most AniList-based trackers either:
 - Lightweight (if I can get it to work)
 - Focused on clean UI
 - Built for native desktop use and no browser add-ons
+- Built in watching Animes with HiAnimez on MPV-PLAYER with automatic AniList tracking
 
 ---
 
