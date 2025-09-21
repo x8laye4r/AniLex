@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QPushButton, QSizePolicy
 from PySide6.QtCore import Property, Qt, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QEnterEvent
+from PySide6.QtWidgets import QPushButton, QSizePolicy
+
 
 # Custom Button with hover animation
 class AnimatedButton(QPushButton):

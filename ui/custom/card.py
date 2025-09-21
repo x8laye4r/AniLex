@@ -1,7 +1,6 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy, QApplication
-from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QEasingCurve, QSize
-from PySide6.QtGui import QPainter, QPainterPath, QColor, QPen, QFont, QPixmap
-from utils.helpers import get_card_settings
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QSizePolicy
 
 '''
     To-Do:

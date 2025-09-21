@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QSizePolicy, QStackedWidget, QHBoxLayout, QVBoxLayout, QTabBar
-from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QEasingCurve, Property, QSize
+from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QEasingCurve, Property
 from PySide6.QtGui import QEnterEvent
+from PySide6.QtWidgets import QWidget, QPushButton, QSizePolicy, QHBoxLayout
+
 
 class TabButton(QPushButton):
     def __init__(self, text, base_font_pt=20, parent=None):
