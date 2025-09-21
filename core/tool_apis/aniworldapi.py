@@ -1,15 +1,14 @@
-import cloudscraper
-import re
-from urllib.parse import urljoin
 import logging
-import time
-from bs4 import BeautifulSoup
-from typing import Optional
-from rapidfuzz import fuzz, process
-import sqlite3
-import threading
-import concurrent.futures
 import os
+import re
+import sqlite3
+from typing import Optional
+from urllib.parse import urljoin
+
+import cloudscraper
+from bs4 import BeautifulSoup
+from rapidfuzz import fuzz, process
+
 from utils.anilex_helper import get_cache_path
 
 DATA_DB = os.path.join(get_cache_path(), "api_data", "aniworld_data.db")
@@ -88,6 +87,12 @@ class AniWorldAPI:
             converted[dat] = text
         return converted
 
+    @staticmethod
+    def convert_sting_to_id(text: str):
+        text = text.lower()
+        text = re.sub(r'[^a-z0-9\s-]', '', text)
+        text = re.sub(r'[\s-]+', '-', text)
+        return text
 
     @staticmethod
     def create_title_db():
@@ -160,13 +165,150 @@ class AniWorldAPI:
         conn.close()
 
 
+    @staticmethod
+    def extract_id(link: str) -> str:
+        m = re.search(r"/anime/stream/([^/]+)", link)
+        if m:
+            return m.group(1)
+        return None
+
     # ---------------------------
     # Core methods
     # ---------------------------
 
     def scrape_home_screen(self):
-        raise NotImplementedError("This method is not implemented yet.")
+        resp = self.scraper.get(self.base_url)
+        content = resp.text
+        soup = BeautifulSoup(content, 'html.parser')
 
+        result = {
+            'slider': {},
+            'popular': {},
+            'new_episodes': {},
+            'new_animes': {},
+            'today_anime_calendar': {},
+            'currently_populuar': {},
+            'users_favorite': {}
+        }
+
+        seen_titles = set()
+
+        # --- Slider Animes ---
+        slider_views = soup.find_all('div', class_="homeSliderView row")
+        for view in slider_views:
+            items = view.find_all("div", class_="homeContentPromotionBoxPicture")
+            for item in items:
+                h3 = item.find("h3")
+                h4 = item.find("h4")
+
+                title = h3.get_text(strip=True) if h3 else ""
+                subtitle = h4.get_text(strip=True) if h4 else ""
+                if subtitle:
+                    if not re.search(r"Season\s*\d+|St\.\s*\d+", subtitle, re.I):
+                        title = f"{title} {subtitle}"
+
+                title_key = title.lower()
+                if title_key in seen_titles:
+                    continue
+                seen_titles.add(title_key)
+
+                link = item.find_parent("a")["href"]
+                season = None
+                m = re.search(r"Season\s*(\d+)|St\.\s*(\d+)", subtitle or "", re.I)
+                if m:
+                    season = int(m.group(1) or m.group(2))
+                else:
+                    m2 = re.search(r"/staffel-(\d+)", link, re.I)
+                    season = int(m2.group(1)) if m2 else 1
+
+                img_tag = item.find("img")
+                poster = img_tag.get("data-src") or img_tag.get("src") if img_tag else None
+                anime_id = self.extract_id(link)
+
+                result["slider"][title] = {
+                    "id": anime_id,
+                    "season": season,
+                    "poster": poster,
+                }
+
+        # --- Popular Animes ---
+        popular_container = None
+        for carousel in soup.find_all("div", class_="carousel"):
+            header = carousel.find("h2")
+            if header and "Derzeit beliebt" in header.get_text():
+                popular_container = carousel.find("div", class_="previews")
+                break
+
+        if popular_container:
+            for item in popular_container.find_all("div", class_="coverListItem"):
+                a_tag = item.find("a")
+                if not a_tag:
+                    continue
+
+                anime_id = self.extract_id(a_tag["href"])
+                title_tag = item.find("h3")
+                if not title_tag:
+                    continue
+                title = title_tag.get_text(strip=True)
+
+                img_tag = item.find("img")
+                poster = img_tag.get("data-src") if img_tag else None
+
+                season_match = re.search(r"/season-(\d+)", a_tag["href"])
+                season = int(season_match.group(1)) if season_match else 1
+
+                if any(title.lower() == t.lower() for t in result["popular"]):
+                    continue
+
+                result["popular"][title] = {
+                    "id": anime_id,
+                    "season": season,
+                    "poster": poster
+                }
+
+        # --- New Animes (drittes Carousel) ---
+        new_animes_container = None
+        for carousel in soup.find_all("div", class_="carousel"):
+            header = carousel.find("h2")
+            if header and "Neue Animes" in header.get_text():
+                new_animes_container = carousel.find("div", class_="previews")
+                break
+
+        if new_animes_container:
+            for item in new_animes_container.find_all("div", class_="coverListItem"):
+                a_tag = item.find("a")
+                if not a_tag:
+                    continue
+
+                anime_id = self.extract_id(a_tag["href"])
+                title_tag = item.find("h3")
+                if not title_tag:
+                    continue
+                title = title_tag.get_text(strip=True)
+
+                # Season aus 'title'-Attribut extrahieren
+                full_title = a_tag.get("title", "")
+                season = None
+                m = re.search(r"Season\s*(\d+)|St\.\s*(\d+)", full_title, re.I)
+                if m:
+                    season = int(m.group(1) or m.group(2))
+                else:
+                    season_match = re.search(r"/staffel-(\d+)", a_tag["href"], re.I)
+                    season = int(season_match.group(1)) if season_match else 1
+
+                img_tag = item.find("img")
+                poster = img_tag.get("data-src") if img_tag else None
+
+                if any(title.lower() == t.lower() for t in result["new_animes"]):
+                    continue
+
+                result["new_animes"][title] = {
+                    "id": anime_id,
+                    "poster": poster,
+                    "season": season
+                }
+
+        return result
 
     # Search for an anime by name
     def search_anime(self, anime):
@@ -591,10 +733,8 @@ if __name__ == "__main__":
 
     api = AniWorldAPI()
 
-    api.search_anime("one-piece")
-    data = api.scrape_anime("one-piece")
+    data = api.scrape_home_screen()
     print(data)
-
     """
     # Search for anime
     print("=== Anime Search ===")
