@@ -13,7 +13,7 @@ from urllib.parse import urlparse, parse_qs
 import keyring
 import sys
 import os
-from utils.helpers import get_cache_path
+from utils.anilex_helper import get_cache_path
 
 '''
     Check if file exists and if the files are already saved

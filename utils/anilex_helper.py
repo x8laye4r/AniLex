@@ -1,5 +1,6 @@
 import json
 import keyring
+from keyring.errors import PasswordSetError, PasswordDeleteError
 import os
 from tinydb import TinyDB, Query
 import yaml
@@ -55,6 +56,12 @@ def get_mal_id(id, type_):
         return None
 
     return data["data"]["Media"]["idMal"]
+
+def get_mutation_path():
+    return os.path.join(os.getcwd(), "GraphQL", "mutations")
+
+def get_query_path():
+    return os.path.join(os.getcwd(), "GraphQL", "queries")
 
 def load_settings():
     try:
@@ -201,3 +208,45 @@ def get_api_key():
         return key
     else:
         return pw
+
+def save_trace_moe_key(key):
+    try:
+        keyring.set_password("Trace.moe", get_username(), key)
+        return True
+    except PasswordSetError:
+        return False
+
+def get_trace_moe_key():
+    try:
+        pw = keyring.get_password("Trace.moe", get_username())
+        return pw
+    except keyring.errors.KeyringError:
+        return None
+
+def delete_trace_moe_key():
+    try:
+        keyring.delete_password("Trace.moe", get_username())
+        return True
+    except PasswordDeleteError:
+        return False
+
+def save_sauce_noe_key(key):
+    try:
+        keyring.set_password("saucenoe", get_username(), key)
+        return True
+    except PasswordSetError:
+        return False
+
+def get_sauce_noe_key():
+    try:
+        pw = keyring.get_password("saucenoe", get_username())
+        return pw
+    except keyring.errors.KeyringError:
+        return None
+
+def delete_sauce_noe_key():
+    try:
+        keyring.delete_password("saucenoe", get_username())
+        return True
+    except PasswordDeleteError:
+        return False

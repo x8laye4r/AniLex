@@ -3,7 +3,7 @@
 '''
 import httpx
 import asyncio
-from utils.helpers import get_username, get_id, get_auth_key, get_mal_id, convert_time, filter_today
+from utils.anilex_helper import get_username, get_id, get_auth_key, get_mal_id, convert_time, filter_today
 
 URL = "https://graphql.anilist.co"
 username = get_username()

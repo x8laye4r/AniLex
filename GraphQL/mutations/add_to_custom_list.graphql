@@ -1,0 +1,17 @@
+mutation ($mediaId: Int, $status: MediaListStatus, $customLists: [String]) {
+	SaveMediaListEntry(
+		mediaId: $mediaId,
+		status: $status,
+		customLists: $customLists
+	){
+		id
+		status
+		customLists
+		media {
+			id
+			title {
+				userPreferred
+			}
+		}
+	}
+}
