@@ -1,26 +1,23 @@
-'''
-
-'''
 import sys
+from os import path
+
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QStackedWidget, QPushButton, QSizePolicy, QScrollArea, QDialog, QCheckBox, QSpacerItem, QComboBox, QFrame
+    QLabel, QStackedWidget, QPushButton, QScrollArea, QDialog, QCheckBox
 )
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, Property, QSize, QPoint
-from PySide6.QtGui import QEnterEvent, QPixmap, QIcon
-from utils.helpers import get_cache_path, load_settings
-from ui.card import Card
-from ui.tab import TabBar
-from os import path
-from config.settings import save_card_settings
 
-'''
-    To Do:
-        1) Make QScrollArea arrangement from top left to bottom right
-        2) Make scroll bar better
-        3) Make a drop down for the filter button
-        4) Make tabs color in a better colors
-'''
+from ui.apis.animechangui import AnimeChanGUI
+from ui.apis.aniworldgui import AniWorldGUI
+from ui.apis.hianimezgui import HiAnimezGUI
+from ui.apis.nekos_images import NekoImageGUI
+from ui.apis.trace_moe_searchV2 import TraceMoeGUI
+from ui.apis.waifu_images import WaifuPicturesGUI
+from ui.custom.tab import TabBar
+from ui.custom.vertical_tab import AutoHideVerticalTabs
+from utils.anilex_helper import get_cache_path
+
 
 class Discover(QWidget):
     def __init__(self):
@@ -182,12 +179,82 @@ class ChatBot(QWidget):
         label = QLabel("Das ist Tab 5", alignment=Qt.AlignCenter)
         layout.addWidget(label)
 
-class Recommendations(QWidget):
+
+class Tools(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout(self)
-        label = QLabel("Das ist Tab 6", alignment=Qt.AlignCenter)
-        layout.addWidget(label)
+
+        # Create a horizontal layout
+        self.layout = QHBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
+
+        # Tab names
+        self.tab_names = [
+            "Nekos Images",
+            "WaifuIm Images",
+            "Trace.moe",
+            "SauceNAO",
+            "HiAnimez",
+            "AniWorld",
+            "Animechan"
+        ]
+
+        # Create vertical tab bar
+        self.vertical_tab = AutoHideVerticalTabs(
+            expanded_width=200,
+            collapsed_width=70,
+            collapse_delay=1500,
+            background_color="#1e2329",
+            font_size=12
+        )
+        self.vertical_tab.setup_tabs(self.tab_names)
+
+        # Create content stack
+        self.content_stack = QStackedWidget()
+
+        # Create and add widget instances for each tab
+        self.tab_widgets = [
+            NekoImageGUI(),
+            WaifuPicturesGUI(),
+            TraceMoeGUI(),
+            HiAnimezGUI(),
+            AniWorldGUI(),
+            AnimeChanGUI(),
+        ]
+
+        # Add widgets to stack
+        for widget in self.tab_widgets:
+            self.content_stack.addWidget(widget)
+
+        # Connect signals
+        self.vertical_tab.currentChanged.connect(self.on_tab_changed)
+
+        # Add widgets to main layout
+        self.layout.addWidget(self.vertical_tab)
+        self.layout.addWidget(self.content_stack)
+
+    def on_tab_changed(self, index):
+        self.content_stack.setCurrentIndex(index)
+
+    def add_new_section(self, name, widget_class=None):
+        # Add new tab
+        new_index = self.vertical_tab.add_tab(name)
+
+        # Create widget for the new tab
+        if widget_class:
+            widget = widget_class()
+        else:
+            # Default widget if no class provided
+            widget = QWidget()
+            layout = QVBoxLayout(widget)
+            layout.addWidget(QLabel(f"Content for {name}", alignment=Qt.AlignCenter))
+
+        # Add to content stack and tab list
+        self.content_stack.addWidget(widget)
+        self.tab_widgets.append(widget)
+
+        return new_index
 
 
 # ---- Main Window ----
@@ -197,7 +264,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("AniLex")
         self.setMinimumSize(800, 600)
 
-        self.tab_bar = TabBar(["Discover", "Anime", "Manga", "ChatBot", "Recom", "Profile"])
+        self.tab_bar = TabBar(["Discover", "Anime", "Manga", "ChatBot", "Tools", "Profile"])
         self.tab_bar.currentChanged.connect(self.on_tab_changed)
 
         self.stack = QStackedWidget()
@@ -205,7 +272,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(ListAnime())
         self.stack.addWidget(ListManga())
         self.stack.addWidget(ChatBot())
-        self.stack.addWidget(Recommendations())
+        self.stack.addWidget(Tools())
         self.stack.addWidget(Profile())
 
         container = QWidget()

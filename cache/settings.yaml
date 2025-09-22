@@ -1,9 +1,27 @@
 USER_SETTINGS:
-  title:
-    english: false
-    romaji: false
-    native: true
-  list: page_system
+  first_login: false
+settings:
+  time_format: 24h
+  date_format: "%d.%m.%Y"
+  notifications:
+    upcoming_episodes: true
+    new_chapter_releases: true
+    seasonal_anime_announcements: false
+    manga_releases: false
+    anime_releases: false
+    general_updates: false
+theme:
+  primary_color: default
+  secondary_color: default
+  card_color: default
+  title_color: default
+  text_color: default
+  background_color: default
+  select_color: default
+  font:
+    title: default
+    text: default
+  scrolling: horizontal
 CARD_OPTIONS:
   ANIME:
     description: true
