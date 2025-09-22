@@ -459,14 +459,42 @@ class AniWorldAPI:
             anime_lower = anime.lower()
             animes_lower = list(map(str.lower, animes))
 
-            # Fuzzy matching and substring matching
-            fuzzy_matches = [animes[i] for _, _, i in process.extract(anime_lower, animes_lower, scorer=fuzz.ratio)]
-
-            substring_matches = [s for s in animes if anime_lower in s.lower()]
-
-            # Combine the results
-            matches = list(dict.fromkeys(fuzzy_matches + substring_matches))
-            return self.convert_to_id(matches)
+            # Improved matching strategy to reduce false positives
+            matches = []
+            
+            # 1. Exact matches
+            exact_matches = [anime for anime in animes if anime.lower() == anime_lower]
+            matches.extend(exact_matches)
+            
+            # 2. Substring matches
+            substring_matches = [anime for anime in animes if anime_lower in anime.lower()]
+            matches.extend(substring_matches)
+            
+            # 3. Fuzzy matching with better threshold to reduce false positives
+            already_found = {anime.lower() for anime in matches}
+            fuzzy_results = process.extract(anime_lower, animes_lower, scorer=fuzz.ratio, limit=20)
+            
+            for match_text, score, index in fuzzy_results:
+                if score > 70 and match_text not in already_found:
+                    matches.append(animes[index])
+            
+            # 4. Token-based matching for compound titles (like "re:zero")
+            # Split search term and check if all tokens appear in the title
+            search_tokens = re.split(r'[:\s\-_]+', anime_lower.strip())
+            search_tokens = [token for token in search_tokens if len(token) > 1]  # should ignore single chars like that
+            
+            if len(search_tokens) > 1:
+                token_matches = []
+                for anime in animes:
+                    anime_lower_check = anime.lower()
+                    if anime_lower_check not in already_found:
+                        if all(token in anime_lower_check for token in search_tokens):
+                            token_matches.append(anime)
+                matches.extend(token_matches)
+            
+            # Remove dups
+            unique_matches = list(dict.fromkeys(matches))
+            return self.convert_to_id(unique_matches)
 
         except Exception as e:
             self.logger.error(f"Error while searching for anime: {e}")
