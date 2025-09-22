@@ -96,6 +96,9 @@ class AniWorldAPI:
 
     @staticmethod
     def create_title_db():
+        if not os.path.exists(DATA_DB):
+            with open(DATA_DB, 'w') as file:
+                pass
         conn = sqlite3.connect(DATA_DB)
         cursor = conn.cursor()
         cursor.execute('''
@@ -110,6 +113,9 @@ class AniWorldAPI:
 
     @staticmethod
     def create_data_db():
+        if not os.path.exists(DATA_DB):
+            with open(DATA_DB, 'w') as file:
+                pass
         conn = sqlite3.connect(DATA_DB)
         cursor = conn.cursor()
         cursor.execute('''
@@ -307,6 +313,55 @@ class AniWorldAPI:
                     "poster": poster,
                     "season": season
                 }
+
+        # --- New Episodes ---
+        new_episode_element = soup.find('div', class_='newEpisodeList')
+        elements = new_episode_element.find_all('div', class_='row')
+        for element in elements:
+            title = element.find('strong').get_text()
+            a_tag = element.find('a')
+            anime_id = self.extract_id(a_tag["href"])
+
+            episode = element.find('span', class_='listTag bigListTag blue2').get_text(strip=True)
+            episode.replace('S', 'Staffel')
+            episode.replace('E', 'Episode')
+            lang = element.find('img').get('data-src').removesuffix('.svg').split('/')[-1]
+
+            result['new_animes'][title] = {
+                "id": anime_id,
+                "episode": episode,
+                "lang": lang,
+            }
+
+
+        # --- Anime Calendar ---
+        calendar_element = soup.find_all('div', id=re.compile(r'animekalender-\d+'))
+        anime_id = None
+        title = None
+        time = None
+        season = None
+        episode = None
+        lang = None
+        for element in calendar_element:
+            if element.has_attr('style'):
+                continue
+            a_tags = element.find_all('a')
+            for a_tag in a_tags:
+                anime_id = self.extract_id(a_tag["href"])
+                title = a_tag.find('h3').get_text()
+                h_tags = a_tag.find_all('h4')
+                time = h_tags[0].get_text().replace('~ ', '').strip()
+                season = h_tags[1].get_text()
+                episode = h_tags[2].get_text()
+                lang = a_tag.find('img').get('src').removesuffix('.svg').split('/')[-1].replace('-', ' ')
+            result['today_anime_calendar'][title] = {
+                "id": anime_id,
+                "season": season,
+                "episode": episode,
+                "lang": lang,
+                "time": time,
+            }
+
 
         return result
 

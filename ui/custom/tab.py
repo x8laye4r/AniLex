@@ -110,7 +110,6 @@ class TabBar(QWidget):
             layout.addWidget(btn)
             self._buttons.append(btn)
 
-        # optional: ersten Tab aktivieren
         if self._buttons:
             self.setCurrentIndex(0)
 
@@ -120,7 +119,7 @@ class TabBar(QWidget):
     def setCurrentIndex(self, index: int):
         if index == self._current_index:
             return
-        # Reset alle Buttons
+
         for i, btn in enumerate(self._buttons):
             btn.setChecked(i == index)
         self._current_index = index
