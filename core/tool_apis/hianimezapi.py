@@ -1,7 +1,9 @@
-from hianimez_setup import HianimezSetup
-from models.Hianimez import HianimezData
-import requests
 import re
+
+import requests
+
+from core.tool_apis.hianimez_setup import HianimezSetup
+
 
 class HianimezAPI:
     def __init__(self):
