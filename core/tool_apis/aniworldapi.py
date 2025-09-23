@@ -153,14 +153,12 @@ class AniWorldAPI:
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS anime_data (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                anime_id TEXT,
-                anime_title TEXT,
+                anime INTEGER,
                 anime_description TEXT,
                 anime_genres TEXT,
                 anime_poster_data BLOB,
-                max_episodes INTEGER,
-                max_seasons INTEGER,
-                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(anime) REFERENCES titles(id)
             )
         ''')
         conn.commit()
@@ -183,23 +181,97 @@ class AniWorldAPI:
         conn.commit()
         conn.close()
 
-    def insert_anime_data(self, anime_id, anime_title, anime_description, anime_genres, anime_poster_data, max_episodes, max_seasons):
+
+
+
+    @staticmethod
+    def get_all_episode_numbers(max_season):
+        episodes_nums = []
+        for i in range(1, max_season + 1):
+            url = urljoin("AniWorld.to", f"/anime/stream/{anime_id}/staffel-{i}")
+            response = self.scraper.get(url)
+            content = response.text
+
+            soup = BeautifulSoup(content, "html.parser")
+
+            container_main = soup.find("div", id="stream")
+            episodes_seasons_container = container_main.find_all("ul")
+
+            episodes = episodes_seasons_container[-1]
+            episode_items = episodes.find_all("li")
+            episodes_nums.append(len(episode_items))
+        return episodes_nums
+
+
+
+
+
+    @staticmethod
+    def create_season_episode_db(max_seasons):
+        conn = sqlite3.connect(DATA_DB)
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+        cols = ",\n".join(f'episodes_season_{i} INTEGER' for i in range(1, max_seasons + 1))
+        cursor.execute(f'''  
+            CREATE TABLE IF NOT EXISTS {anime_id} (  
+            id INTEGER PRIMARY KEY AUTOINCREMENT,  
+            anime INTEGER,  
+            max_seasons INTEGER,  
+            {cols},  
+            FOREIGN KEY(anime) REFERENCES anime_data(id)  
+        )  
+        ''')
+
+        episode_numbers = AniWorldAPI.get_all_episode_numbers(max_seasons)
+        for index in range(1, max_seasons + 1):
+            column = f"episodes_season_{season}"
+            cursor.execute(f'''
+                UPDATE "{anime_id}" SET {column} = ? WHERE id = (SELECT id FROM anime_data WHERE anime_id = ?)
+            ''', (episode_numbers[index], anime_id))
+        conn.commit()
+
+        conn.close()
+
+    @staticmethod
+    def add_season(anime_id, season_num, current_episodes):
+        conn = sqlite3.connect(DATA_DB)
+        cursor = conn.cursor()
+        column = f"episodes_season_{season_num}"
+        cursor.execute(f'''
+            ALTER TABLE "{anime_id}" ADD COLUMN {column} INTEGER
+        ''')
+        cursor.execute(f'''
+            UPDATE "{anime_id}" SET {column} = ? WHERE id = (SELECT id FROM anime_data WHERE anime_id = ?)
+        ''', (current_episodes, anime_id))
+        cursor.execute(f'''
+            UPDATE "{anime_id}" SET max_seasons = ? WHERE id = (SELECT id FROM anime_data WHERE anime_id = ?)
+        ''', (season_num, anime_id))
+        conn.commit()
+        conn.close()
+
+    def insert_anime_data(self, anime_id, anime_description = "", anime_genres = [""], anime_poster_data = "", max_seasons = 0, update_existing=False):
+        if update_existing:
+            self.add_season(anime_id, max_seasons, current_episodes)
+            return
+
         conn = sqlite3.connect(DATA_DB)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT 1 FROM anime_data WHERE anime_title = ?", (anime_title,))
+        cursor.execute("SELECT 1 FROM anime_data WHERE anime_id = ?", (anime_id,))
         exists = cursor.fetchone()
+
         if exists:
             conn.close()
-            self.logger.info(f"Anime {anime_title} already exists in database. Skipping insert.")
             return
 
-        cursor.execute('''
-            INSERT INTO anime_data (anime_id, anime_title, anime_description, anime_genres, anime_poster_data, max_episodes, max_seasons)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (anime_id, anime_title, anime_description, anime_genres, anime_poster_data, max_episodes, max_seasons))
-        conn.commit()
-        conn.close()
+
+        cursor.execute(f'''
+            INSERT INTO anime_data (anime, anime_description, anime_genres, anime_poster_data)
+            VALUES ((SELECT id FROM titles WHERE anime_id = ?), ?, ?, ?)
+        ''', (anime_id, anime_description, ",".join(anime_genres), anime_poster_data))
+        self.create_season_episode_db(max_seasons)
+
+
 
 
     @staticmethod
@@ -455,7 +527,7 @@ class AniWorldAPI:
                     title = strong_tag.get_text() if strong_tag else None
                     if not title:
                         continue
-                    
+
                     a_tag = element.find('a')
                     if not a_tag or not a_tag.get("href"):
                         continue
@@ -496,14 +568,14 @@ class AniWorldAPI:
         for element in calendar_elements:
             if element.get('style') and 'display: none' in element['style']:
                 continue
-            
+
             a_tags = element.find_all('a')
             for a_tag in a_tags:
                 try:
                     anime_id = self.extract_id(a_tag["href"]) if a_tag.get("href") else None
                     if not anime_id:
                         continue
-                    
+
                     title_tag = a_tag.find('h3')
                     title = title_tag.get_text(strip=True) if title_tag else None
                     if not title:
@@ -512,11 +584,11 @@ class AniWorldAPI:
                     h_tags = a_tag.find_all('h4')
                     if len(h_tags) < 3:
                         continue
-                    
+
                     time = h_tags[0].get_text().replace('~ ', '').replace("Uhr", "").strip()
                     season = h_tags[1].get_text().replace("Staffel", "").strip()
                     episode = h_tags[2].get_text().replace("Episode", "").strip()
-                    
+
                     img_tag = a_tag.find('img')
                     lang = None
                     if img_tag:
@@ -549,12 +621,12 @@ class AniWorldAPI:
                         if not a_tag or not a_tag.get("href"):
                             continue
                         anime_id = self.extract_id(a_tag["href"])
-                        
+
                         title_tag = element.find('h3')
                         title = title_tag.get_text(strip=True) if title_tag else None
                         if not title:
                             continue
-                        
+
                         img_tag = element.find('img')
                         poster = img_tag.get('data-src') if img_tag else None
 
@@ -577,14 +649,14 @@ class AniWorldAPI:
                     a_tag = box.find_parent("a")
                     if not a_tag or not a_tag.get("href"):
                         continue
-                    
+
                     img = box.find("img")
                     title_tag = box.find("h3")
 
                     anime_id = self.extract_id(a_tag["href"])
                     poster = img.get("data-src") or img.get("src") if img else None
                     title = title_tag.get_text(strip=True) if title_tag else None
-                    
+
                     if not title:
                         continue
 
@@ -624,28 +696,28 @@ class AniWorldAPI:
 
             # Improved matching strategy to reduce false positives
             matches = []
-            
+
             # 1. Exact matches
             exact_matches = [anime for anime in animes if anime.lower() == anime_lower]
             matches.extend(exact_matches)
-            
+
             # 2. Substring matches
             substring_matches = [anime for anime in animes if anime_lower in anime.lower()]
             matches.extend(substring_matches)
-            
+
             # 3. Fuzzy matching with better threshold to reduce false positives
             already_found = {anime.lower() for anime in matches}
             fuzzy_results = process.extract(anime_lower, animes_lower, scorer=fuzz.ratio, limit=20)
-            
+
             for match_text, score, index in fuzzy_results:
                 if score > 70 and match_text not in already_found:
                     matches.append(animes[index])
-            
+
             # 4. Token-based matching for compound titles (like "re:zero")
             # Split search term and check if all tokens appear in the title
             search_tokens = re.split(r'[:\s\-_]+', anime_lower.strip())
             search_tokens = [token for token in search_tokens if len(token) > 1]  # should ignore single chars like that
-            
+
             if len(search_tokens) > 1:
                 token_matches = []
                 for anime in animes:
@@ -654,7 +726,7 @@ class AniWorldAPI:
                         if all(token in anime_lower_check for token in search_tokens):
                             token_matches.append(anime)
                 matches.extend(token_matches)
-            
+
             # Remove dups
             unique_matches = list(dict.fromkeys(matches))
             return self.convert_to_id(unique_matches)
@@ -1041,7 +1113,7 @@ class AniWorldAPI:
             self.scrape_info(content)
             self.scrape_episodes_seasons(content)
             poster_data = self.scraper.get(urljoin(self.base_url, self.info['poster'])).content if self.info['poster'] != "N/A" else "N/A"
-            self.insert_anime_data(anime, self.info['title'], self.info['description'], ",".join(self.info['genres']), poster_data, self.current_max_episodes, self.max_seasons)
+            self.insert_anime_data(anime, self.info['description'], self.info['genres'], poster_data, self.max_seasons)
 
             return self.info, self.current_max_episodes, self.max_seasons
         except Exception as e:
