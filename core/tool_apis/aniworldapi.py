@@ -68,10 +68,10 @@ class AniWorldAPI:
     def max_episodes(self):
         return self.current_max_episodes
 
-    def max_seasons(self):
+    def current_max_seasons(self):
         return self.max_seasons
 
-    def current_season(self):
+    def current_season_number(self):
         return self.current_season
 
     def get_info(self):
@@ -183,7 +183,6 @@ class AniWorldAPI:
         conn.commit()
         conn.close()
 
-    @staticmethod
     def insert_anime_data(self, anime_id, anime_title, anime_description, anime_genres, anime_poster_data, max_episodes, max_seasons):
         conn = sqlite3.connect(DATA_DB)
         cursor = conn.cursor()
@@ -204,7 +203,7 @@ class AniWorldAPI:
 
 
     @staticmethod
-    def extract_id(link: str) -> str:
+    def extract_id(link: str) -> Optional[str]:
         m = re.search(r"/anime/stream/([^/]+)", link)
         if m:
             return m.group(1)
@@ -243,7 +242,7 @@ class AniWorldAPI:
 
         self.logger.info("Adding home to database.")
         # check if data is in home
-        if not getattr(self, "home", None):
+        if not getattr(self, "home", None) or self.home is None:
             self.logger.info("No home data to insert.")
             return
 
@@ -448,77 +447,124 @@ class AniWorldAPI:
 
         # --- New Episodes ---
         new_episode_element = soup.find('div', class_='newEpisodeList')
-        elements = new_episode_element.find_all('div', class_='row')
-        for element in elements:
-            title = element.find('strong').get_text()
-            a_tag = element.find('a')
-            anime_id = self.extract_id(a_tag["href"])
+        if new_episode_element:
+            elements = new_episode_element.find_all('div', class_='row')
+            for element in elements:
+                try:
+                    strong_tag = element.find('strong')
+                    title = strong_tag.get_text() if strong_tag else None
+                    if not title:
+                        continue
+                    
+                    a_tag = element.find('a')
+                    if not a_tag or not a_tag.get("href"):
+                        continue
+                    anime_id = self.extract_id(a_tag["href"])
 
-            text = element.find('span', class_='listTag bigListTag blue2').get_text(strip=True)
-            pattern = r"S(\d{2})\s*E(\d{2})"
-            text = re.sub(pattern, lambda m: f"Staffel {int(m.group(1))} Episode {int(m.group(2))}", text)
-            episode = text.split(" ")[-1]
-            season = text.split(" ")[-3]
+                    span_tag = element.find('span', class_='listTag bigListTag blue2')
+                    if span_tag:
+                        text = span_tag.get_text(strip=True)
+                        pattern = r"S(\d{2})\s*E(\d{2})"
+                        text = re.sub(pattern, lambda m: f"Staffel {int(m.group(1))} Episode {int(m.group(2))}", text)
+                        text_parts = text.split(" ")
+                        episode = text_parts[-1] if len(text_parts) > 0 else None
+                        season = text_parts[-3] if len(text_parts) >= 3 else None
+                    else:
+                        episode = None
+                        season = None
 
+                    img_tag = element.find('img')
+                    lang = None
+                    if img_tag:
+                        data_src = img_tag.get('data-src')
+                        if data_src:
+                            lang = data_src.removesuffix('.svg').split('/')[-1]
 
-            lang = element.find('img').get('data-src').removesuffix('.svg').split('/')[-1]
-
-            result['new_episodes'][title] = {
-                "id": anime_id,
-                "episode": episode,
-                "season": season,
-                "lang": lang,
-            }
+                    result['new_episodes'][title] = {
+                        "id": anime_id,
+                        "episode": episode,
+                        "season": season,
+                        "lang": lang,
+                    }
+                except Exception as e:
+                    self.logger.warning(f"Error processing new episode item: {e}")
+                    continue
 
 
         # --- Anime Calendar ---
-        calendar_element = soup.find_all('div', id=re.compile(r'animekalender-\d+'))
-        anime_id = None
-        title = None
-        time = None
-        season = None
-        episode = None
-        lang = None
-        for element in calendar_element:
+        calendar_elements = soup.find_all('div', id=re.compile(r'animekalender-\d+'))
+        for element in calendar_elements:
             if element.get('style') and 'display: none' in element['style']:
                 continue
+            
             a_tags = element.find_all('a')
             for a_tag in a_tags:
-                anime_id = self.extract_id(a_tag["href"])
-                title = a_tag.find('h3').get_text()
+                try:
+                    anime_id = self.extract_id(a_tag["href"]) if a_tag.get("href") else None
+                    if not anime_id:
+                        continue
+                    
+                    title_tag = a_tag.find('h3')
+                    title = title_tag.get_text(strip=True) if title_tag else None
+                    if not title:
+                        continue
 
-                h_tags = a_tag.find_all('h4')
-                time = h_tags[0].get_text().replace('~ ', '').replace("Uhr", "").strip()
+                    h_tags = a_tag.find_all('h4')
+                    if len(h_tags) < 3:
+                        continue
+                    
+                    time = h_tags[0].get_text().replace('~ ', '').replace("Uhr", "").strip()
+                    season = h_tags[1].get_text().replace("Staffel", "").strip()
+                    episode = h_tags[2].get_text().replace("Episode", "").strip()
+                    
+                    img_tag = a_tag.find('img')
+                    lang = None
+                    if img_tag:
+                        src = img_tag.get('src') or img_tag.get('data-src')
+                        if src:
+                            lang = src.removesuffix('.svg').split('/')[-1]
 
-                season = h_tags[1].get_text().replace("Staffel", "").strip()
-                episode = h_tags[2].get_text().replace("Episode", "").strip()
-                lang = a_tag.find('img').get('src').removesuffix('.svg').split('/')[-1]
-
-            result['today_anime_calendar'][title] = {
-                "id": anime_id,
-                "season": season,
-                "episode": episode,
-                "lang": lang,
-                "time": time,
-            }
+                    result['today_anime_calendar'][title] = {
+                        "id": anime_id,
+                        "season": season,
+                        "episode": episode,
+                        "lang": lang,
+                        "time": time,
+                    }
+                except Exception as e:
+                    self.logger.warning(f"Error processing calendar item: {e}")
+                    continue
 
 
         # currently popular
         currently_popular = soup.find_all('div', class_='carousel')
-        carousel = currently_popular[-1]
-        containers = carousel.find_all('div', class_='preview')
-        for container in containers:
-            items = container.find_all('div', class_='coverListItem')
-            for element in items:
-                a_tag = element.find('a')
-                anime_id = self.extract_id(a_tag["href"])
-                title = element.find('h3').get_text(strip=True)
-                poster = element.find('img').get('data-src')
+        if currently_popular:
+            carousel = currently_popular[-1]
+            containers = carousel.find_all('div', class_='preview')
+            for container in containers:
+                items = container.find_all('div', class_='coverListItem')
+                for element in items:
+                    try:
+                        a_tag = element.find('a')
+                        if not a_tag or not a_tag.get("href"):
+                            continue
+                        anime_id = self.extract_id(a_tag["href"])
+                        
+                        title_tag = element.find('h3')
+                        title = title_tag.get_text(strip=True) if title_tag else None
+                        if not title:
+                            continue
+                        
+                        img_tag = element.find('img')
+                        poster = img_tag.get('data-src') if img_tag else None
 
-                result['currently_popular'][title] = {
-                    "id": anime_id,
-                    "poster": poster,
-                }
+                        result['currently_popular'][title] = {
+                            "id": anime_id,
+                            "poster": poster,
+                        }
+                    except Exception as e:
+                        self.logger.warning(f"Error processing currently popular item: {e}")
+                        continue
 
         # users favourite
         all_sliders = soup.select('.homeSliderView')
@@ -527,18 +573,28 @@ class AniWorldAPI:
             anime_boxes = slider.select('.homeContentPromotionBoxPicture')
 
             for box in anime_boxes:
-                a_tag = box.find_parent("a")
-                img = box.find("img")
-                title_tag = box.find("h3")
+                try:
+                    a_tag = box.find_parent("a")
+                    if not a_tag or not a_tag.get("href"):
+                        continue
+                    
+                    img = box.find("img")
+                    title_tag = box.find("h3")
 
-                anime_id = self.extract_id(a_tag["href"])
-                poster = img.get("data-src") or img.get("src") if img else None
-                title = title_tag.get_text(strip=True) if title_tag else None
+                    anime_id = self.extract_id(a_tag["href"])
+                    poster = img.get("data-src") or img.get("src") if img else None
+                    title = title_tag.get_text(strip=True) if title_tag else None
+                    
+                    if not title:
+                        continue
 
-                result['users_favorite'][title] = {
-                    "id": anime_id,
-                    "poster": poster,
-                }
+                    result['users_favorite'][title] = {
+                        "id": anime_id,
+                        "poster": poster,
+                    }
+                except Exception as e:
+                    self.logger.warning(f"Error processing users favorite item: {e}")
+                    continue
         self.home = result
         threading.Thread(target=self.add_home_to_database(), daemon=True).start()
         return result
@@ -663,8 +719,9 @@ class AniWorldAPI:
             soup = BeautifulSoup(content, 'html.parser')
 
             # scrape max episodes for the season
-            nav_tag = soup.find('div', class_='hosterSiteDirectNav', id='stream').find_all('ul')
-            episodes = nav_tag[1].find_all('li') if nav_tag else []
+            nav_element = soup.find('div', class_='hosterSiteDirectNav', id='stream')
+            nav_tag = nav_element.find_all('ul') if nav_element else []
+            episodes = nav_tag[1].find_all('li') if nav_tag and len(nav_tag) > 1 else []
 
             # set the variables
             self.current_max_episodes = int(episodes[-1].get_text(strip=True)) if episodes else 0
@@ -711,7 +768,8 @@ class AniWorldAPI:
             }
             soup = BeautifulSoup(content, 'html.parser')
             # get the streaming element list
-            elements = soup.find('ul', class_="row").find_all('li')
+            ul_element = soup.find('ul', class_="row")
+            elements = ul_element.find_all('li') if ul_element else []
 
             # streams dict
             streams = {
@@ -751,12 +809,13 @@ class AniWorldAPI:
             soup = BeautifulSoup(content, 'html.parser')
 
             # get max seasons
-            nav_tag = soup.find('div', class_='hosterSiteDirectNav', id='stream').find_all('ul')
-            seasons = nav_tag[0].find_all('li')
-            self.max_seasons = seasons[-1].get_text(strip=True) if nav_tag else "N/A"
+            nav_element = soup.find('div', class_='hosterSiteDirectNav', id='stream')
+            nav_tag = nav_element.find_all('ul') if nav_element else []
+            seasons = nav_tag[0].find_all('li') if nav_tag and len(nav_tag) > 0 else []
+            self.max_seasons = int(seasons[-1].get_text(strip=True)) if seasons else 0
             # get max episodes for season 1
-            episodes = nav_tag[1].find_all('li')
-            self.current_max_episodes = episodes[-1].get_text(strip=True) if nav_tag else "N/A"
+            episodes = nav_tag[1].find_all('li') if nav_tag and len(nav_tag) > 1 else []
+            self.current_max_episodes = int(episodes[-1].get_text(strip=True)) if episodes else 0
 
         except Exception as e:
             self.logger.error(f"Error while scraping episodes and seasons: {e}")
@@ -982,7 +1041,7 @@ class AniWorldAPI:
             self.scrape_info(content)
             self.scrape_episodes_seasons(content)
             poster_data = self.scraper.get(urljoin(self.base_url, self.info['poster'])).content if self.info['poster'] != "N/A" else "N/A"
-            self.insert_anime_data(self, anime, self.info['title'], self.info['description'], ",".join(self.info['genres']), poster_data, self.current_max_episodes, self.max_seasons)
+            self.insert_anime_data(anime, self.info['title'], self.info['description'], ",".join(self.info['genres']), poster_data, self.current_max_episodes, self.max_seasons)
 
             return self.info, self.current_max_episodes, self.max_seasons
         except Exception as e:
