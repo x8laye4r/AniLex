@@ -1,7 +1,9 @@
+import concurrent.futures
 import logging
 import os
 import re
 import sqlite3
+import threading
 from typing import Optional
 from urllib.parse import urljoin
 
@@ -48,6 +50,7 @@ class AniWorldAPI:
             'genres': [],
             'poster': "",
         }
+        self.home: Optional[dict] = None
 
         # Logging setup
         logging.basicConfig(
@@ -57,6 +60,7 @@ class AniWorldAPI:
         self.logger = logging.getLogger(__name__)
         self.create_data_db()
         self.create_title_db()
+        self.create_home_db()
 
     # ---------------------------
     # Getter methods
@@ -124,16 +128,20 @@ class AniWorldAPI:
         cursor = conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS home (
-                id TEXT PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT,
-                season TEXT,
-                episode TEXT, 
+                anime_id TEXT,
                 poster BLOB,
-                release_date TEXT,
-                release_time TEXT,
-                category TEXT,
+                season INTEGER,
+                episode INTEGER,
+                lang TEXT,
+                last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                next_update TEXT,
+                type TEXT
             )
         ''')
+        conn.commit()
+        conn.close()
 
     @staticmethod
     def create_data_db():
@@ -202,19 +210,99 @@ class AniWorldAPI:
             return m.group(1)
         return None
 
-    @staticmethod
-    def write_home_db(data: dict):
-        """
-        Write home data to database for faster retrieval of data and not calling the website to many times
-        :param data: Home Screen scraped data
-        :return: Nothing
-        """
-        conn = sqlite3.connect(DATA_DB)
-        cursor = conn.cursor()
-
     # ---------------------------
     # Core methods
     # ---------------------------
+
+    def _download_poster(self, poster: Optional[str]) -> Optional[bytes]:
+        """
+            Download pictures helper function
+        """
+        if not poster or not isinstance(poster, str):
+            return None
+        try:
+            poster_url = urljoin(self.base_url, poster) if poster.startswith("/") else poster
+            resp = self.scraper.get(poster_url, timeout=10)
+            if resp and getattr(resp, "status_code", 0) == 200:
+                return resp.content
+        except Exception:
+            return None
+
+    def add_home_to_database(self):
+        """
+            Add fetched home screen data to the database. Mulithreading implementation
+        """
+
+        # Delete old data from the database
+        self.logger.info("Delete Database data.")
+        conn = sqlite3.connect(DATA_DB)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM home;")
+        conn.commit()
+        conn.close()
+
+        self.logger.info("Adding home to database.")
+        # check if data is in home
+        if not getattr(self, "home", None):
+            self.logger.info("No home data to insert.")
+            return
+
+        # create tasks
+        tasks = []
+        self.logger.info("Parse data from self.home")
+        for section, items in self.home.items():
+            if not isinstance(items, dict):
+                continue
+            for title, val in items.items():
+                if not title:
+                    continue
+                # set values
+                anime_id = val.get("id") or val.get("anime_id")
+                poster = val.get("poster")
+                season = val.get("season")
+                episode = val.get("episode")
+                lang = val.get("lang")
+                _time = val.get("time")
+                entry_type = section
+                tasks.append((title, anime_id, poster, season, episode, lang, _time, entry_type))
+
+        # check if tasks not empty
+        if not tasks:
+            self.logger.info("No tasks to insert.")
+            return
+
+        inserted = 0
+
+        # Multithreading for adding the data.
+        self.logger.info("Adding data to database")
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:
+            future_to_task = {ex.submit(self._download_poster, t[2]): t for t in tasks}
+            for future in concurrent.futures.as_completed(future_to_task):
+                title, anime_id, poster, season, episode, lang, time, entry_type = future_to_task[future]
+                try:
+                    poster_blob = future.result()
+                except Exception:
+                    poster_blob = None
+
+                try:
+                    conn = sqlite3.connect(DATA_DB, timeout=30)
+                    cursor = conn.cursor()
+                    cursor.execute('''
+                        INSERT INTO home (title, anime_id, poster, season, episode, lang, next_update, type)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (title, anime_id, poster_blob, season, episode, lang, time, entry_type))
+                    conn.commit()
+                    inserted += 1
+                except Exception as e:
+                    self.logger.error(f"DB insert error for {title}: {e}")
+                finally:
+                    try:
+                        conn.close()
+                    except Exception:
+                        pass
+
+        self.logger.info(f"Inserted {inserted} new home entries into the database.")
+
 
     def scrape_home_screen(self):
         resp = self.scraper.get(self.base_url)
@@ -239,10 +327,14 @@ class AniWorldAPI:
             items = view.find_all("div", class_="homeContentPromotionBoxPicture")
             for item in items:
                 h3 = item.find("h3")
+                if h3.get_text() == "Animeverschiebungen":
+                    continue
                 h4 = item.find("h4")
 
                 title = h3.get_text(strip=True) if h3 else ""
                 subtitle = h4.get_text(strip=True) if h4 else ""
+                season = None
+                episode = None
                 if subtitle:
                     if not re.search(r"Season\s*\d+|St\.\s*\d+", subtitle, re.I):
                         title = f"{title} {subtitle}"
@@ -254,12 +346,17 @@ class AniWorldAPI:
 
                 link = item.find_parent("a")["href"]
                 season = None
+                episode = None
                 m = re.search(r"Season\s*(\d+)|St\.\s*(\d+)", subtitle or "", re.I)
                 if m:
                     season = int(m.group(1) or m.group(2))
                 else:
                     m2 = re.search(r"/staffel-(\d+)", link, re.I)
                     season = int(m2.group(1)) if m2 else 1
+
+                match = re.search(r'\bEp\. (\d+)\b', subtitle)
+                if match:
+                    episode = match.group(1)
 
                 img_tag = item.find("img")
                 poster = img_tag.get("data-src") or img_tag.get("src") if img_tag else None
@@ -268,7 +365,8 @@ class AniWorldAPI:
                 result["slider"][title] = {
                     "id": anime_id,
                     "season": season,
-                    "poster": poster,
+                    "episode": episode,
+                    "poster": poster
                 }
 
         # --- Popular Animes ---
@@ -356,14 +454,19 @@ class AniWorldAPI:
             a_tag = element.find('a')
             anime_id = self.extract_id(a_tag["href"])
 
-            episode = element.find('span', class_='listTag bigListTag blue2').get_text(strip=True)
-            episode.replace('S', 'Staffel')
-            episode.replace('E', 'Episode')
+            text = element.find('span', class_='listTag bigListTag blue2').get_text(strip=True)
+            pattern = r"S(\d{2})\s*E(\d{2})"
+            text = re.sub(pattern, lambda m: f"Staffel {int(m.group(1))} Episode {int(m.group(2))}", text)
+            episode = text.split(" ")[-1]
+            season = text.split(" ")[-3]
+
+
             lang = element.find('img').get('data-src').removesuffix('.svg').split('/')[-1]
 
-            result['new_animes'][title] = {
+            result['new_episodes'][title] = {
                 "id": anime_id,
                 "episode": episode,
+                "season": season,
                 "lang": lang,
             }
 
@@ -377,17 +480,20 @@ class AniWorldAPI:
         episode = None
         lang = None
         for element in calendar_element:
-            if element.has_attr('style'):
+            if element.get('style') and 'display: none' in element['style']:
                 continue
             a_tags = element.find_all('a')
             for a_tag in a_tags:
                 anime_id = self.extract_id(a_tag["href"])
                 title = a_tag.find('h3').get_text()
+
                 h_tags = a_tag.find_all('h4')
-                time = h_tags[0].get_text().replace('~ ', '').strip()
-                season = h_tags[1].get_text()
-                episode = h_tags[2].get_text()
-                lang = a_tag.find('img').get('src').removesuffix('.svg').split('/')[-1].replace('-', ' ')
+                time = h_tags[0].get_text().replace('~ ', '').replace("Uhr", "").strip()
+
+                season = h_tags[1].get_text().replace("Staffel", "").strip()
+                episode = h_tags[2].get_text().replace("Episode", "").strip()
+                lang = a_tag.find('img').get('src').removesuffix('.svg').split('/')[-1]
+
             result['today_anime_calendar'][title] = {
                 "id": anime_id,
                 "season": season,
@@ -433,7 +539,8 @@ class AniWorldAPI:
                     "id": anime_id,
                     "poster": poster,
                 }
-
+        self.home = result
+        threading.Thread(target=self.add_home_to_database(), daemon=True).start()
         return result
 
     # Search for an anime by name
@@ -887,8 +994,8 @@ if __name__ == "__main__":
 
     api = AniWorldAPI()
 
-    data = api.scrape_home_screen()
-    print(data)
+    from pprint import pprint
+    pprint(api.scrape_home_screen(), sort_dicts=False)
     """
     # Search for anime
     print("=== Anime Search ===")
