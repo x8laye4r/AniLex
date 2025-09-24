@@ -1,11 +1,11 @@
 schema:
-  - https://graphql.anilist.co:
+  - "https://graphql.anilist.co":
       headers:
         Content-Type: application/json
-documents: './src/**/*.graphql'
+documents: "./src/**/*.graphql"
 extensions:
   endpoints:
     AniListAPI:
-      url: https://graphql.anilist.co
+      url: "https://graphql.anilist.co"
       headers:
         Content-Type: application/json
