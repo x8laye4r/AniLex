@@ -6,13 +6,11 @@ import sqlite3
 import threading
 from typing import Optional
 from urllib.parse import urljoin
-
 import cloudscraper
 from bs4 import BeautifulSoup
 from rapidfuzz import fuzz, process
-
 from utils.anilex_helper import get_cache_path
-
+import concurrent.futures
 DATA_DB = os.path.join(get_cache_path(), "api_data", "aniworld_data.db")
 
 
@@ -62,6 +60,7 @@ class AniWorldAPI:
     # ---------------------------
     # Getter methods
     # ---------------------------
+
     def current_max_seasons(self):
         return self.max_seasons
 
@@ -76,10 +75,7 @@ class AniWorldAPI:
     def convert_to_id(data: list[str]):
         converted = {}
         for dat in data:
-            text = dat.lower()
-            text = re.sub(r'[^a-z0-9\s-]', '', text)
-            text = re.sub(r'[\s-]+', '-', text)
-            converted[dat] = text
+            converted[dat] = AniWorldAPI.convert_sting_to_id(dat)
         return converted
 
     @staticmethod
@@ -121,6 +117,7 @@ class AniWorldAPI:
                 last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 next_update TEXT,
                 type TEXT,
+                last_scraped TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(anime) REFERENCES titles(id)
             )
         ''')
@@ -217,6 +214,112 @@ class AniWorldAPI:
 
         return results
 
+    def scrape_season(self, anime_id, season):
+        resp = self.scraper.get(urljoin(self.base_url, f"/anime/stream/{anime_id}/staffel-{season}"))
+        soup = BeautifulSoup(resp.text, 'html.parser')
+
+        tbody = soup.find('tbody')
+        if not tbody:
+            self.logger.error(f"No tbody found for season {season}")
+            return []
+        table_elements = tbody.find_all('tr')
+        results = []
+        for table_element in table_elements:
+            episode_title = table_element.find('strong').get_text(strip=True)
+            if not episode_title:
+                episode_title = table_element.find('span').get_text(strip=True)
+
+            lang_container = table_element.find('td', class_='editFunctions').find_all('img')
+            langs = []
+            for lang in lang_container:
+                src = lang.get('src', '')
+                langs.append(src.split("/")[-1].removesuffix(".svg"))
+
+            results.append({
+                'episode': int(table_element.find('meta', itemprop='episodeNumber')['content']),
+                'title': episode_title,
+                'german-dub': int('german' in langs),
+                'english-sub': int('japanese-english' in langs),
+                'german-sub': int('japanese-german' in langs)
+            })
+        return results
+
+    def update_anime(self, anime_id):
+        """
+        Aktualisiert immer die letzte (höchste) Staffel des Animes in der Datenbank,
+        indem sie komplett neu gescraped und in der Tabelle ersetzt wird.
+        """
+        conn = sqlite3.connect(DATA_DB)
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(f'''
+                SELECT MAX(season) FROM "{anime_id}"
+            ''')
+            max_season = cursor.fetchone()[0]
+            if not max_season:
+                self.logger.error(f"Keine Staffeln für {anime_id} gefunden.")
+                conn.close()
+                return
+        except sqlite3.OperationalError:
+            self.logger.error(f"Tabelle für {anime_id} existiert nicht.")
+            conn.close()
+            return
+
+        # Prüfe, ob es auf der Website eine höhere Staffel gibt
+        url = urljoin(self.base_url, f"/anime/stream/{anime_id}/staffel-{max_season}")
+        resp = self.scraper.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
+
+        season_container = soup.find('div', id="stream")
+        if not season_container:
+            self.logger.error("Season-Container konnte nicht gefunden werden.")
+            conn.close()
+            return
+        season_links = season_container.find('ul').find_all('li')
+        last_season_link = season_links[-1].find('a')['href']
+        new_max_seasons = int(re.search(r'staffel-(\d+)', last_season_link).group(1))
+
+        # Ziel: Immer die höchste Staffel neu scrapen und ersetzen
+        last_season = new_max_seasons
+
+        self.logger.info(f"Letzte Staffel von {anime_id} ist {last_season}. Aktualisiere diese Staffel jetzt.")
+
+        # Lösche alle Episoden dieser Staffel aus der DB
+        try:
+            cursor.execute(f'''
+                DELETE FROM "{anime_id}" WHERE season = ?
+            ''', (last_season,))
+            conn.commit()
+        except sqlite3.OperationalError as e:
+            self.logger.error(f"Fehler beim Löschen der alten Einträge: {e}")
+            conn.close()
+            return
+
+        # Jetzt neu scrapen und einfügen
+        results = self.scrape_season(anime_id, last_season)
+        for ep in results:
+            try:
+                cursor.execute(f'''
+                    INSERT INTO "{anime_id}"
+                        (season, episode, episode_title, german_dub, german_sub, english_sub)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (
+                    last_season,
+                    ep.get('episode'),
+                    ep.get('title'),
+                    ep.get('german-dub'),
+                    ep.get('german-sub'),
+                    ep.get('english-sub'),
+                ))
+            except sqlite3.OperationalError as e:
+                self.logger.error(f"Fehler beim Einfügen von Episode {ep.get('episode')}: {e}")
+
+        conn.commit()
+        conn.close()
+        self.logger.info(f"Staffel {last_season} von {anime_id} wurde aktualisiert.")
+
+
     def seasons_episodes_table(self, anime_id, season_num):
         self.logger.info("Seasons episodes table creation")
         conn = sqlite3.connect(DATA_DB)
@@ -258,13 +361,6 @@ class AniWorldAPI:
         conn.commit()
         conn.close()
 
-    def update_anime(self, anime_id):
-        conn = sqlite3.connect(DATA_DB)
-        cursor = conn.cursor()
-
-        cursor.execute(f'''
-            
-        ''')
 
     def insert_anime_data(self, anime_id, anime_description="", anime_genres=[""], anime_poster_data="", max_seasons=0):
         self.logger.info("Inserting anime data into table")
@@ -765,7 +861,7 @@ class AniWorldAPI:
 
             # get description
             desc_tag = soup.find('p', class_='seri_des')
-            self.info['description'] = desc_tag.get_text(strip=True) if desc_tag else "N/A"
+            self.info['description'] = desc_tag.attrs['data-full-description'] if desc_tag and 'data-full-description' in desc_tag.attrs else "N/A"
 
             # get genres
             genres_tag = soup.find('div', class_='genres')
@@ -795,7 +891,7 @@ class AniWorldAPI:
             self.logger.error(f"Error while scraping info: {e}")
 
     # Get redirect links for a specific episode and season
-    def get_redirect_links(self, episdoe, season):
+    def get_redirect_links(self, episdoe, season, anime_id = None):
         '''
         Get redirect links for a specific episode and season
         1. Check if anime is set
@@ -809,16 +905,15 @@ class AniWorldAPI:
         '''
         # Check if anime is set
         if self.anime is None:
-            self.logger.error("Anime not set. Please set the anime before fetching episode streams.")
-            return None
+            if anime_id is not None:
+                self.anime = anime_id
+            else:
+                self.logger.error("Anime not set. Please set the anime before fetching episode streams.")
+                return None
 
-        # Validate season and episode numbers
-        if season > int(self.max_seasons):
-            self.logger.error("Requested season or episode exceeds available limits.")
-            return None
         try:
-            resp = self.scraper.get(
-                urljoin(self.base_url, f"/anime/stream/{self.anime}/staffel-{season}/episode-{episdoe}"))
+            url = urljoin(self.base_url, f"anime/stream/{self.anime}/staffel-{season}/episode-{episdoe}")
+            resp = self.scraper.get(url)
             content = resp.text
 
             # Language keys mapping
@@ -920,6 +1015,7 @@ class AniWorldAPI:
             options.add_argument("--disable-gpu")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
+            options.add_experimental_option(os.path.join(get_cache_path(), "adnauseam-3.25.8.chromium.crx"))
 
             # Initialize the webdriver
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
@@ -1078,82 +1174,134 @@ class AniWorldAPI:
                                                                                                        'poster'] != "N/A" else "N/A"
             self.insert_anime_data(anime, self.info['description'], self.info['genres'], poster_data, self.max_seasons)
 
-            return self.info, self.max_seasons
+            self.info['poster'] = poster_data
+            self.info['anime_id'] = anime
+
+            return self.info
         except Exception as e:
             self.logger.error(f"Fehler beim Scrapen des Animes: {e}")
 
 
+    def get_title(self, id):
+        try:
+            conn = sqlite3.connect(DATA_DB)
+            cursor = conn.cursor()
+            cursor.execute("SELECT title FROM titles WHERE id = ?;", (id,))
+            row = cursor.fetchone()
+            conn.close()
+            return row[0] if row else "N/A"
+        except Exception as e:
+            self.logger.error(f"Error while getting title: {e}")
+            return "N/A"
+
+    def get_id(self, id):
+        try:
+            conn = sqlite3.connect(DATA_DB)
+            cursor = conn.cursor()
+            cursor.execute("SELECT anime_id FROM titles WHERE id = ?;", (id,))
+            row = cursor.fetchone()
+            conn.close()
+            return row[0] if row else "N/A"
+        except Exception as e:
+            self.logger.error(f"Error while getting anime_id: {e}")
+            return "N/A"
+
+    def get_anime(self, anime):
+        try:
+            conn = sqlite3.connect(DATA_DB)
+            cursor = conn.cursor()
+
+            # check if anime is already in database
+            cursor.execute("""
+                SELECT anime, anime_description, anime_genres, poster
+                FROM anime_data 
+                LEFT JOIN titles ON anime_data.anime = titles.id
+                WHERE titles.anime_id = ?;
+            """, (anime,))
+            row = cursor.fetchone()
+            if row:
+                self.logger.info(f"Found {anime} in database")
+                anime_id, description, genres_str, poster_blob = row
+                genres = genres_str.split(',') if genres_str else []
+                conn.close()
+                return {
+                    'title': self.get_title(anime_id),
+                    'id': self.get_id(anime_id),
+                    'description': description,
+                    'genres': genres,
+                    'poster': poster_blob
+                }
+            else:
+                self.logger.info(f"Anime not found in database, scraping...")
+                info = self.scrape_anime(anime)
+                return info
+        except Exception as e:
+            self.logger.error(f"Error while getting anime info: {e}")
+            return None
+
+    def get_home(self):
+        from datetime import timedelta, datetime, timezone
+        try:
+            conn = sqlite3.connect(DATA_DB)
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT last_scraped FROM home ORDER BY last_scraped DESC LIMIT 1;
+            """)
+            row = cursor.fetchone()
+            last_scraped = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc) if row else None
+            if row and (datetime.now(tz=timezone.utc) - last_scraped > timedelta(hours=1)):
+                self.logger.info("Home data is outdated or not present, scraping...")
+                home_data, db_thread = self.scrape_home_screen()
+                db_thread.join()
+                return home_data
+            else:
+                self.logger.info("Loading home data from database")
+                cursor.execute("""
+                    SELECT titles.title, titles.anime_id, poster, season, episode, lang, next_update, type 
+                    FROM home
+                    LEFT JOIN titles ON home.anime = titles.id;
+                """)
+                rows = cursor.fetchall()
+                home_data = {
+                    'slider': {},
+                    'popular': {},
+                    'new_episodes': {},
+                    'new_animes': {},
+                    'today_anime_calendar': {},
+                    'currently_popular': {},
+                    'users_favorite': {}
+                }
+                for row in rows:
+                    title, anime_id, poster_blob, season, episode, lang, next_update, type_ = row
+                    entry = {
+                        'id': anime_id,
+                        'season': season,
+                        'episode': episode,
+                        'poster': poster_blob,
+                        'lang': lang,
+                        'next_update': next_update
+                    }
+                    if type_ == 'slider':
+                        home_data['slider'][title] = entry
+                    elif type_ == 'popular':
+                        home_data['popular'][title] = entry
+                    elif type_ == 'new_episodes':
+                        home_data['new_episodes'][title] = entry
+                    elif type_ == 'new_animes':
+                        home_data['new_animes'][title] = entry
+                    elif type_ == 'today_anime_calendar':
+                        home_data['today_anime_calendar'][title] = entry
+                    elif type_ == 'currently_popular':
+                        home_data['currently_popular'][title] = entry
+                    elif type_ == 'users_favorite':
+                        home_data['users_favorite'][title] = entry
+                return home_data
+        except Exception as e:
+            self.logger.error(f"Error while getting home data: {e}")
+            return None
 if __name__ == "__main__":
     import time
 
     api = AniWorldAPI()
-
-    from pprint import pprint
-    pprint(api.scrape_home_screen(), sort_dicts=False)
-    """
-    # Search for anime
-    print("=== Anime Search ===")
-    data = api.search_anime("Re:Zero")
-    print(f"Found anime matches: {data[:5] if data else 'None'}")  # Show first 5 matches
-
-    # Scrape anime info
-    print("\n=== Anime Info ===")
-    result = api.scrape_anime("dan-da-dan")
-    if result:
-        info, max_episodes, max_seasons = result
-        print(f"Title: {info.get('title', 'N/A')}")
-        print(f"Max Episodes: {max_episodes}, Max Seasons: {max_seasons}")
-    else:
-        print("Failed to scrape anime info")
-        exit()
-
-    # Get streaming links
-    print("\n=== Episode Streaming Links ===")
-    episode_data = api.get_redirect_links(1, 2)  # Episode 1, Season 1 ? I guess
-    if not episode_data:
-        print("Failed to get episode data")
-        exit()
-
-    print("Available streaming servers:")
-    for lang, servers in episode_data.items():
-        if servers:
-            print(f"\n{lang.upper()} ({len(servers)} servers):")
-            for i, server in enumerate(servers):
-                print(f"  {i + 1}. {server['server']}")
-
-    # Test different streaming services
-    print("\n=== Testing Streaming Services ===")
-
-    for lang, servers in episode_data.items():
-        if not servers:
-            continue
-
-        print(f"\n--- {lang.upper()} Language ---")
-        for server_data in servers:
-            server_name = server_data['server']
-            print(f"\nTesting {server_name}...")
-
-            try:
-                stream_result = api.get_streaming_link(server_data)
-
-                if stream_result:
-                    if isinstance(stream_result, str):
-                        # Vidmoly returns a direct URL
-                        print(f"  ✓ {server_name}: {stream_result}")
-                    elif isinstance(stream_result, list):
-                        # Other servers return m3u8 links list
-                        print(f"  ✓ {server_name}: Found {len(stream_result)} m3u8 link(s)")
-                        for i, link in enumerate(stream_result, 1):
-                            print(f"    {i}. {link}")
-                    else:
-                        print(f"  ✓ {server_name}: {stream_result}")
-                else:
-                    print(f"  ✗ {server_name}: No streaming links found")
-
-            except Exception as e:
-                print(f"  ✗ {server_name}: Error - {e}")
-
-            # Add delay between requests to avoid rate limiting
-            time.sleep(2)
-
-"""
+    data = api.get_home()
+    print(data['today_anime_calendar'])
