@@ -6,4 +6,5 @@
 /cache/api_data/aniwatch-api/
 .idea
 __pycache__
+/cache/logs
 

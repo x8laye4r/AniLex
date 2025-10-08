@@ -1,11 +1,5 @@
-from ast import main
-from PySide6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QSizePolicy
-from PySide6.QtGui import QPixmap, QPainter, QPainterPath
 from PySide6.QtCore import Qt
-import sys 
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
-from utils.anilex_helper import get_cache_path
+from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout
 
 
 class AnilexTableItem(QWidget):
@@ -27,8 +21,34 @@ class AnilexTableItem(QWidget):
         main_layout = QHBoxLayout()
 
 
-        title_label = QLabel(self.title)
-        title_label.setStyleSheet("font-size: 18px; font-weight: bold; background: transparent;")
+
+        title_label = QLabel("")
+        if len(self.title) > 40: 
+            title_label.setText(self.title[:40] + "...")
+            title_label.setToolTip(self.title)
+            title_label.setStyleSheet("""
+                QLabel {
+                    font-size: 18px;
+                    font-weight: bold;
+                    background: transparent;
+                }
+                QToolTip {
+                    font-size: 14px;
+                    padding: 4px;
+                    border-radius: 4px;
+                    background-color: #333333;
+                    color: white;   
+                }
+            """)
+        else:
+            title_label.setText(self.title)
+            title_label.setStyleSheet("""
+                QLabel {
+                    font-size: 18px;
+                    font-weight: bold;
+                    background: transparent;
+                }
+            """)
         title_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
 
         season_episode_label = QLabel(f"S{self.season} E{self.episode}")
@@ -59,7 +79,7 @@ if __name__ == "__main__":
     layout = QVBoxLayout()
     window = QWidget()
     window.setLayout(layout)
-    test_item = AnilexTableItem("Sample Title", "japanese-german", "1", "1", "12:00 PM")
+    test_item = AnilexTableItem("Sample Title Test Test ", "japanese-german", "1", "1", "12:00 PM")
     layout.addWidget(test_item)
     window.show()
 
