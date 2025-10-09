@@ -6,12 +6,17 @@ from datetime import datetime
 from logging.handlers import RotatingFileHandler
 
 from PySide6.QtCore import QObject, QTimer
-from PySide6.QtWidgets import QApplication
 
 from core.notifications.notification_dialog import Notification
 from utils.anilex_helper import NotificationDatabaseHandler
 from utils.anilex_helper import get_cache_path
 
+
+def load_settings():
+    from utils.anilex_helper import load_settings
+    settings = load_settings()
+    notification_settings = settings.get('THEME', {}).get('notifications')
+    return notification_settings if notification_settings else {}
 
 class NotificationHandler(QObject):
     """
@@ -19,13 +24,14 @@ class NotificationHandler(QObject):
     This version correctly repositions notifications when one is closed.
     """
 
-    def __init__(self, base_offset_top=40, base_offset_right=40, cascade_offset=20, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.db_handler = NotificationDatabaseHandler()
         self.shown_notifications = []
-        self.base_offset_top = base_offset_top
-        self.base_offset_right = base_offset_right
-        self.cascade_offset = cascade_offset
+        self.settings = load_settings()
+        self.base_offset_top = self.settings.get('offset_top')
+        self.base_offset_right = self.settings.get('offset_right')
+        self.cascade_offset = self.settings.get('cascade_offset')
         self.restack_timer = QTimer(self)
         self.restack_timer.setSingleShot(True)
         self.restack_timer.timeout.connect(self._perform_restack)
@@ -64,7 +70,6 @@ class NotificationHandler(QObject):
         todays_notifications = self.db_handler.get_todays_notifications()
         now = datetime.now()
         if not todays_notifications:
-            self.logger.info("No notifications scheduled for today.")
             return
 
         self.logger.info(f"Found {len(todays_notifications)} notifications for today. Scheduling them now...")
@@ -92,7 +97,13 @@ class NotificationHandler(QObject):
             banner=banner,
             handler=self,
             offset_top=self.base_offset_top + vertical_offset,
-            offset_right=self.base_offset_right
+            offset_right=self.base_offset_right,
+            fixed_width=self.settings.get('fixed_width', 380),
+            width_factor=self.settings.get('width_factor', None),
+            poster_height=self.settings.get('poster_height', 160),
+            banner_max_height=self.settings.get('banner_max_height', 140),
+            corner_radius=self.settings.get('corner_radius', 1),
+            dismiss_timeout=self.settings.get('dismiss_timeout', 5000)
         )
         notification.finished.connect(lambda: self.on_notification_closed(notification))
         self.shown_notifications.append(notification)
@@ -193,10 +204,3 @@ class NotificationHandler(QObject):
                 self.logger.error(f"Error stopping timer for ID {_id}: {e}")
         else:
             self.logger.warning(f"No active timer found for ID {_id}.")
-
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    handler = NotificationHandler()
-    sys.exit(app.exec())

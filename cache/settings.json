@@ -1,0 +1,43 @@
+{
+    "USER_SETTINGS": {
+        "login": true,
+        "renew_token": "2026-01-01"
+    },
+    "SETTINGS": {
+        "time_format": "24h",
+        "date_format": "%d.%m.%Y",
+        "notifications": {
+            "upcoming_episodes": true,
+            "new_chapter_releases": true,
+            "seasonal_anime_announcements": false,
+            "manga_releases": false,
+            "anime_releases": false,
+            "general_updates": false
+        }
+    },
+    "THEME": {
+        "primary_color": "default",
+        "secondary_color": "default",
+        "card_color": "default",
+        "title_color": "default",
+        "text_color": "default",
+        "background_color": "default",
+        "select_color": "default",
+        "font": {
+            "title": "default",
+            "text": "default"
+        },
+        "notifications": {
+          "offset_top": 40,
+          "offset_right": 40,
+          "cascade_offset": 20,
+          "fixed_width": 380,
+          "width_factor": null,
+          "banner_max_height": 140,
+          "poster_height": 160,
+          "corner_radius": 11,
+          "dismiss_timeout": 5000
+        },
+        "scrolling": "horizontal"
+    }
+}

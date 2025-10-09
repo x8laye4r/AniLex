@@ -14,7 +14,6 @@ if __name__ == "__main__":
     window = MainWindow()
     window.showMaximized()
 
-    # NotificationHandler hier starten – teilt sich die gleiche QApplication
     handler = NotificationHandler()
 
     sys.exit(app.exec())

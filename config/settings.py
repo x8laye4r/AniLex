@@ -2,11 +2,13 @@
     Settings Handler
 '''
 
-import yaml
 import os
+
+import yaml
+
 from utils.anilex_helper import load_settings, get_cache_path
 
-PATH = os.path.join(get_cache_path(), "settings.yaml")
+PATH = os.path.join(get_cache_path(), "settings.json")
 
 def save_card_settings(data_anime, data_manga):
     configure = load_settings()
