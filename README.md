@@ -19,7 +19,7 @@ It’s designed specifically for Windows users (for now) who want a clean, moder
 > It's my **first major project in Python** and also my **very first desktop app**. I'm learning as I go, feedback is welcome!
 
 > 🧪 **Note:** Currently only tested on **Windows**.  
-> **Linux support is planned** once the core functionality is finished.
+> **Linux support is planned** once the core functionality is finished. <br>
 > **macOS** might never come — I simply have no system to test it on.
 
 > 💬 *Disclaimer:*  
