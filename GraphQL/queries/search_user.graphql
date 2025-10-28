@@ -1,0 +1,11 @@
+query searchUser($username: String!) {
+    users: Page(perPage: 20) {
+        users(search: $username) {
+            id
+            name
+            avatar {
+                large
+            }
+        }
+    }
+}

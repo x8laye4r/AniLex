@@ -3,8 +3,7 @@ import os
 import time
 
 import requests
-
-from utils.anilex_helper import get_cache_path
+from old.anilex_helper import get_cache_path
 
 PATH = os.path.join(get_cache_path(), "api_data")
 os.makedirs(PATH, exist_ok=True)

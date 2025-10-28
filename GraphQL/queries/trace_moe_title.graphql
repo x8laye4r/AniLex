@@ -1,4 +1,4 @@
-query($id: Int, $type: MediaType) {
+query($id: Int = 1243, $type: MediaType) {
     Media(id: $id, type: $type){
         title{
             english
@@ -10,5 +10,6 @@ query($id: Int, $type: MediaType) {
             medium
             large
         }
+        bannerImage
     }
 }

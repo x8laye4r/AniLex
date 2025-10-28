@@ -1,4 +1,5 @@
 import concurrent.futures
+import concurrent.futures
 import logging
 import os
 import re
@@ -6,11 +7,12 @@ import sqlite3
 import threading
 from typing import Optional
 from urllib.parse import urljoin
+
 import cloudscraper
 from bs4 import BeautifulSoup
+from old.anilex_helper import get_cache_path
 from rapidfuzz import fuzz, process
-from utils.anilex_helper import get_cache_path
-import concurrent.futures
+
 DATA_DB = os.path.join(get_cache_path(), "api_data", "aniworld_data.db")
 
 
@@ -1015,7 +1017,7 @@ class AniWorldAPI:
             options.add_argument("--disable-gpu")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
-            options.add_experimental_option(os.path.join(get_cache_path(), "adnauseam-3.25.8.chromium.crx"))
+            options.add_extension(os.path.join(get_cache_path(), "adnauseam-3.25.8.chromium.crx"))
 
             # Initialize the webdriver
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
@@ -1069,6 +1071,7 @@ class AniWorldAPI:
             options.add_argument("--disable-extensions")
             options.add_argument("--disable-plugins")
             options.add_argument("--disable-images")  # Don't load images for speed
+            options.add_extension(os.path.join(get_cache_path(), "adnauseam-3.25.8.chromium.crx"))
 
             # Initialize the webdriver
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
@@ -1301,7 +1304,11 @@ class AniWorldAPI:
             return None
 if __name__ == "__main__":
     import time
-
+    from pprint import pprint
     api = AniWorldAPI()
-    data = api.get_home()
-    print(data['today_anime_calendar'])
+    data = api.search_anime("One Punch Man")
+    pprint(data)
+    streams = api.get_redirect_links(1, 2, 'one-punch-man')
+    print(streams)
+    stream = api.get_streaming_link(streams['en-sub'][0])
+    print(stream)

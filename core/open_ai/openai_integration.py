@@ -1,8 +1,7 @@
 import os
 
 import openai
-
-from utils.anilex_helper import get_api_key
+from old.anilex_helper import get_api_key
 
 os.environ["OPENAI_API_KEY"] = get_api_key()
 client = openai.OpenAI()

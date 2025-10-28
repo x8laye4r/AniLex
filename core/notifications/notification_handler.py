@@ -8,12 +8,12 @@ from logging.handlers import RotatingFileHandler
 from PySide6.QtCore import QObject, QTimer
 
 from core.notifications.notification_dialog import Notification
-from utils.anilex_helper import NotificationDatabaseHandler
-from utils.anilex_helper import get_cache_path
+from models.NotificationDB import NotificationDatabaseHandler
+from utils.anilex_helpers_v2 import get_cache_dir
 
 
 def load_settings():
-    from utils.anilex_helper import load_settings
+    from old.anilex_helper import load_settings
     settings = load_settings()
     notification_settings = settings.get('THEME', {}).get('notifications')
     return notification_settings if notification_settings else {}
@@ -38,7 +38,10 @@ class NotificationHandler(QObject):
         self.active_timers = {}
 
 
-        log_path = os.path.join(get_cache_path(), 'logs', 'notification_handler.log')
+        log_path = os.path.join(get_cache_dir(), 'logs', 'notification_handler.log')
+        if not os.path.exists(log_path):
+            with open(log_path, 'w'):
+                pass
         archive_path = log_path + '.gz'
 
         if os.path.getsize(log_path) >= 10_000_000:

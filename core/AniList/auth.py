@@ -1,256 +1,331 @@
-'''
-    Authentification for AniLex
-'''
-
-import http.server
-import socketserver
-import threading
-import webbrowser
-import requests
-import time
-import json
-from urllib.parse import urlparse, parse_qs
-import keyring
-import sys
-import os
-from utils.anilex_helper import get_cache_path
-
-'''
-    Check if file exists and if the files are already saved
-'''
-
-PATH = os.path.join(get_cache_path(), "user_data.json")
-
-if os.path.exists(PATH):
-    with open(PATH, "r") as file:
-        data = json.load(file)
-
-    if data["auth"]["user_token"] == "saved":
-        print("Already saved!")
-        sys.exit(0)
-
-
-
-'''
-    Data for local-server and AniList 
-'''
-PORT = 8000
-CLIENT_ID = '28840'
-REDIRECT_URI = f'http://localhost:{PORT}/callback'
-url = "https://graphql.anilist.co"
-auth_url = f"https://anilist.co/api/v2/oauth/authorize?client_id={CLIENT_ID}&response_type=token"
-
-# Code for altering user data and getting user data
-received_code = None
-
-# Class for the server
-class AniListHandler(http.server.SimpleHTTPRequestHandler):
-    def do_GET(self):
-        global received_code
-        if self.path.startswith("/callback"):
-            self.send_response(200)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            self.wfile.write("""
-                <html lang="de">
-                    <head>
-                      <meta charset="UTF-8" />
-                      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                      <title>AniList Authentication</title>
-                      <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet" />
-                      <style>
-                        body {
-                          margin: 0;
-                          padding: 0;
-                          font-family: 'Roboto', sans-serif;
-                          background: #f4f6f8;
-                          color: #333;
-                          display: flex;
-                          height: 100vh;
-                          align-items: center;
-                          justify-content: center;
-                        }
-                        .container {
-                          background: #fff;
-                          padding: 2rem;
-                          border-radius: 12px;
-                          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-                          text-align: center;
-                          max-width: 400px;
-                          width: 90%;
-                        }
-                        h1 {
-                          margin-bottom: 1rem;
-                          font-size: 1.5rem;
-                          font-weight: 700;
-                        }
-                        p {
-                          margin: 0.5rem 0 1.5rem;
-                          font-size: 1rem;
-                        }
-                        .success {
-                          color: #2a9d8f;
-                        }
-                        .error {
-                          color: #e76f51;
-                        }
-                        .close-btn {
-                          padding: 0.6rem 1.2rem;
-                          font-size: 1rem;
-                          font-weight: 700;
-                          border: none;
-                          border-radius: 6px;
-                          background: #2a9d8f;
-                          color: #fff;
-                          cursor: pointer;
-                          transition: transform 0.2s ease, background 0.2s ease;
-                        }
-                        .close-btn:hover {
-                          transform: scale(1.05);
-                          background: #21867a;
-                        }
-                      </style>
-                    </head>
-                    <body>
-                      <div class="container">
-                        <h1 id="status">Authentication running...</h1>
-                        <p>Please wait a moment, you can't refresh the site manually.</p>
-                        <button id="closeBtn" class="close-btn" style="display:none;" onclick="window.close();">
-                          Close Tab
-                        </button>
-                      </div>
-                    
-                      <script>
-                        const hash = window.location.hash.substring(1);
-                        const params = new URLSearchParams(hash);
-                        const accessToken = params.get('access_token');
-                        const statusEl = document.getElementById('status');
-                        const closeBtn = document.getElementById('closeBtn');
-                    
-                        function showCloseButton() {
-                          closeBtn.style.display = 'inline-block';
-                        }
-                    
-                        if (accessToken) {
-                          fetch('/token?access_token=' + accessToken)
-                            .then(res => {
-                              if (res.ok) {
-                                statusEl.textContent = 'Authentication successful';
-                                statusEl.classList.add('success');
-                                document.querySelector('p').textContent = 'You can close this tab now';
-                                showCloseButton();
-                              } else {
-                                throw new Error('Fetch Error');
-                              }
-                            })
-                            .catch(() => {
-                              statusEl.textContent = 'Error while saving the Token!';
-                              statusEl.classList.add('error');
-                              document.querySelector('p').textContent = '';
-                              showCloseButton();
-                            });
-                        } else {
-                          statusEl.textContent = 'Error no token was found!';
-                          statusEl.classList.add('error');
-                          document.querySelector('p').textContent = '';
-                          showCloseButton();
-                        }
-                        closeBtn.addEventListener("click", function() {
-                            window.close()
-                        });
-                      </script>
-                    </body>
-                </html>
-            """.encode())
-        elif self.path.startswith("/token"):
-            query = urlparse(self.path).query
-            access_token = parse_qs(query).get("access_token", [None])[0]
-            if access_token:
-                received_code = access_token
-                self.send_response(200)
-                self.send_header("Content-type", "text/plain")
-                self.end_headers()
-                self.wfile.write("Token found".encode())
-            else:
-                self.send_error(400, "No token was found")
-        else:
-            self.send_error(404, "Nothing found")
-
-def start_server_until_code():
-    with socketserver.TCPServer(("", PORT), AniListHandler) as httpd:
-        print(f"Local server started on http://localhost:{PORT}/callback")
-        while not received_code:
-            httpd.handle_request()
-
-# Start the local server
-server_thread = threading.Thread(target=start_server_until_code, daemon=True)
-server_thread.start()
-
-webbrowser.open(auth_url)
-print("Browser opened. Login for AniList is ready")
-
-while not received_code:
-    time.sleep(0.1)
-
-# Header and query for getting the code
-headers = {
-    'Authorization': f'Bearer {received_code}',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-}
-
-query = """
-{
-  Viewer {
-    id
-    name
-  }
-}
+"""
+Authentication module for AniLex
+Provides OAuth authentication with AniList API
 """
 
-# Getting the code
-response = requests.post(url, json={'query': query}, headers=headers)
-if response.status_code != 200 or "errors" in response.json():
-    print("Error getting the code")
-    sys.exit(1)
+import http.server
+import json
+import logging
+import os
+import socketserver
+import sys
+import threading
+import time
+import webbrowser
+from datetime import datetime
+from logging.handlers import RotatingFileHandler
+from typing import Optional, Dict, Any
+from urllib.parse import urlparse, parse_qs
 
-viewer = response.json()['data']['Viewer']
-username = viewer['name']
-user_id = viewer['id']
-user_token = received_code
-del received_code
-
-# Defining path
-SERVICE_NAME = "UNOFICIAL-ANILEX"
-USER_TOKEN_KEY = f"{username}-{user_id}-AniLex"
-
-# Save token in keyring
-def save_token(token):
-    if token:
-        keyring.set_password(SERVICE_NAME, USER_TOKEN_KEY, token)
-        print("Token saved")
+import keyring
+import requests
+from dateutil.relativedelta import relativedelta
+from old.anilex_helper import get_cache_path
 
 
-# Save user-data
-data = {
-    "auth": {
-        "username": username,
-        "user_id": user_id,
-        "user_token": "saved"
-    },
-    "auth_key": {
-        "service_name": SERVICE_NAME,
-        "user_token_key": USER_TOKEN_KEY,
-        "user_data_path": PATH,
-        "keyring_backend": "Windows"
-    }
-}
-
-os.makedirs(os.path.dirname(PATH), exist_ok=True)
-with open(PATH, "w") as file:
-    json.dump(data, file, indent=4)
+class AniListAuthenticator:
+    """Handles AniList OAuth authentication flow"""
+    
+    def __init__(self, client_id: str = '28840', port: int = 8000):
+        self.client_id = client_id
+        self.port = port
+        self.redirect_uri = f'http://localhost:{port}/callback'
+        self.auth_url = f"https://anilist.co/api/v2/oauth/authorize?client_id={client_id}&response_type=token"
+        self.api_url = "https://graphql.anilist.co"
+        self.service_name = "UNOFICIAL-ANILEX"
+        self.user_data_path = os.path.join(get_cache_path(), "user_data.json")
+        self._received_token: Optional[str] = None
 
 
-save_token(user_token)
+        # logger setup
+        log_path = os.path.join(get_cache_path(), "logs", "anilist_auth.log")
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                RotatingFileHandler(log_path, maxBytes=1_000_000, backupCount=5),
+                logging.StreamHandler(sys.stdout)
+            ]
+        )
+        self.logger = logging.getLogger(__name__)
 
-print("Authentification successful!")
+
+    def is_already_authenticated(self) -> bool:
+        """Check if user is already authenticated"""
+        if not os.path.exists(self.user_data_path):
+            return False
+        
+        try:
+            with open(self.user_data_path, "r") as file:
+                data = json.load(file)
+            return data.get("auth", {}).get("user_token", "unsaved") == "saved"
+        except (json.JSONDecodeError, IOError):
+            return False
+    
+    def _create_handler_class(self):
+        """Create HTTP request handler class with access to instance variables"""
+        authenticator = self
+        
+        class AniListHandler(http.server.SimpleHTTPRequestHandler):
+            def log_message(self, format, *args):
+                """Suppress default logging"""
+                pass
+            
+            def do_GET(self):
+                if self.path.startswith("/callback"):
+                    self._handle_callback()
+                elif self.path.startswith("/token"):
+                    self._handle_token()
+                else:
+                    self.send_error(404, "Not found")
+            
+            def _handle_callback(self):
+                """Handle OAuth callback and serve HTML page"""
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(self._get_callback_html().encode())
+            
+            def _handle_token(self):
+                """Extract and store access token"""
+                query = urlparse(self.path).query
+                access_token = parse_qs(query).get("access_token", [None])[0]
+                
+                if access_token:
+                    authenticator._received_token = access_token
+                    self.send_response(200)
+                    self.send_header("Content-type", "text/plain")
+                    self.end_headers()
+                    self.wfile.write("Token received successfully".encode())
+                else:
+                    self.send_error(400, "No access token found")
+            
+            def _get_callback_html(self) -> str:
+                """Return HTML for the callback page"""
+                return """
+                <html lang="en">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <title>AniList Authentication</title>
+                        <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet" />
+                        <style>
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                font-family: 'Roboto', sans-serif;
+                                background: #f4f6f8;
+                                color: #333;
+                                display: flex;
+                                height: 100vh;
+                                align-items: center;
+                                justify-content: center;
+                            }
+                            .container {
+                                background: #fff;
+                                padding: 2rem;
+                                border-radius: 12px;
+                                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                                text-align: center;
+                                max-width: 400px;
+                                width: 90%;
+                            }
+                            h1 {
+                                margin-bottom: 1rem;
+                                font-size: 1.5rem;
+                                font-weight: 700;
+                            }
+                            p {
+                                margin: 0.5rem 0 1.5rem;
+                                font-size: 1rem;
+                            }
+                            .success { color: #2a9d8f; }
+                            .error { color: #e76f51; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h1 id="status">Authentication in progress...</h1>
+                            <p>Please wait while we process your authentication.</p>
+                        </div>
+                        
+                        <script>
+                            const hash = window.location.hash.substring(1);
+                            const params = new URLSearchParams(hash);
+                            const accessToken = params.get('access_token');
+                            const statusEl = document.getElementById('status');
+                            
+                            if (accessToken) {
+                                fetch('/token?access_token=' + accessToken)
+                                    .then(res => {
+                                        if (res.ok) {
+                                            statusEl.textContent = 'Authentication successful!';
+                                            statusEl.classList.add('success');
+                                            document.querySelector('p').textContent = 'You can close this tab now.';
+                                        } else {
+                                            throw new Error('Server error');
+                                        }
+                                    })
+                                    .catch(() => {
+                                        statusEl.textContent = 'Error saving token!';
+                                        statusEl.classList.add('error');
+                                        document.querySelector('p').textContent = 'Please try again.';
+                                    });
+                            } else {
+                                statusEl.textContent = 'No access token found!';
+                                statusEl.classList.add('error');
+                                document.querySelector('p').textContent = 'Authentication failed.';
+                            }
+                        </script>
+                    </body>
+                </html>
+                """
+        
+        return AniListHandler
+    
+    def _start_local_server(self) -> None:
+        """Start local server to handle OAuth callback"""
+        handler_class = self._create_handler_class()
+        
+        def server_loop():
+            with socketserver.TCPServer(("", self.port), handler_class) as httpd:
+                self.logger.info(f"Local server started on http://localhost:{self.port}/callback")
+                while not self._received_token:
+                    httpd.handle_request()
+        
+        server_thread = threading.Thread(target=server_loop, daemon=True)
+        server_thread.start()
+    
+    def _get_user_info(self, token: str) -> Dict[str, Any]:
+        """Fetch user information from AniList API"""
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+        
+        query = """
+        {
+            Viewer {
+                id
+                name
+            }
+        }
+        """
+        
+        response = requests.post(
+            self.api_url, 
+            json={'query': query}, 
+            headers=headers,
+            timeout=10
+        )
+        
+        if response.status_code != 200:
+            self.logger.error(f"API request failed {response.status_code}")
+            raise Exception(f"API request failed with status ")
+        
+        data = response.json()
+        if "errors" in data:
+            self.logger.error(f"API returned errors: {data['errors']}")
+            raise Exception(f"API returned errors: {data['errors']}")
+        
+        return data['data']['Viewer']
+    
+    def _save_token_to_keyring(self, username: str, user_id: int, token: str) -> None:
+        """Save token to system keyring"""
+        user_token_key = f"{username}-{user_id}-AniLex"
+        keyring.set_password(self.service_name, user_token_key, token)
+        self.logger.info(f"Token saved to keyring")
+    
+    def _save_user_data(self, username: str, user_id: int) -> None:
+        """Save user data to JSON file"""
+        user_token_key = f"{username}-{user_id}-AniLex"
+
+        renew = datetime.now() + relativedelta(years=1)
+
+        data = {
+            username: {
+                "auth": {
+                    "user_id": user_id,
+                    "renew_token": renew.isoformat(),
+                    "user_token": "saved"
+                },
+                "auth_key": {
+                    "service_name": self.service_name,
+                    "user_token_key": user_token_key,
+                    "user_data_path": self.user_data_path,
+                    "keyring_backend": "Windows"
+                }
+            }
+        }
+        
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(self.user_data_path), exist_ok=True)
+        
+        with open(self.user_data_path, "a") as file:
+            json.dump(data, file, indent=4)
+
+        self.logger.info(f"User data saved to {self.user_data_path}")
+    
+    def authenticate(self, force_reauth: bool = False) -> Dict[str, Any]:
+        """
+        Perform the authentication process
+        :param force_reauth: Force re-authentication even if already authenticated
+        :return: return Dict containing user info (username, user_id)
+        :raises Exception: if authentication fails
+        """
+        # Check if already authenticated
+        if not force_reauth and self.is_already_authenticated():
+            self.logger.info("User already authenticated, loading existing data.")
+            # Load existing user data
+            with open(self.user_data_path, "r") as file:
+                data = json.load(file)
+            return {
+                "username": data["auth"]["username"],
+                "user_id": data["auth"]["user_id"]
+            }
+
+        self.logger.info(f"Authentication process started...")
+        
+        try:
+            # Start local server
+            self._start_local_server()
+            
+            # Open browser for authentication
+            webbrowser.open(self.auth_url)
+            self.logger.info("Browser opened. Please complete authentication in your browser.")
+            
+            # Wait for token
+            timeout = 300  # 5 minutes timeout
+            start_time = time.time()
+            
+            while not self._received_token:
+                if time.time() - start_time > timeout:
+                    self.logger.error("Authentication timeout. Please try again.")
+                    return {}
+                time.sleep(0.1)
+
+            self.logger.info("Token received, verifying with AniList...")
+            
+            # Get user information
+            user_info = self._get_user_info(self._received_token)
+            username = user_info['name']
+            user_id = user_info['id']
+            
+            # Save token and user data
+            self._save_token_to_keyring(username, user_id, self._received_token)
+            self._save_user_data(username, user_id)
+
+            self.logger.info("Authentication successful!")
+            
+            return {
+                "username": username,
+                "user_id": user_id
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Authentication failed: {e}")
+            raise
+
+

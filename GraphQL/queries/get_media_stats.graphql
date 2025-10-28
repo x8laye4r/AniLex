@@ -1,0 +1,33 @@
+query getMediaStats($mediaId: Int = 1) {
+    Media(id: $mediaId) {
+        stats {
+            ...scoreDistribution#
+            ...status_distribution
+        }
+        rankings {
+            ...rankings
+        }
+    }
+}
+
+fragment scoreDistribution on MediaStats {
+    scoreDistribution {
+        score
+        amount
+    }
+}
+fragment status_distribution on MediaStats {
+    statusDistribution {
+        status
+        amount
+    }
+}
+
+fragment rankings on MediaRank {
+    rank
+    format
+    type
+    context
+    year
+    season
+}

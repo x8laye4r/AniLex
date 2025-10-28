@@ -1,17 +1,14 @@
+import json
 import os
-import git
-from github import Github
-import subprocess
-import signal
-import sys
 import shutil
+import subprocess
 import threading
 import time
+
+import git
 from git import Repo
-from pathlib import Path
-from typing import Optional, Callable
-from utils.anilex_helper import get_cache_path
-import json
+from github import Github
+from old.anilex_helper import get_cache_path
 
 if not os.path.exists(os.path.join(get_cache_path(), "api_data","aniwatchapi.json")):
     with open(os.path.join(get_cache_path(), "api_data", "aniwatchapi.json"), "w") as f:

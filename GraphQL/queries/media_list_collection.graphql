@@ -1,0 +1,62 @@
+query mediaCollection(
+  $userId: Int!,
+  $username: String,
+  $type: MediaType!,
+  $chunk: Int,
+  $perChunk: Int,
+  $forceSingleCompletedList: Boolean = false,
+  $startedAtGreater: FuzzyDateInt,
+  $startedAtLesser: FuzzyDateInt,
+  $completedAtGreater: FuzzyDateInt,
+  $completedAtLesser: FuzzyDateInt
+) {
+  MediaListCollection(
+    userId: $userId,
+    userName: $username,
+    type: $type,
+    forceSingleCompletedList: $forceSingleCompletedList,
+    startedAt_greater: $startedAtGreater,
+    startedAt_lesser: $startedAtLesser,
+    completedAt_greater: $completedAtGreater,
+    completedAt_lesser: $completedAtLesser,
+    chunk: $chunk,
+    perChunk: $perChunk
+  ) {
+    hasNextChunk
+    user {
+      id
+      name
+        mediaListOptions {
+            animeList {
+                advancedScoringEnabled
+            }
+            mangaList {
+                advancedScoringEnabled
+            }
+        }
+    }
+    lists {
+      isCustomList
+      name
+      status
+      entries {
+        id
+        mediaId
+        media {
+           id
+           title {
+               userPreferred
+           }
+           coverImage {
+              extraLarge
+           }
+        }
+        priority
+        score
+        progress
+        advancedScores
+        repeat
+      }
+    }
+  }
+}

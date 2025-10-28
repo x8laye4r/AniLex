@@ -1,0 +1,9 @@
+query getFollowers($userId: Int!, $sort: [UserSort]) {
+    Follower(userId: $userId, sort: $sort) {
+        id
+        name
+        avatar {
+            large
+        }
+    }
+}

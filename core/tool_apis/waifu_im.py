@@ -3,9 +3,8 @@ import os
 import typing
 
 import requests
+from old.anilex_helper import get_cache_path
 from waifuim import WaifuAioClient
-
-from utils.anilex_helper import get_cache_path
 
 PATH = os.path.join(get_cache_path(), "api_data", "waifuimapi.json")
 os.makedirs(os.path.dirname(PATH), exist_ok=True)

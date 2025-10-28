@@ -1,0 +1,73 @@
+query getMediaInfo($mediaId: Int!) {
+    Media(id: $mediaId) {
+        ...media_basic
+        ...media_stats
+        ...media_airing
+        ...media_list_entry
+    }
+}
+
+fragment media_basic on Media {
+    id
+    title {
+        userPreferred
+        romaji
+        english
+        native
+    }
+    synonyms
+    description
+    coverImage {
+        extraLarge
+    }
+    genres
+    tags {
+        name
+        description
+    }
+    trailer {
+        site
+        id
+        thumbnail
+    }
+}
+
+fragment media_stats on Media {
+    averageScore
+    meanScore
+    popularity
+    favourites
+    status
+    season
+    seasonYear
+    episodes
+}
+
+fragment media_airing on Media {
+    nextAiringEpisode {
+        airingAt
+        timeUntilAiring
+        episode
+    }
+}
+
+fragment media_list_entry on Media {
+    mediaListEntry {
+        id
+        mediaId
+        score
+        advancedScores
+        status
+        progress
+        repeat
+        private
+        priority
+        notes
+        customLists
+        completedAt {
+            year
+            month
+            day
+        }
+    }
+}

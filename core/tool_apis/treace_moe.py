@@ -6,10 +6,9 @@ from pathlib import Path
 import requests
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
-
-from models.TraceMoe import TraceMoe
-from utils.anilex_helper import get_trace_moe_key, get_auth_key
-from utils.anilex_helper import load_settings, get_query_path
+from old.TraceMoe import TraceMoe
+from old.anilex_helper import get_trace_moe_key, get_auth_key
+from old.anilex_helper import load_settings, get_query_path
 
 transport = RequestsHTTPTransport(
     url="https://graphql.anilist.co",

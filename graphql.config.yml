@@ -1,8 +1,5 @@
-schema:
-  - "https://graphql.anilist.co":
-      headers:
-        Content-Type: application/json
-documents: "./src/**/*.graphql"
+schema: "./GraphQL/schema/schema.graphql"
+documents: "./GraphQL/**/*.graphql"
 extensions:
   endpoints:
     AniListAPI:

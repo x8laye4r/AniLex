@@ -1,0 +1,16 @@
+query getMediaCharacters($mediaId: Int!, $sort: [CharacterSort], $page: Int) {
+    Media(id: $mediaId) {
+        characters (sort: $sort, page: $page){
+            pageInfo {
+                ...page_info
+            }
+            edges {
+                ...character_edge
+            }
+        }
+    }
+}
+
+fragment page_info on PageInfo {
+    hasNextPage
+}

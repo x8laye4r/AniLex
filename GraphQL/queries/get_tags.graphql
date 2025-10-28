@@ -1,0 +1,10 @@
+query getTags {
+    MediaTagCollection {
+        id
+        category
+        isAdult
+        name
+        isGeneralSpoiler
+        isMediaSpoiler
+    }
+}

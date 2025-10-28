@@ -1,0 +1,29 @@
+query getMediaStaff($mediaId: Int!, $sort: [StaffSort], $page: Int) {
+    Media(id: $mediaId) {
+        staff (sort: $sort, page: $page){
+            pageInfo {
+                ...page_info
+            }
+            edges {
+                ...staff_edge
+            }
+        }
+    }
+}
+
+fragment page_info on PageInfo {
+    hasNextPage
+}
+
+fragment staff_edge on StaffEdge {
+    role
+    node {
+        id
+        name {
+            full
+        }
+        image {
+            large
+        }
+    }
+}

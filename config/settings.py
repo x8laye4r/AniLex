@@ -5,8 +5,7 @@
 import os
 
 import yaml
-
-from utils.anilex_helper import load_settings, get_cache_path
+from old.anilex_helper import load_settings, get_cache_path
 
 PATH = os.path.join(get_cache_path(), "settings.json")
 

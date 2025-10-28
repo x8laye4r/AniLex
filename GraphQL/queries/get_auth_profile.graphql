@@ -1,0 +1,312 @@
+query GetProfileInfo {
+  Viewer {
+      ...user_basic
+      ...user_statistics
+      ...user_media_options
+      ...user_favourites
+  }
+}
+
+fragment user_basic on User {
+  id
+  name
+  previousNames {
+    name
+    updatedAt
+  }
+  avatar {
+    large
+  }
+  bannerImage
+  about
+  siteUrl
+  options {
+    activityMergeTime
+    airingNotifications
+    titleLanguage
+  }
+  unreadNotificationCount
+}
+
+fragment user_statistics on User {
+  statistics {
+    anime {
+      count
+      meanScore
+      episodesWatched
+      minutesWatched
+      standardDeviation
+
+      formats {
+        format
+        minutesWatched
+        count
+        meanScore
+      }
+
+      genres {
+        count
+        genre
+        meanScore
+        minutesWatched
+      }
+
+      lengths {
+        length
+        count
+        meanScore
+        minutesWatched
+      }
+
+      releaseYears {
+        count
+        releaseYear
+        meanScore
+        minutesWatched
+      }
+
+      scores {
+        count
+        score
+        minutesWatched
+      }
+
+      staff(sort: [MEAN_SCORE_DESC], limit: 10) {
+        count
+        minutesWatched
+        staff {
+          id
+          name {
+            userPreferred
+          }
+          image {
+            large
+          }
+        }
+      }
+
+      startYears {
+        count
+        startYear
+        meanScore
+        minutesWatched
+      }
+
+      statuses {
+        count
+        status
+      }
+
+      studios {
+        count
+        minutesWatched
+        meanScore
+        studio {
+          id
+          name
+          isAnimationStudio
+        }
+      }
+
+      tags {
+        count
+        tag {
+          category
+          name
+          isAdult
+          description
+          isMediaSpoiler
+          isGeneralSpoiler
+        }
+        meanScore
+        minutesWatched
+      }
+
+      voiceActors {
+        count
+        minutesWatched
+        voiceActor {
+          id
+          name {
+            userPreferred
+          }
+          image {
+            large
+          }
+        }
+      }
+
+      countries {
+        count
+        country
+        meanScore
+        minutesWatched
+      }
+    }
+
+    manga {
+      count
+      meanScore
+      chaptersRead
+      volumesRead
+      standardDeviation
+
+      formats {
+        format
+        chaptersRead
+        count
+        meanScore
+      }
+
+      genres {
+        count
+        genre
+        meanScore
+        chaptersRead
+      }
+
+      lengths {
+        length
+        count
+        meanScore
+        chaptersRead
+      }
+
+      releaseYears {
+        count
+        releaseYear
+        meanScore
+        chaptersRead
+      }
+
+      scores {
+        count
+        score
+        chaptersRead
+      }
+
+      staff(sort: [MEAN_SCORE_DESC], limit: 10) {
+        count
+        chaptersRead
+        staff {
+          id
+          name {
+            userPreferred
+          }
+          image {
+            large
+          }
+        }
+      }
+
+      startYears {
+        count
+        startYear
+        meanScore
+        chaptersRead
+      }
+
+      statuses {
+        count
+        status
+      }
+
+      tags {
+        count
+        tag {
+          category
+          name
+          isAdult
+          description
+          isMediaSpoiler
+          isGeneralSpoiler
+        }
+        meanScore
+        chaptersRead
+      }
+
+      countries {
+        count
+        country
+        meanScore
+        chaptersRead
+      }
+    }
+  }
+}
+
+fragment user_media_options on User {
+  mediaListOptions {
+    scoreFormat
+    animeList {
+      customLists
+      advancedScoring
+      advancedScoringEnabled
+      sectionOrder
+      splitCompletedSectionByFormat
+    }
+    mangaList {
+      customLists
+      advancedScoring
+      advancedScoringEnabled
+      sectionOrder
+      splitCompletedSectionByFormat
+    }
+  }
+}
+
+fragment user_favourites on User {
+  favourites {
+    anime {
+      nodes {
+        id
+        title {
+          userPreferred
+        }
+        coverImage {
+          extraLarge
+        }
+      }
+    }
+    manga {
+      nodes {
+        id
+        title {
+          userPreferred
+        }
+        coverImage {
+          extraLarge
+        }
+      }
+    }
+    characters {
+      nodes {
+        id
+        name {
+          userPreferred
+        }
+        image {
+          large
+        }
+      }
+    }
+    staff {
+      nodes {
+        id
+        name {
+          userPreferred
+        }
+        image {
+          large
+        }
+      }
+    }
+    studios {
+      nodes {
+        id
+        name
+        isAnimationStudio
+      }
+    }
+  }
+}
