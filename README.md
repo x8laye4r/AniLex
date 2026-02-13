@@ -48,17 +48,7 @@ If you're not a programmer and have no idea about coding, look here in the Notio
 ## 📛 Naming
 
 As a German programming student, I took inspiration from the word **"Lexikon"** (meaning encyclopedia or dictionary).  
-Combining that with **"Ani"** for anime, I came up with **AniLex** – a name that reflects both structure and focus: an organized place for all your anime data.
-
----
-
-## Local installtion
-```bash 
-git clone https://codeberg.org/x8laye4r/AniLex.git
-cd AniLex
-pip install -r requirements.txt
-python main.py
-```
+Combining that with **"Ani"** for anime, I came up with **AniLex** – a name that reflects both structure and focus: an organized place for all your anime data
 
 ---
 
