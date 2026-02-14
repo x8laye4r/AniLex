@@ -1,0 +1,80 @@
+query ActivityFeedQuery($page: Int, $perPage: Int, $isFollowing: Boolean, $tpyeIn: [ActivityType]) {
+    Page(page: $page, perPage: $perPage) {
+        activities(isFollowing: $isFollowing, type_in: $tpyeIn, sort: [ID_DESC]) {
+            ... on TextActivity {
+                ...TextActivityFragment
+            }
+            ... on ListActivity {
+                ...ListActivityFragment
+            }
+            ... on MessageActivity {
+                ...MessageActivityFragment
+            }
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}
+
+fragment ListActivityFragment on ListActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    type
+    progress
+    status
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+    media {
+        id
+        title {
+            userPreferred
+        }
+        coverImage {
+            medium
+        }
+    }
+}
+
+fragment MessageActivityFragment on MessageActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    message
+    messengerId
+    messenger {
+        name
+        avatar {
+            medium
+        }
+    }
+}
+
+fragment TextActivityFragment on TextActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    text
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+}

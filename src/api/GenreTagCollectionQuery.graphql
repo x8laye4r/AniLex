@@ -1,0 +1,9 @@
+query GenreTagCollection {
+    GenreCollection
+    MediaTagCollection {
+        id
+        name
+        description
+        isAdult
+    }
+}

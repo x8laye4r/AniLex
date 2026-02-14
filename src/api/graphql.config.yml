@@ -1,0 +1,9 @@
+projects:
+  app:
+    schema: "shema.graphqls.graphql"
+    documents: "**/*.graphql"
+    extensions:
+      endpoints:
+        default:
+          url: "https://graphql.anilist.co"
+

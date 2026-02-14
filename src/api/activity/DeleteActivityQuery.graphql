@@ -1,0 +1,5 @@
+mutation DeleteActivityQuery($deleteActivityId: Int) {
+    DeleteActivity(id: $deleteActivityId) {
+        deleted
+    }
+}

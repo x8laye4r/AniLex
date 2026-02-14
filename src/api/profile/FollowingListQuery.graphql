@@ -1,0 +1,14 @@
+query Query($page: Int, $perPage: Int, $userId: Int!) {
+    Page(page: $page, perPage: $perPage) {
+        following(userId: $userId) {
+            id
+            name
+            avatar {
+                medium
+            }
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}
