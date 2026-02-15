@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
     app_anilex.setApplicationVersion(VERSION_STR);
 
     // qInfo() << app_anilex.applicationVersion();
+    // qInfo() << QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 
     MainWindow widget;
     widget.show();

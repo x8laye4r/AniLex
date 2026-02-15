@@ -21,9 +21,12 @@ void MainWindow::setupUI() {
     }
     this->picture_container->setPixmap(pm);
 
-    this->layout->addWidget(this->label);
-    this->layout->addWidget(this->button);
-    this->layout->addWidget(this->picture_container);
+    // this->label->setAlignment(Qt::AlignTop | Qt::AlignRight);
+    this->layout->addWidget(label);
+    this->layout->addWidget(button);
+    this->layout->addWidget(picture_container);
+
+    this->layout->setAlignment(Qt::AlignCenter);
 }
 
 void MainWindow::setupConnections() {

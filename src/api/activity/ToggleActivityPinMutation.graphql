@@ -1,0 +1,13 @@
+mutation ToggleActivityPinMutation($id: Int) {
+    ToggleActivityPin(id: $id) {
+        ...on MessageActivity {
+            ...MessageActivityFragment
+        }
+        ...on TextActivity {
+            ...TextActivityFragment
+        }
+        ...on ListActivity {
+            ...ListActivityFragment
+        }
+    }
+}

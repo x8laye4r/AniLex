@@ -1,0 +1,5 @@
+mutation DeleteThreadCommentMutation($id: Int) {
+    DeleteThreadComment(id: $id) {
+        deleted
+    }
+}

@@ -3,10 +3,10 @@ query GetCommentsOfThreadQuery($page: Int, $perPage: Int, $threadId: Int) {
         threadComments(threadId: $threadId) {
             id
             comment
-            likeCount
             isLiked
-            createdAt
+            likeCount
             isLocked
+            createdAt
             user {
                 id
                 name

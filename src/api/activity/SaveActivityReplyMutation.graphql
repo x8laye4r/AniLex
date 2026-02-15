@@ -1,0 +1,5 @@
+mutation SaveActivityReplyMutation($id: Int, $text: String) {
+    SaveActivityReply(id: $id, text: $text) {
+        ...ReplyFragment
+    }
+}

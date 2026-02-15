@@ -1,4 +1,4 @@
-mutation ToggleLikeV2($toggleLikeV2Id: Int, $type: LikeableType) {
+mutation ToggleLikeMutation($toggleLikeV2Id: Int, $type: LikeableType) {
     ToggleLikeV2(id: $toggleLikeV2Id, type: $type) {
         ...on ListActivity {
             ...ListActivityFragment

@@ -1,4 +1,4 @@
-mutation UpdateTextActivity($id: Int, $text: String) {
+mutation UpdateTextActivityMutation($id: Int, $text: String) {
     SaveTextActivity(id: $id, text: $text) {
         ... on TextActivity {
             ...TextActivityFragment
