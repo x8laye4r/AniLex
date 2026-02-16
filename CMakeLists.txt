@@ -41,6 +41,19 @@ file(GLOB_RECURSE RESOURCE_LIST RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
         "assets/*"
 )
 
+file(GLOB_RECURSE GRAPHQL_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/api/*.graphql"
+)
+
+file(GLOB_RECURSE OLD_GRAPHQL_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/api/old_queries/*.graphql"
+)
+message("All Files: " ${GRAPHQL_FILES})
+
+list(REMOVE_ITEM GRAPHQL_FILES ${OLD_GRAPHQL_FILES})
+message("All Files: " ${GRAPHQL_FILES})
+
+
 configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h.in"
         "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h"
@@ -92,6 +105,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE anilex_lib)
 qt_add_resources(${PROJECT_NAME} "anilex_assets"
         PREFIX "/"
         FILES ${RESOURCE_LIST}
+)
+qt_add_resources(${PROJECT_NAME} "graphql_queries"
+    PREFIX "/graphql"
+    BASE "${CMAKE_CURRENT_SOURCE_DIR}/src/api"
+    FILES ${GRAPHQL_FILES}
 )
 
 # ================

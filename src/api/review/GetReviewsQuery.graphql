@@ -2,8 +2,8 @@ query MediaTrends($sort: [ReviewSort]) {
     Page {
         reviews(sort: $sort) {
             id  # id of the review
-            mediaType
             summary
+            mediaType
             createdAt
             user {
                 id
@@ -12,12 +12,12 @@ query MediaTrends($sort: [ReviewSort]) {
                     medium
                 }
             }
-        }
-        media {
-            id
-            bannerImage
-            title {
-                userPreferred
+            media {
+                id
+                bannerImage
+                title {
+                    userPreferred
+                }
             }
         }
         pageInfo {

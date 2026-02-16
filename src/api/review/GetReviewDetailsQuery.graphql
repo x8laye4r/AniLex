@@ -1,11 +1,11 @@
 query GetReviewDetailsQuery($reviewId: Int) {
     Review(id: $reviewId) {
         id
-        summary
+        mediaType
         body(asHtml: true)
-        score
-        rating
-        ratingAmount
+        score # Rating out of 100
+        rating # User Like Count
+        ratingAmount # Total Users Rated
         user {
             name
             avatar {
@@ -18,6 +18,6 @@ query GetReviewDetailsQuery($reviewId: Int) {
                 userPreferred
             }
         }
-        userRating
+        userRating # Your rating
     }
 }
