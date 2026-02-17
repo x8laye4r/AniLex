@@ -1,0 +1,37 @@
+query GetStudioInfoQuery($id: Int, $onList: Boolean, $page: Int) {
+    Studio(id: $id) {
+        id
+        name
+        favourites
+        isFavourite
+        isAnimationStudio
+        mainMedia: media(isMain: true, onList: $onList, page: $page) {
+            nodes {
+                id
+                title {
+                    userPreferred
+                }
+                coverImage {
+                    medium
+                }
+            }
+            pageInfo {
+                ...PageInfo
+            }
+        }
+        sideMedia: media(isMain: false, onList: $onList, page: $page) {
+            nodes {
+                id
+                title {
+                    userPreferred
+                }
+                coverImage {
+                    medium
+                }
+            }
+            pageInfo {
+                ...PageInfo
+            }
+        }
+    }
+}

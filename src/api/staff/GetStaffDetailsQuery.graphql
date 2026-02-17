@@ -12,6 +12,7 @@ query GetStaffDetailsQuery($staffId: Int) {
         description
         primaryOccupations
         gender
+        languageV2
         dateOfBirth {
             ...FuzzyDate
         }
@@ -25,5 +26,10 @@ query GetStaffDetailsQuery($staffId: Int) {
         favourites
         isFavourite
         siteUrl
+
+        # some general info for the background
+        isFavouriteBlocked
+        favourites
+        isFavourite
     }
 }

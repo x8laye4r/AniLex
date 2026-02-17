@@ -11,7 +11,14 @@ set(CMAKE_AUTOUIC ON)
 
 include(FetchContent)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network Test)
+find_package(Qt6 6.10.1 REQUIRED COMPONENTS Core Gui Widgets Network Test)
+
+if(Qt6Core_VERSION VERSION_LESS "6.10.1")
+    message(WARNING
+            "This project was developed and tested with Qt 6.10.1. "
+            "Current Qt version: ${Qt6Core_VERSION}"
+    )
+endif()
 
 # Fetch QtKeychain for easy Keyring support (Linux needs libsecret installed)
 FetchContent_Declare(
@@ -48,10 +55,8 @@ file(GLOB_RECURSE GRAPHQL_FILES
 file(GLOB_RECURSE OLD_GRAPHQL_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/src/api/old_queries/*.graphql"
 )
-message("All Files: " ${GRAPHQL_FILES})
 
 list(REMOVE_ITEM GRAPHQL_FILES ${OLD_GRAPHQL_FILES})
-message("All Files: " ${GRAPHQL_FILES})
 
 
 configure_file(
