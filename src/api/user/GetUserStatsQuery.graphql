@@ -1,0 +1,50 @@
+query GetUserStatsQuery($name: String) {
+    User(name: $name) {
+        id
+        name
+        statistics {
+            anime {
+                count
+                meanScore
+                standardDeviation
+                minutesWatched
+                episodesWatched
+                genres(limit: 10, sort: COUNT_DESC) {
+                    genre
+                    count
+                    meanScore
+                    minutesWatched
+                }
+                tags (limit: 10, sort: COUNT_DESC) {
+                    tag {
+                        name
+                    }
+                    chaptersRead
+                    count
+                    meanScore
+                }
+            }
+            manga {
+                count
+                meanScore
+                standardDeviation
+                chaptersRead
+                volumesRead
+                genres(limit: 10, sort: COUNT_DESC) {
+                    genre
+                    count
+                    meanScore
+                    minutesWatched
+                }
+                tags(limit: 10, sort: COUNT_DESC) {
+                    tag {
+                        name
+                    }
+                    chaptersRead
+                    count
+                    meanScore
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+query GetUserProfile($name: String) {
+    User(name: $name) {
+        id
+        name
+        donatorBadge
+        donatorTier
+        previousNames {
+            name
+        }
+        about(asHtml: true)
+        avatar {
+            large
+            medium
+        }
+        bannerImage
+        createdAt
+        updatedAt
+        siteUrl
+    }
+}

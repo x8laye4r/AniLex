@@ -1,0 +1,32 @@
+query GetMediaListCollectionQuery(
+    $userId: Int,
+    $mediaType: MediaType,
+    $startedAt: FuzzyDateInt,
+    $completedAt: FuzzyDateInt,
+    $forceSingleList: Boolean,
+    $chunk: Int,
+    $sort: [MediaListSort]
+) {
+    MediaListCollection(
+        userId: $userId,
+        type: $mediaType,
+        startedAt: $startedAt,
+        completedAt: $completedAt,
+        forceSingleCompletedList: $forceSingleList,
+        chunk: $chunk,
+        sort: $sort
+    ) {
+        lists {
+            isCustomList
+            name
+            isSplitCompletedList
+            entries {
+                id
+                mediaId
+                customLists(asArray: true)
+                __replace_custom_entries__
+            }
+        }
+        hasNextChunk
+    }
+}

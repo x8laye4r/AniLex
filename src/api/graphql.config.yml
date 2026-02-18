@@ -1,6 +1,6 @@
 projects:
   app:
-    schema: "shema.graphqls.graphql"
+    schema: "schema.graphqls.graphql"
     documents: "**/*.graphql"
     extensions:
       endpoints:

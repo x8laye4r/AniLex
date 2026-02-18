@@ -1,0 +1,73 @@
+query GetMedia(
+    $page: Int,
+    $perPage: Int,
+    $startDate: FuzzyDateInt,
+    $endDate: FuzzyDateInt,
+    $season: MediaSeason,
+    $type: MediaType = MANGA,
+    $format: MediaFormat,
+    $chapters: Int,
+    $volume: Int,
+    $isAdult: Boolean,
+    $onList: Boolean,
+    $averageScore: Int,
+    $popularity: Int,
+    $source: MediaSource,
+    $countryOfOrigin: CountryCode,
+    $search: String,
+    $statusIn: [MediaStatus],
+    $statusNotIn: [MediaStatus],
+    $genreIn: [String],
+    $tagIn: [String],
+    $tagNotIn: [String],
+    $genreNotIn: [String],
+    $sort: [MediaSort],
+    $popularityLesser: Int,
+    $popularityGreater: Int,
+    $averageScoreLesser: Int,
+    $averageScoreGreater: Int,
+    $seasonYear: Int,
+    $startDateGreater: FuzzyDateInt,
+    $startDateLesser: FuzzyDateInt
+) {
+    Page(page: $page, perPage: $perPage) {
+        pageInfo {
+            ...PageInfo
+        }
+        media(
+            startDate: $startDate,
+            endDate: $endDate,
+            season: $season,
+            type: $type,
+            format: $format,
+            chapters: $chapters,
+            volumes: $volume,
+            isAdult: $isAdult,
+            onList: $onList,
+            averageScore: $averageScore,
+            popularity: $popularity,
+            source: $source,
+            countryOfOrigin: $countryOfOrigin,
+            search: $search,
+            status_in: $statusIn,
+            status_not_in: $statusNotIn,
+            genre_in: $genreIn,
+            tag_in: $tagIn,
+            tag_not_in: $tagNotIn,
+            genre_not_in: $genreNotIn,
+            sort: $sort,
+            popularity_lesser: $popularityLesser,
+            popularity_greater: $popularityGreater,
+            averageScore_lesser: $averageScoreLesser,
+            averageScore_greater: $averageScoreGreater,
+            seasonYear: $seasonYear,
+            startDate_greater: $startDateGreater,
+            startDate_lesser: $startDateLesser
+        ) {
+            ...BasicMediaDetails
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}

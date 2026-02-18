@@ -1,4 +1,5 @@
 fragment PageInfo on PageInfo {
     currentPage
     hasNextPage
+    total
 }

@@ -1,0 +1,24 @@
+query GetUserOptionsQuery {
+    Viewer {
+        id
+        options {
+            profileColor
+            titleLanguage
+            displayAdultContent
+        }
+        mediaListOptions {
+            scoreFormat
+            animeList {
+                advancedScoringEnabled
+                sectionOrder
+                customLists
+                advancedScoring
+            }
+            mangaList {
+                sectionOrder
+                customLists
+                advancedScoring
+            }
+        }
+    }
+}

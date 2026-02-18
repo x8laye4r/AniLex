@@ -15,7 +15,6 @@ query GetCommentsOfThreadQuery($page: Int, $perPage: Int, $threadId: Int) {
                 }
             }
             childComments # null if name contains ThreadComment
-            comment
         }
         pageInfo {
             ...PageInfo

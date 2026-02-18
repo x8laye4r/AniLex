@@ -1,0 +1,29 @@
+query GetMediaRecomRelatQuery($id: Int, $page: Int, $perPage: Int) {
+    Media(id: $id) {
+        recommendations(page: $page, perPage: $perPage) {
+            nodes {
+                mediaRecommendation {
+                    id
+                    title {
+                        userPreferred
+                    }
+                    coverImage {
+                        medium
+                    }
+                }
+            }
+        }
+        relations {
+            edges {
+                node {
+                    title {
+                        userPreferred
+                    }
+                    coverImage {
+                        medium
+                    }
+                }
+            }
+        }
+    }
+}

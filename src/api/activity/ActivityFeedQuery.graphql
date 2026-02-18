@@ -1,6 +1,6 @@
-query ActivityFeedQuery($page: Int, $perPage: Int, $isFollowing: Boolean, $tpyeIn: [ActivityType]) {
+query ActivityFeedQuery($page: Int, $perPage: Int, $isFollowing: Boolean, $typeIn: [ActivityType]) {
     Page(page: $page, perPage: $perPage) {
-        activities(isFollowing: $isFollowing, type_in: $tpyeIn, sort: [ID_DESC]) {
+        activities(isFollowing: $isFollowing, type_in: $typeIn, sort: [ID_DESC]) {
             ... on TextActivity {
                 ...TextActivityFragment
             }

@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     // qInfo() << QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
     qInfo() << QT_VERSION_STR;
 
-    QFile file(":/graphql/activity/ToggleActivitySubcriptionMutation.graphql");
+    QFile file(":/graphql/activity/ToggleActivitySubscriptionMutation.graphql");
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Failed to open file:" << file.errorString();
