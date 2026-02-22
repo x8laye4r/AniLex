@@ -1,5 +1,5 @@
-query GetUserStatsQuery($name: String) {
-    User(name: $name) {
+query GetUserStatsQuery($id: Int) {
+    User(id: $id) {
         id
         name
         statistics {

@@ -1,5 +1,5 @@
-query GetUserProfile($name: String) {
-    User(name: $name) {
+query GetUserProfile($id: Int) {
+    User(id: $id) {
         id
         name
         donatorBadge

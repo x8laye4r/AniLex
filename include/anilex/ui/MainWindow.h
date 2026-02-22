@@ -1,10 +1,12 @@
-#ifndef ANILEX_MAINWINDOW_H
-#define ANILEX_MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+
+#include "anilex/core/Collapsable.h"
+
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -20,6 +22,8 @@ private:
 
     QLabel *picture_container = nullptr;
 
+    Collapsable *collapsable_ = nullptr;
+
     void setupUI();
     void setupConnections();
 
@@ -27,5 +31,3 @@ private slots:
     static void onButtonClick();
 };
 
-
-#endif //ANILEX_MAINWINDOW_H

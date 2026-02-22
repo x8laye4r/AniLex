@@ -2,7 +2,7 @@ query GetReviewDetailsQuery($reviewId: Int) {
     Review(id: $reviewId) {
         id
         mediaType
-        body(asHtml: true)
+        body(asHtml: false)
         score # Rating out of 100
         rating # User Like Count
         ratingAmount # Total Users Rated

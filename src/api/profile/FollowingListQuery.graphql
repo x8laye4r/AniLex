@@ -1,4 +1,4 @@
-query Query($page: Int, $perPage: Int, $userId: Int!) {
+query FollowingListQuery($page: Int, $perPage: Int, $userId: Int!) {
     Page(page: $page, perPage: $perPage) {
         following(userId: $userId) {
             id

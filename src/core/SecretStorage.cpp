@@ -10,7 +10,7 @@ void SecretStorage::saveSecret(const QString &key, const QString &value) {
     job->setTextData(value);
 
     connect(job, &QKeychain::Job::finished, this, [this, job, key]() {
-       if (job->error()) emit errorOccurred(key, job->errorString());
+        if (job->error()) emit errorOccurred(key, job->errorString());
         else emit secretStored(key);
         job->deleteLater();
     });

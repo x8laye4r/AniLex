@@ -112,9 +112,9 @@ qt_add_resources(${PROJECT_NAME} "anilex_assets"
         FILES ${RESOURCE_LIST}
 )
 qt_add_resources(${PROJECT_NAME} "graphql_queries"
-    PREFIX "/graphql"
-    BASE "${CMAKE_CURRENT_SOURCE_DIR}/src/api"
-    FILES ${GRAPHQL_FILES}
+        PREFIX "/graphql"
+        BASE "${CMAKE_CURRENT_SOURCE_DIR}/src/api"
+        FILES ${GRAPHQL_FILES}
 )
 
 # ================

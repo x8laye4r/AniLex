@@ -21,10 +21,13 @@ void MainWindow::setupUI() {
     }
     this->picture_container->setPixmap(pm);
 
+    this->collapsable_ = new Collapsable("Hello World", 100, this);
+
     // this->label->setAlignment(Qt::AlignTop | Qt::AlignRight);
     this->layout->addWidget(label);
     this->layout->addWidget(button);
     this->layout->addWidget(picture_container);
+    this->layout->addWidget(collapsable_);
 
     this->layout->setAlignment(Qt::AlignCenter);
 }

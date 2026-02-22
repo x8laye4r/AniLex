@@ -1,4 +1,4 @@
-query Query($userId: Int!, $page: Int, $perPage: Int) {
+query FollowerListQuery($userId: Int!, $page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
         followers(userId: $userId) {
             id

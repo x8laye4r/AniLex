@@ -1,0 +1,26 @@
+query GetHomeScreenQuery {
+    trendingAnime: Page {
+
+    }
+    trendingManga: Page {
+
+    }
+    popularAnime: Page {
+
+    }
+    popularManga: Page {
+
+    }
+    currentSeason: Page {
+
+    }
+    nextSeason: Page {
+
+    }
+    newlyAddedAnime: Page {
+
+    }
+    newlyAddedManga: Page {
+
+    }
+}
