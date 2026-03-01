@@ -1,26 +1,131 @@
-query GetHomeScreenQuery {
-    trendingAnime: Page {
-
+query GetHomeScreenQuery($seasonYear: Int, $season: MediaSeason, $nextSeasonYear: Int, $nextSeason: MediaSeason) {
+    # =================
+    # TRENDING
+    # =================
+    trendingAnime: Page(page: 1, perPage: 25) {
+        media(sort: TRENDING_DESC, type: ANIME) {
+            id
+            __replace_custom_trea_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
     }
-    trendingManga: Page {
-
+    # Get Trending Manga
+    trendingManga: Page(page: 1, perPage: 25) {
+        media(sort: TRENDING_DESC, type: MANGA) {
+            id
+            __replace_custom_tream_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
     }
-    popularAnime: Page {
 
+
+    # =================
+    # POPULAR
+    # =================
+    popularAnime: Page(page: 1, perPage: 25) {
+        media(sort: POPULARITY_DESC, type: ANIME) {
+            id
+            __replace_custom_popa_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
     }
-    popularManga: Page {
-
+    popularManga: Page(page: 1, perPage: 25) {
+        media(sort: POPULARITY_DESC, type: MANGA) {
+            id
+            __replace_custom_popm_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
     }
-    currentSeason: Page {
 
+
+    # =================
+    # RELEASING
+    # =================
+    releasingAnime: Page(page: 1, perPage: 25) {
+        media(status: RELEASING, sort: POPULARITY_DESC, type: ANIME) {
+            id
+            __replace_custom_rela_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
     }
-    nextSeason: Page {
-
+    releasingManga: Page(page: 1, perPage: 25) {
+        media(status: RELEASING, sort: POPULARITY_DESC, type: MANGA) {
+            id
+            __replace_custom_relm_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
     }
-    newlyAddedAnime: Page {
 
+
+    # =================
+    # SEASON
+    # =================
+    currentSeasonAnime: Page(page: 1, perPage: 25) {
+        media(seasonYear: $seasonYear, season: $season, type: ANIME) {
+            id
+            __replace_custom_seaa_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
     }
-    newlyAddedManga: Page {
+    nextSeasonAnime: Page(page: 1, perPage: 25) {
+        media(seasonYear: $nextSeasonYear, season: $season, type: ANIME) {
+            id
+            __replace_custom_nsea_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+    currentSeasonManga: Page(page: 1, perPage: 25) {
+        media(seasonYear: $seasonYear, season: $season, type: MANGA) {
+            id
+            __replace_custom_seam_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+    nextSeasonManga: Page(page: 1, perPage: 25) {
+        media(seasonYear: $nextSeasonYear, season: $season, type: MANGA) {
+            id
+            __replace_custom_nsem_entries__
+        }
+    }
 
+
+    # =================
+    # NEW
+    # =================
+    newlyAddedAnime: Page(page: 1, perPage: 25) {
+        media(type: ANIME, sort: ID_DESC) {
+            id
+            __replace_custom_newa_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+    newlyAddedManga: Page(page: 1, perPage: 25) {
+        media(type: MANGA, sort: ID_DESC) {
+            id
+            __replace_custom_newm_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
     }
 }

@@ -1,13 +1,16 @@
 #pragma once
 #include <QObject>
-
+#include <QVariant>
 
 /***
  * Still figuring out how this works with ENUMS in Qt
 ***/
-class AniList : public QObject {
+class AniListEnums : public QObject {
     Q_OBJECT
 public:
+    explicit AniListEnums(QObject *parent = nullptr) : QObject(parent) {}
+
+
     enum MediaStatus {
         CANCELLED,
         FINISHED,
@@ -26,5 +29,4 @@ public:
         NO_VOTE,
         UP_VOTE
     }; Q_ENUM(ReviewRating);
-
 };

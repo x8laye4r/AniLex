@@ -1,3 +1,13 @@
-query GetAiringScheduleQuery() {
-
+query GetAiringScheduleQuery($page: Int, $perPage: Int, $aired: Boolean = false) {
+    Page(page: $page, perPage: $perPage) {
+        airingSchedules(notYetAired: $aired, sort: TIME) {
+            id
+            airingAt
+            timeUntilAiring
+            episode
+            media{
+                __replace_custom_entries__
+            }
+        }
+    }
 }

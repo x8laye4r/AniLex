@@ -1,0 +1,9 @@
+mutation ($customLists: [String]) {
+    UpdateUser (animeListOptions: {customLists: $customLists}) {
+        mediaListOptions {
+            animeList {
+                customLists
+            }
+        }
+    }
+}

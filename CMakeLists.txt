@@ -136,7 +136,6 @@ target_link_libraries(${PROJECT_NAME}_TEST PRIVATE
         anilex_lib
         Qt6::Test
 )
-message(STATUS "Qt6Test_DIR = ${Qt6Test_DIR}")
 
 # Don't know if I need them
 qt_add_resources(${PROJECT_NAME}_TEST "anilex_assets"

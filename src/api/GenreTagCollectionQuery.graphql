@@ -1,4 +1,4 @@
-query GenreTagCollection {
+query GenreTagCollectionQuery {
     GenreCollection
     MediaTagCollection {
         id

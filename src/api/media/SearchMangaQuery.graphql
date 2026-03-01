@@ -1,4 +1,4 @@
-query GetMedia(
+query SearchMangaQuery(
     $page: Int,
     $perPage: Int,
     $startDate: FuzzyDateInt,

@@ -1,0 +1,11 @@
+query GetTrendingMoreQuery($page: Int, $perPage: Int, $type: MediaType) {
+    Page(page: $page, perPage: $perPage) {
+        media(sort: TRENDING_DESC, type: $type) {
+            id
+            __replace_custom_trea_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}
