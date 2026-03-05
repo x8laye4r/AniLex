@@ -22,7 +22,9 @@ private:
 
     QLabel *picture_container = nullptr;
 
-    Collapsable *collapsable_ = nullptr;
+    Section *collapsable_ = nullptr;
+
+    QVBoxLayout *layout2 = nullptr;
 
     void setupUI();
     void setupConnections();

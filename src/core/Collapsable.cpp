@@ -1,11 +1,10 @@
+#include <QPropertyAnimation>
+
 #include "anilex/core/Collapsable.h"
 
-#include <QPropertyAnimation>
-#include <QDebug>
-
-
-Collapsable::Collapsable(const QString &title, const int animationDuration, QWidget *parent)
-    : QWidget(parent), animationDuration(animationDuration) {
+Section::Section(const QString & title, const int animationDuration, QWidget* parent)
+    : QWidget(parent), animationDuration(animationDuration)
+{
     toggleButton = new QToolButton(this);
     headerLine = new QFrame(this);
     toggleAnimation = new QParallelAnimationGroup(this);
@@ -23,11 +22,13 @@ Collapsable::Collapsable(const QString &title, const int animationDuration, QWid
     headerLine->setFrameShadow(QFrame::Sunken);
     headerLine->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
+    contentArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     contentArea->setMaximumHeight(0);
     contentArea->setMinimumHeight(0);
 
-    toggleAnimation->addAnimation(new QPropertyAnimation(this, "maximumHeight"));
     toggleAnimation->addAnimation(new QPropertyAnimation(this, "minimumHeight"));
+    toggleAnimation->addAnimation(new QPropertyAnimation(this, "maximumHeight"));
     toggleAnimation->addAnimation(new QPropertyAnimation(contentArea, "maximumHeight"));
 
     mainLayout->setVerticalSpacing(0);
@@ -39,36 +40,20 @@ Collapsable::Collapsable(const QString &title, const int animationDuration, QWid
     mainLayout->addWidget(contentArea, row, 0, 1, 3);
     setLayout(mainLayout);
 
-    connect(toggleButton, &QToolButton::toggled, this, &Collapsable::toggle);
+    QObject::connect(toggleButton, &QToolButton::clicked, [this](const bool checked)
+    {
+        toggleButton->setArrowType(checked ? Qt::ArrowType::DownArrow : Qt::ArrowType::RightArrow);
+        toggleAnimation->setDirection(checked ? QAbstractAnimation::Forward : QAbstractAnimation::Backward);
+        toggleAnimation->start();
+    });
 }
 
-void Collapsable::toggle(bool collapsed) {
-    toggleButton->setArrowType(collapsed ? Qt::ArrowType::DownArrow : Qt::ArrowType::RightArrow);
-    toggleAnimation->setDirection(collapsed ? QAbstractAnimation::Forward : QAbstractAnimation::Backward);
-    toggleAnimation->start();
-
-    isExpanded = collapsed;
-
-    qInfo() << "MV: toggle: collapsed:" << isExpanded;
-}
-
-void Collapsable::setContentLayout(QLayout &contentLayout) {
+void Section::setContentLayout(QLayout & contentLayout)
+{
     delete contentArea->layout();
-
     contentArea->setLayout(&contentLayout);
-    collapsedHeight = sizeHint().height() - contentArea->maximumHeight();
-
-    updateHeights();
-}
-
-void Collapsable::setTitle(QString title)
-{
-    toggleButton->setText(std::move(title));
-}
-
-void Collapsable::updateHeights()
-{
-    int contentHeight = contentArea->layout()->sizeHint().height();
+    const auto collapsedHeight = sizeHint().height() - contentArea->maximumHeight();
+    auto contentHeight = contentLayout.sizeHint().height();
 
     for (int i = 0; i < toggleAnimation->animationCount() - 1; ++i)
     {
@@ -82,7 +67,4 @@ void Collapsable::updateHeights()
     contentAnimation->setDuration(animationDuration);
     contentAnimation->setStartValue(0);
     contentAnimation->setEndValue(contentHeight);
-
-    toggleAnimation->setDirection(isExpanded ? QAbstractAnimation::Forward : QAbstractAnimation::Backward);
-    toggleAnimation->start();
 }

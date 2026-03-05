@@ -21,9 +21,15 @@ void MainWindow::setupUI() {
     }
     this->picture_container->setPixmap(pm);
 
-    this->collapsable_ = new Collapsable("Hello World", 100, this);
+    collapsable_ = new Section("Section", 300, this);
 
-    // this->label->setAlignment(Qt::AlignTop | Qt::AlignRight);
+    this->layout2 = new QVBoxLayout(this);
+
+    this->layout2->addWidget(new QLabel("Some Text in Section", collapsable_));
+    this->layout2->addWidget(new QPushButton("Button in Section", collapsable_));
+
+    collapsable_->setContentLayout(*this->layout2);
+
     this->layout->addWidget(label);
     this->layout->addWidget(button);
     this->layout->addWidget(picture_container);
