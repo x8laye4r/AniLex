@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-#include "anilex/core/Collapsable.h"
+#include "Collapsable.h"
 
 
 class MainWindow : public QMainWindow {
@@ -13,7 +13,12 @@ class MainWindow : public QMainWindow {
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
+protected:
+    QString currentUser = nullptr;
+    int userId = 0;
+
 private:
+
     QVBoxLayout *layout = nullptr;
     QWidget *centralWidget = nullptr;
 

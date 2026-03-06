@@ -1,0 +1,22 @@
+query GetVoiceActorsQuery($id: Int, $sort: [UserStatisticsSort]) {
+    User(id: $id) {
+        statistics {
+            anime {
+                staff(sort: $sort) {
+                    staff {
+                        id
+                        name {
+                            userPreferred
+                        }
+                        image {
+                            medium
+                        }
+                    }
+                    count
+                    meanScore
+                    minutesWatched
+                }
+            }
+        }
+    }
+}

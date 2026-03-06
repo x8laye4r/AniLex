@@ -13,7 +13,7 @@ public:
 signals:
     void secretLoaded(const QString &key, const QString &value);
     void secretStored(const QString &key);
-    void secretDeleted(const QString key);
+    void secretDeleted(QString key);
     void errorOccurred(const QString &key, const QString &message);
 
 private:

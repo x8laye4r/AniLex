@@ -1886,7 +1886,7 @@ type Mutation {
     """
 
     Add or remove a like from a likeable type.
-    Returns all the users who liked the same model
+                              Returns all the users who liked the same model
     """
     ToggleLike(
         "The id of the likeable type"

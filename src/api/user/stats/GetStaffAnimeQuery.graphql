@@ -1,0 +1,21 @@
+query GetStaffAnimeQuery($id: Int, $sort: [UserStatisticsSort]) {
+    User(id: $id){
+        statistics {
+            anime {
+                staff(sort: $sort) {
+                    staff {
+                        name {
+                            userPreferred
+                        }
+                        image {
+                            medium
+                        }
+                    }
+                    count
+                    meanScore
+                    minutesWatched
+                }
+            }
+        }
+    }
+}

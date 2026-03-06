@@ -1,0 +1,16 @@
+query GetStudiosAnimeQuery($id: Int, $sort: [UserStatisticsSort]) {
+    User(id: $id) {
+        statistics {
+            anime {
+                studios(sort: $sort) {
+                    studio {
+                        name
+                    }
+                    minutesWatched
+                    meanScore
+                    count
+                }
+            }
+        }
+    }
+}
