@@ -1,6 +1,6 @@
 query GetViewerQuery {
     Viewer {
-        name
         id
+        name
     }
 }

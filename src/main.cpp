@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
     app_anilex.setApplicationName("AniLex");
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
     app_anilex.setApplicationVersion(VERSION_STR);
+    app_anilex.setDesktopFileName("com.example.anilex");
 
     /*
     SecretStorage keyring;
@@ -38,6 +39,7 @@ int main(int argc, char *argv[]) {
     */
 
     Authenticator auth;
+    auth.startAuth();
 
     MainWindow widget;
 
