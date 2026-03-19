@@ -1,47 +1,31 @@
 #include "anilex/ui/MainWindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(const QList<Tab> &tabs, QWidget *parent) : QMainWindow(parent) {
+    // 1. Central Widget erstellen und setzen
+    QWidget *centralWidget = new QWidget(this);
+    this->setCentralWidget(centralWidget);
+
+    // 2. Layout auf das Central Widget setzen, nicht auf das QMainWindow
+    this->layout = new QVBoxLayout(centralWidget);
+
+    // Margins auf 0 setzen, damit der TabBar direkt am Rand klebt
+    this->layout->setContentsMargins(0, 0, 0, 0);
+    this->layout->setSpacing(0);
+
+    this->tabBar = new TabBar(tabs, this);
+
     this->setupUI();
     this->setupConnections();
 }
 
 void MainWindow::setupUI() {
-    this->centralWidget = new QWidget(this);
-    this->setCentralWidget(this->centralWidget);
+    // KEIN Qt::AlignTop hier verwenden, wenn es die volle Breite füllen soll
+    this->layout->addWidget(this->tabBar);
 
-    this->layout = new QVBoxLayout(centralWidget);
-
-    this->label = new QLabel("Test Label", centralWidget);
-    this->button = new QPushButton("Click for Testing", centralWidget);
-
-    this->picture_container = new QLabel(centralWidget);
-    QPixmap pm(":/assets/images/ShiinaV2.jpg");
-    if (pm.isNull()) {
-        qInfo() << "Pixmap could not be loaded!";
-    }
-    this->picture_container->setPixmap(pm);
-
-    collapsable_ = new Section(tr("Section"), 300, this);
-
-    this->layout2 = new QVBoxLayout();
-
-    this->layout2->addWidget(new QLabel(tr("Some Text in Section"), collapsable_));
-    this->layout2->addWidget(new QPushButton(tr("Button in Section"), collapsable_));
-
-    collapsable_->setContentLayout(*this->layout2);
-
-    this->layout->addWidget(label);
-    this->layout->addWidget(button);
-    this->layout->addWidget(picture_container);
-    this->layout->addWidget(collapsable_);
-
-    this->layout->setAlignment(Qt::AlignCenter);
+    // Wenn du willst, dass der TabBar oben bleibt und darunter Platz für anderes ist:
+    // Nutze einen Spacer am Ende
+    this->layout->addStretch(1);
 }
 
 void MainWindow::setupConnections() {
-    connect(this->button, &QPushButton::clicked, this, &MainWindow::onButtonClick);
-}
-
-void MainWindow::onButtonClick() {
-    qInfo() << "Button was Clicked";
 }

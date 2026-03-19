@@ -65,4 +65,3 @@ Any contribution, no matter how small, is welcome!
 Contact me via:
 - E-Mail: **contact@mail.x8laye4r.net**
 - Discord: **x8laye4r**
-

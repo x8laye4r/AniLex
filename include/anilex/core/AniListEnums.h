@@ -3,7 +3,7 @@
 #include <QVariant>
 
 /***
- * Still figuring out how this works with ENUMS in Qt
+ * @brief Still figuring out how this works with ENUMS in Qt
 ***/
 class AniListEnums : public QObject {
     Q_OBJECT

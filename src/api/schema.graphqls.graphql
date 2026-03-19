@@ -1094,7 +1094,7 @@ type Media {
     "The genres of the media"
     genres: [String]
     "Official Twitter hashtags for the media"
-    hashtag: String
+    Official Twitter hashtags for hashtag: String
     "The id of the media"
     id: Int!
     "The mal id of the media"

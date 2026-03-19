@@ -7,7 +7,9 @@
 
 #include "anilex/core/AniListEnums.h"
 #include "anilex/core/SecretStorage.h"
-#include "AniListApi.h"
+// #include "AniListApi.h"
+#include <QFile>
+
 #include "anilex/core/Authenticator.h"
 
 template<typename T>
@@ -20,6 +22,14 @@ QString enumToString(const T value) {
 }
 
 
+void loadStylesheet(QApplication &app) {
+    QFile file(":/assets/styles/main.qss");
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&file);
+        app.setStyleSheet(in.readAll());
+    }
+}
+
 int main(int argc, char *argv[]) {
     QApplication app_anilex(argc, argv);
 
@@ -27,7 +37,7 @@ int main(int argc, char *argv[]) {
     app_anilex.setApplicationName("AniLex");
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
     app_anilex.setApplicationVersion(VERSION_STR);
-    app_anilex.setDesktopFileName("com.example.anilex");
+    // app_anilex.setDesktopFileName("com.example.anilex");
 
     /*
     SecretStorage keyring;
@@ -38,10 +48,19 @@ int main(int argc, char *argv[]) {
     // keyring.getSecret("auth");
     */
 
-    Authenticator auth;
-    auth.startAuth();
+    //Authenticator auth;
+    //auth.startAuth();
 
-    MainWindow widget;
+    loadStylesheet(app_anilex);
+
+    QList<Tab> tabs;
+    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
+    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
+    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
+    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
+    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
+
+    MainWindow widget(tabs);
 
     widget.show();
 
