@@ -5,23 +5,28 @@
 #include <QList>
 #include <QString>
 #include <QStackedLayout>
+#include <QButtonGroup>
+
+#include "Collapsable.h"
 #include "anilex/core/Tabs.h"
 
 class TabBar : public QWidget {
     Q_OBJECT
 private:
-    QFrame *tabBar = nullptr;
-    QVBoxLayout *layout = nullptr;
     QList<Tab> tabs;
+    QFrame *container = nullptr;
+    QHBoxLayout *layout = nullptr;
+    QButtonGroup *buttonGroup = nullptr;
 
     void setupUI();
     void setupConnections();
 
 public:
     explicit TabBar(const QList<Tab> &tabs, QWidget *parent = nullptr);
+    void addTab(const Tab &tab);
 
 signals:
-    void tabSwitched(int index);
+    void tabChanged(int index);
 };
 
 #endif //ANILEX_TABBAR_H

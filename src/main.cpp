@@ -54,11 +54,11 @@ int main(int argc, char *argv[]) {
     loadStylesheet(app_anilex);
 
     QList<Tab> tabs;
-    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
-    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
-    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
-    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
-    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/home.png")});
+    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/Home.png")});
+    tabs.append((Tab){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.png")});
+    tabs.append((Tab){.name = "BROWSE", .icon = QString(":/assets/icons/Browse.png")});
+    tabs.append((Tab){.name = "SEARCH", .icon = QString(":/assets/icons/Search.png")});
+    tabs.append((Tab){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.png")});
 
     MainWindow widget(tabs);
 
