@@ -1,43 +1,64 @@
 #include "anilex/ui/TabBar.h"
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QButtonGroup>
 
-TabBar::TabBar(const QList<Tab> &tabs, QWidget *parent)
-    : QWidget(parent) {
+namespace TabBarConf {
+    struct TabBar {
+        static constexpr uint maxHeight = 100;
+    };
+}
+
+TabBar::TabBar(const QList<Tab> &tabs, const uint animation_duration, QWidget *parent)
+    : QWidget(parent), animation_duration(animation_duration) {
+
+    setupUi();
+    setupConnections();
+    addTabs(tabs);
+
+    if (!tabButtons.isEmpty()) {
+        tabButtons.first()->setChecked(true);
+    }
+}
+
+void TabBar::addTabs(const QList<Tab> &tabs) {
+    for (int i = 0; i < tabs.size(); ++i) {
+        addTab(tabs.at(i), i);
+    }
+}
+
+void TabBar::setupUi() {
+    QHBoxLayout *baseLayout = new QHBoxLayout(this);
+    baseLayout->setContentsMargins(0, 0, 0, 0);
 
     container = new QFrame(this);
     container->setObjectName("navbarContainer");
+    baseLayout->addWidget(container);
 
     layout = new QHBoxLayout(container);
-    layout->setContentsMargins(10, 0, 10, 0);
-    layout->setSpacing(5);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     buttonGroup = new QButtonGroup(this);
     buttonGroup->setExclusive(true);
 
-    for (const auto &tab : tabs) {
-        addTab(tab);
-    }
-
-    QHBoxLayout *baseLayout = new QHBoxLayout(this);
-    baseLayout->setContentsMargins(0, 0, 0, 0);
-    baseLayout->addWidget(container);
-
-    connect(buttonGroup, &QButtonGroup::idClicked, this, &TabBar::tabChanged);
+    this->setMaximumHeight(TabBarConf::TabBar::maxHeight);
 }
 
-void TabBar::addTab(const Tab &tab) {
-    QPushButton *btn = new QPushButton(tab.name);
-    btn->setCheckable(true);
+void TabBar::setupConnections() {
+    connect(buttonGroup, &QButtonGroup::idClicked, this, &TabBar::tabChanged);
+    connect(buttonGroup, &QButtonGroup::buttonToggled, this, &TabBar::onButtonToggled);
+}
 
-    int id = buttonGroup->buttons().size();
-    if (id == 0) btn->setChecked(true);
-
-    buttonGroup->addButton(btn, id);
-    layout->addWidget(btn);
-
-    if (!tabs.contains(tab)) {
-        tabs.append(tab);
+void TabBar::onButtonToggled(QAbstractButton *btn, bool checked) {
+    TabButton *tabBtn = qobject_cast<TabButton *>(btn);
+    if (tabBtn) {
+        checked ? tabBtn->moveDown() : tabBtn->reset();
     }
+}
+
+void TabBar::addTab(const Tab &tab, int index) {
+    TabButton *btn = new TabButton(tab.name, tab.icon, animation_duration, this);
+
+    layout->addWidget(btn);
+    tabButtons.append(btn);
+    buttonGroup->addButton(btn, index);
 }

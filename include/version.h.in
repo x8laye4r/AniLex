@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+    This file is auto generated via cmake
+**/
+
 #define VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 #define VERSION_MINOR @PROJECT_VERSION_MINOR@
 #define VERSION_PATCH @PROJECT_VERSION_PATCH@

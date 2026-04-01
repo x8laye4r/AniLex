@@ -30,6 +30,10 @@ void loadStylesheet(QApplication &app) {
     }
 }
 
+/*
+ * TODO: Redo all icons to make them look better
+ */
+
 int main(int argc, char *argv[]) {
     QApplication app_anilex(argc, argv);
 
@@ -54,11 +58,11 @@ int main(int argc, char *argv[]) {
     loadStylesheet(app_anilex);
 
     QList<Tab> tabs;
-    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/Home.png")});
-    tabs.append((Tab){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.png")});
-    tabs.append((Tab){.name = "BROWSE", .icon = QString(":/assets/icons/Browse.png")});
-    tabs.append((Tab){.name = "SEARCH", .icon = QString(":/assets/icons/Search.png")});
-    tabs.append((Tab){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.png")});
+    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/Home.svg")});
+    tabs.append((Tab){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.svg")});
+    tabs.append((Tab){.name = "BROWSE", .icon = QString(":/assets/icons/Browse.svg")});
+    tabs.append((Tab){.name = "SEARCH", .icon = QString(":/assets/icons/Search.svg")});
+    tabs.append((Tab){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
 
     MainWindow widget(tabs);
 

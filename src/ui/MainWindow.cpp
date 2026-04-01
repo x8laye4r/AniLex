@@ -1,31 +1,48 @@
 #include "anilex/ui/MainWindow.h"
 
+#define MINIMUM_HEIGHT 400
+#define MINIMUM_WIDTH 600
+#define ANIMATION_DURATION 400
+
 MainWindow::MainWindow(const QList<Tab> &tabs, QWidget *parent) : QMainWindow(parent) {
-    // 1. Central Widget erstellen und setzen
     QWidget *centralWidget = new QWidget(this);
     this->setCentralWidget(centralWidget);
 
-    // 2. Layout auf das Central Widget setzen, nicht auf das QMainWindow
     this->layout = new QVBoxLayout(centralWidget);
 
-    // Margins auf 0 setzen, damit der TabBar direkt am Rand klebt
-    this->layout->setContentsMargins(0, 0, 0, 0);
-    this->layout->setSpacing(0);
+    this->tabBar = new TabBar(tabs, ANIMATION_DURATION, this);
+    this->stackedLayout = new QStackedLayout();
 
-    this->tabBar = new TabBar(tabs, this);
-
-    this->setupUI();
+    this->setupUI(tabs);
+    this->setMinimumSize(QSize(MINIMUM_WIDTH, MINIMUM_HEIGHT));
     this->setupConnections();
 }
 
-void MainWindow::setupUI() {
-    // KEIN Qt::AlignTop hier verwenden, wenn es die volle Breite füllen soll
+void MainWindow::setupUI(const QList<Tab> &tabs) {
+    this->layout->setContentsMargins(0, 0, 0, 0);
+    this->layout->setSpacing(0);
+
     this->layout->addWidget(this->tabBar);
 
-    // Wenn du willst, dass der TabBar oben bleibt und darunter Platz für anderes ist:
-    // Nutze einen Spacer am Ende
-    this->layout->addStretch(1);
+    this->layout->addLayout(this->stackedLayout, 1);
+
+    for (const auto &tab : tabs) {
+        QWidget *page = createPage(tab.name);
+        this->stackedLayout->addWidget(page);
+    }
 }
 
 void MainWindow::setupConnections() {
+    connect(this->tabBar, &TabBar::tabChanged, this->stackedLayout, &QStackedLayout::setCurrentIndex);
+}
+
+QWidget* MainWindow::createPage(const QString &text) {
+    QWidget *pageWidget = new QWidget();
+    QVBoxLayout *pageLayout = new QVBoxLayout(pageWidget);
+
+    QLabel *label = new QLabel(text);
+    label->setAlignment(Qt::AlignCenter);
+
+    pageLayout->addWidget(label);
+    return pageWidget;
 }
