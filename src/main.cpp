@@ -11,6 +11,7 @@
 #include <QFile>
 
 #include "anilex/core/Authenticator.h"
+#include "anilex/core/GlobalSettings.h"
 
 template<typename T>
 QString enumToString(const T value) {
@@ -37,10 +38,14 @@ void loadStylesheet(QApplication &app) {
 int main(int argc, char *argv[]) {
     QApplication app_anilex(argc, argv);
 
+    GlobalSettings::instance().setValue("Network/Port", 8080);
+
     // Application Settings
     app_anilex.setApplicationName("AniLex");
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
     app_anilex.setApplicationVersion(VERSION_STR);
+    app_anilex.setOrganizationName("x8laye4r");
+
     // app_anilex.setDesktopFileName("com.example.anilex");
 
     /*
@@ -68,5 +73,5 @@ int main(int argc, char *argv[]) {
 
     widget.show();
 
-    return app_anilex.exec();
+    return QApplication::exec();
 }
