@@ -2,7 +2,7 @@
 
 namespace TabBarConf {
     struct TabBar {
-        static constexpr uint maxHeight = 100;
+        static constexpr uint maxHeight = 160;
     };
 }
 
@@ -14,6 +14,7 @@ TabBar::TabBar(const QList<Tab> &tabs, const uint animation_duration, QWidget *p
     addTabs(tabs);
 
     if (!tabButtons.isEmpty()) {
+        tabButtons.first()->moveDownImmediately();
         tabButtons.first()->setChecked(true);
     }
 }

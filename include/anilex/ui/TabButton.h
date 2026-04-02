@@ -67,5 +67,8 @@ protected:
 
 public slots:
     void moveDown();
+
+    void moveDownImmediately();
+
     void reset();
 };

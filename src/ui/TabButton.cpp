@@ -8,7 +8,7 @@ namespace TabBtnConf {
     struct Tab {
         static constexpr float fontSize = 0.18f;
         static constexpr float svgSize = 0.35f;
-        static constexpr float textPadding = 0.12f;
+        static constexpr float textPadding = 0.1f;
         static constexpr float spacing = 0.05f;
         static constexpr float sizeDiff = 0.15f;
         static constexpr float moveDownMultiplier = 0.30f;
@@ -17,8 +17,8 @@ namespace TabBtnConf {
         static constexpr int svgMax = 45;
         static constexpr int textMin = 12;
         static constexpr int textMax = 22;
-        static constexpr int heightMin = 50;
-        static constexpr int heightMax = 100;
+        static constexpr int heightMin = 75;
+        static constexpr int heightMax = 150;
         static constexpr int padding = 8;
     };
 }
@@ -69,6 +69,24 @@ void TabButton::moveDown() {
     const int svgSize = qBound(TabBtnConf::Tab::svgMin, static_cast<int>(this->height() * TabBtnConf::Tab::svgSize),
                                TabBtnConf::Tab::svgMax);
     int targetDy = svgSize * TabBtnConf::Tab::moveDownMultiplier;
+
+    group->addAnimation(createAnimation("dy", dy, targetDy));
+    group->addAnimation(createAnimation("alpha", alpha, 255));
+    group->addAnimation(createAnimation("sizeDiff", sizeDiff, this->height() * TabBtnConf::Tab::sizeDiff));
+
+    group->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void TabButton::moveDownImmediately() {
+    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
+
+    const int svgSize = qBound(TabBtnConf::Tab::svgMin, static_cast<int>(this->height() * TabBtnConf::Tab::svgSize),
+                               TabBtnConf::Tab::svgMax);
+    int targetDy = svgSize * TabBtnConf::Tab::moveDownMultiplier;
+
+    dy = targetDy;
+    alpha = 255;
+    sizeDiff = this->height() * TabBtnConf::Tab::sizeDiff;
 
     group->addAnimation(createAnimation("dy", dy, targetDy));
     group->addAnimation(createAnimation("alpha", alpha, 255));

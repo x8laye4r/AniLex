@@ -2,7 +2,7 @@
 
 #define MINIMUM_HEIGHT 400
 #define MINIMUM_WIDTH 600
-#define ANIMATION_DURATION 400
+#define ANIMATION_DURATION 500
 
 MainWindow::MainWindow(const QList<Tab> &tabs, QWidget *parent) : QMainWindow(parent) {
     QWidget *centralWidget = new QWidget(this);
