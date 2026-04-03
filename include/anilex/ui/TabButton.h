@@ -4,18 +4,18 @@
 #include <QResizeEvent>
 #include <QPushButton>
 #include <QString>
+#include "interfaces/AbstractTab.h"
 
 /**
  * @class TabButton
- * @brief A self-made TabButton with custom animations with SVG Icons support. Is used for the TabBar
+ * @brief A self-made TabButton with custom animations and support for SVG Icons
  *
- * The class is using the Q_PROPERTY for the animations so the buttons resize and move down by clicking them.
- * It is also resizing itself via the height of the widget
+ * This class implements the @ref AbstractTab interface. It uses Q_PROPERTY to make the animations for the
+ * tabs smooth for opacity, vertical movement and resizing it
  *
- * @note Is painted in a custom paintEvent()
- *
+ * @note rendering is handled int custom @ref paintEvent()
  */
-class TabButton : public QPushButton {
+class TabButton : public AbstractTab {
     Q_OBJECT
     /** @property dy: property for the vertical movement **/
     Q_PROPERTY(int dy READ getDy WRITE setDy)
@@ -28,26 +28,21 @@ private:
     QSvgRenderer *renderer = nullptr;
     double sizeDiff = 0.0; // modifier for the making the circle bigger
 
-    QPropertyAnimation* createAnimation(const QByteArray &name, const int start, const int end);
-    void setupUi(const QString &text);
-
     int dy = 0; // modifier for the y-axis moving of the circle
     int alpha = 0; // modifier for the alpha channel for the circle
-    const int ANIMATION_DURATION;
-
-    bool active = false;
 
 public:
     /**
      * @param text Text which is shown
      * @param icon path to the icon which should be displayed
-     * @param animation_duration duration of the animation
      * @param parent parent widget
      */
-    explicit TabButton(const QString &text, const QString &icon, const int animation_duration = 500,
-                       QWidget *parent = nullptr);
+    explicit TabButton(const QString &text, const QString &icon, QWidget *parent = nullptr);
 
-    // needed for the Q_PROPERTY so the animation works
+    /**
+     * @name property accessors
+     * Required for QPropertyAnimations
+     * @{ */
     void setDy(int val) { dy = val; update(); }
     int getDy() const { return dy; }
 
@@ -56,19 +51,23 @@ public:
 
     void setSizeDiff(double val) { sizeDiff = val; update(); }
     double getSizeDiff() const { return sizeDiff; }
-
-
-    void toggleActive() { active = !active; }
-    bool isActive() const { return active; }
+    /** @} */
 
 protected:
+    /**
+     * @brief custom paint event to draw the svg and draw a circle around the picture
+     */
     void paintEvent(QPaintEvent* event) override;
+    /** handles the rescaling of the font and height */
     void resizeEvent(QResizeEvent* event) override;
+    /** @brief is setting up the ui */
+    void setupUi() override;
 
 public slots:
-    void moveDown();
-
-    void moveDownImmediately();
-
-    void reset();
+    /** @brief triggers the entry animation of the tab */
+    void startAnimation() override;
+    /** @brief triggers the exit animation of the tab */
+    void endAnimation() override;
+    /** @brief sets the tab to the final animated state */
+    void animationInstant() override;
 };

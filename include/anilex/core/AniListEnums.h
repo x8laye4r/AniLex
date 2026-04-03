@@ -2,14 +2,13 @@
 #include <QObject>
 #include <QVariant>
 
-/***
+/**
  * @brief Still figuring out how this works with ENUMS in Qt
-***/
+*/
 class AniListEnums : public QObject {
     Q_OBJECT
 public:
     explicit AniListEnums(QObject *parent = nullptr) : QObject(parent) {}
-
 
     enum MediaStatus {
         CANCELLED,

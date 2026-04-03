@@ -1,4 +1,7 @@
 #include "anilex/ui/TabBar.h"
+#include <QTimer>
+#include "anilex/ui/TabButtonSimple.h"
+#include <QStackedLayout>
 
 namespace TabBarConf {
     struct TabBar {
@@ -6,22 +9,20 @@ namespace TabBarConf {
     };
 }
 
-TabBar::TabBar(const QList<Tab> &tabs, const uint animation_duration, QWidget *parent)
-    : QWidget(parent), animation_duration(animation_duration) {
+TabBar::TabBar(const QList<TabMeta> &tabs, QWidget *parent)
+    : AbstractTabBar(parent){
+    timer = new QTimer(this);
+    timer->setSingleShot(true);
+    timer->setInterval(GlobalSettings::instance().value("Animation/duration", 500).toInt());
 
-    setupUi();
-    setupConnections();
+    TabBar::setupUi();
+    TabBar::setupConnections();
+
     addTabs(tabs);
 
     if (!tabButtons.isEmpty()) {
-        tabButtons.first()->moveDownImmediately();
+        tabButtons.first()->animationInstant();
         tabButtons.first()->setChecked(true);
-    }
-}
-
-void TabBar::addTabs(const QList<Tab> &tabs) {
-    for (int i = 0; i < tabs.size(); ++i) {
-        addTab(tabs.at(i), i);
     }
 }
 
@@ -45,21 +46,36 @@ void TabBar::setupUi() {
 }
 
 void TabBar::setupConnections() {
-    connect(buttonGroup, &QButtonGroup::idClicked, this, &TabBar::tabChanged);
-    connect(buttonGroup, &QButtonGroup::buttonToggled, this, &TabBar::onButtonToggled);
+    connect(timer, &QTimer::timeout, this, [this]() {
+        this->tabChanged(pendingIndex);
+    });
+
+    connect(buttonGroup, &QButtonGroup::idClicked, this, [this](int index) {
+        pendingIndex = index;
+        timer->start();
+    });
+
+    connect(buttonGroup, &QButtonGroup::buttonToggled, this, &TabBar::onButtonClicked);
 }
 
-void TabBar::onButtonToggled(QAbstractButton *btn, bool checked) {
-    TabButton *tabBtn = qobject_cast<TabButton *>(btn);
-    if (tabBtn) {
-        checked ? tabBtn->moveDown() : tabBtn->reset();
+
+void TabBar::onButtonClicked(QAbstractButton *btn, bool checked) {
+    TabButton *tab = qobject_cast<TabButton *>(btn);
+
+    if (tab) {
+        checked ? tab->startAnimation() : tab->endAnimation();
     }
 }
 
-void TabBar::addTab(const Tab &tab, int index) {
-    TabButton *btn = new TabButton(tab.name, tab.icon, animation_duration, this);
+void TabBar::addTabs(const QList<TabMeta> &tabs) {
+    for (int i = 0; i < tabs.size(); ++i) {
+        addTab(tabs.at(i), i);
+    }
+}
 
-    layout->addWidget(btn);
-    tabButtons.append(btn);
-    buttonGroup->addButton(btn, index);
+void TabBar::addTab(const TabMeta &tab, int index) {
+        TabButton *btn = new TabButton(tab.name, tab.icon, this);
+        layout->addWidget(btn);
+        tabButtons.append(btn);
+        buttonGroup->addButton(btn, index);
 }

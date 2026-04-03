@@ -23,17 +23,15 @@ namespace TabBtnConf {
     };
 }
 
-TabButton::TabButton(const QString &text, const QString &icon, const int animation_duration, QWidget *parent)
-    : QPushButton(parent), ANIMATION_DURATION(animation_duration) {
-
-    setupUi(text);
+TabButton::TabButton(const QString &text, const QString &icon, QWidget *parent)
+    : AbstractTab(text, parent) {
 
     renderer = new QSvgRenderer(icon, this);
+    this->TabButton::setupUi();
 }
 
-void TabButton::setupUi(const QString &text) {
+void TabButton::setupUi() {
     this->setObjectName("tabButton");
-    this->setText(text);
     this->setMinimumHeight(TabBtnConf::Tab::heightMin);
     this->setCheckable(true);
 }
@@ -54,16 +52,7 @@ void TabButton::resizeEvent(QResizeEvent *event) {
     this->setMaximumHeight(qMin(this->width(), TabBtnConf::Tab::heightMax));
 }
 
-QPropertyAnimation * TabButton::createAnimation(const QByteArray &name, const int start, const int end) {
-    QPropertyAnimation *animation = new QPropertyAnimation(this, name);
-    animation->setDuration(ANIMATION_DURATION);
-    animation->setStartValue(start);
-    animation->setEndValue(end);
-    animation->setEasingCurve(QEasingCurve::OutCubic);
-    return animation;
-}
-
-void TabButton::moveDown() {
+void TabButton::startAnimation() {
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
 
     const int svgSize = qBound(TabBtnConf::Tab::svgMin, static_cast<int>(this->height() * TabBtnConf::Tab::svgSize),
@@ -77,9 +66,7 @@ void TabButton::moveDown() {
     group->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void TabButton::moveDownImmediately() {
-    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
-
+void TabButton::animationInstant() {
     const int svgSize = qBound(TabBtnConf::Tab::svgMin, static_cast<int>(this->height() * TabBtnConf::Tab::svgSize),
                                TabBtnConf::Tab::svgMax);
     int targetDy = svgSize * TabBtnConf::Tab::moveDownMultiplier;
@@ -87,15 +74,9 @@ void TabButton::moveDownImmediately() {
     dy = targetDy;
     alpha = 255;
     sizeDiff = this->height() * TabBtnConf::Tab::sizeDiff;
-
-    group->addAnimation(createAnimation("dy", dy, targetDy));
-    group->addAnimation(createAnimation("alpha", alpha, 255));
-    group->addAnimation(createAnimation("sizeDiff", sizeDiff, this->height() * TabBtnConf::Tab::sizeDiff));
-
-    group->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void TabButton::reset() {
+void TabButton::endAnimation() {
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
 
     group->addAnimation(createAnimation("dy", dy, 0));
@@ -130,7 +111,7 @@ void TabButton::paintEvent(QPaintEvent *event) {
         QRectF bgRect(x - offset, y - offset, size, size);
 
         QLinearGradient gradient(bgRect.topLeft(), bgRect.bottomLeft());
-        QColor c1(0x101010); // TODO: Make it so you can choose the colors
+        QColor c1(0x101010); // TODO Make it so you can choose the colors
         QColor c2(0x191919);
         c1.setAlpha(alpha);
         c2.setAlpha(alpha);

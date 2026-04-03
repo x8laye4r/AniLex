@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <qexception.h>
 #include <anilex/ui/MainWindow.h>
-#include <../include/anilex/ui/Collapsable.h>
 #include <version.h>
 #include <QString>
 
@@ -62,12 +61,12 @@ int main(int argc, char *argv[]) {
 
     loadStylesheet(app_anilex);
 
-    QList<Tab> tabs;
-    tabs.append((Tab){.name = "HOME", .icon = QString(":/assets/icons/Home.svg")});
-    tabs.append((Tab){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.svg")});
-    tabs.append((Tab){.name = "BROWSE", .icon = QString(":/assets/icons/Browse.svg")});
-    tabs.append((Tab){.name = "SEARCH", .icon = QString(":/assets/icons/Search.svg")});
-    tabs.append((Tab){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
+    QList<TabMeta> tabs;
+    tabs.append((TabMeta){.name = "HOME", .icon = QString(":/assets/icons/Home.svg")});
+    tabs.append((TabMeta){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.svg")});
+    tabs.append((TabMeta){.name = "BROWSE", .icon = QString(":/assets/icons/Browse.svg")});
+    tabs.append((TabMeta){.name = "SEARCH", .icon = QString(":/assets/icons/Search.svg")});
+    tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
 
     MainWindow widget(tabs);
 

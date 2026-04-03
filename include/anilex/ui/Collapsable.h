@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QFrame>
 #include <QGridLayout>
 #include <QParallelAnimationGroup>
@@ -7,15 +6,17 @@
 #include <QToolButton>
 #include <QWidget>
 
+/**
+ *
+ */
 class Section : public QWidget {
     Q_OBJECT
 private:
-
-    QGridLayout* mainLayout;
-    QToolButton* toggleButton;
-    QFrame* headerLine;
-    QParallelAnimationGroup* toggleAnimation;
-    QScrollArea* contentArea;
+    QGridLayout* mainLayout = nullptr;
+    QToolButton* toggleButton = nullptr;
+    QFrame* headerLine = nullptr;
+    QParallelAnimationGroup* toggleAnimation = nullptr;
+    QScrollArea* contentArea = nullptr;
     int animationDuration;
 
 public:
