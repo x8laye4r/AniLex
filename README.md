@@ -42,6 +42,7 @@ If you're not a programmer and have no idea about coding, look here in the Notio
 ## Used in this Project
 - C++20
 - Qt6
+- QtKeychain
 
 ---
 
