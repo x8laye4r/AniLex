@@ -5,7 +5,7 @@ QFrame#navbarContainer {
         stop: 0.5 #191919
         stop: 1 #101010
     );
-    border-bottom: 1px solid #333333;
+    border-bottom: 1px solid white;
 }
 
 QPushButton#tabButton {

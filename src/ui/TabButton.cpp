@@ -95,7 +95,7 @@ void TabButton::paintEvent(QPaintEvent *event) {
 
     QPushButton::paintEvent(event);
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     const int svgSize = qBound(TabBtnConf::Tab::svgMin, static_cast<int>(this->height() * TabBtnConf::Tab::svgSize),
                                TabBtnConf::Tab::svgMax);
@@ -122,7 +122,7 @@ void TabButton::paintEvent(QPaintEvent *event) {
             {1.0, c1}
         });
 
-        painter.setPen(QPen(QColor(255, 255, 255, alpha), 1.0)); // This is needed for drawing the outline
+        painter.setPen(QPen(QColor(255, 255, 255, alpha), 2.0)); // This is needed for drawing the outline
 
         painter.setBrush(gradient);
         painter.drawEllipse(bgRect);

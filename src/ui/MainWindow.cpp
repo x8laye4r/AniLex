@@ -13,11 +13,11 @@ static AbstractTabBar* chooseTabBar(const QList<TabMeta> &tabs, QWidget *parent 
     if (tab == "horizontal-complex") {
         return new TabBar(tabs, parent);
     }
-    if (tab == "vertical") {
-        return new VerticalTabBar(tabs, parent);
-    }
     if (tab == "horizontal") {
         return new TabBarSimple(tabs, parent);
+    }
+    if (tab == "vertical") {
+        return new VerticalTabBar(tabs, parent);
     }
     return new TabBar(tabs, parent);
 }

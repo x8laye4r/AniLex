@@ -1,4 +1,6 @@
 #include "anilex/ui/TabBar.h"
+
+#include <QPainter>
 #include <QTimer>
 #include "anilex/ui/TabButtonSimple.h"
 #include <QStackedLayout>

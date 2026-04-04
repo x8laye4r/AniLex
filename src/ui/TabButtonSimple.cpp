@@ -18,6 +18,7 @@ namespace TabBtnConf {
 TabButtonSimple::TabButtonSimple(const QString &text, QWidget *parent)
     : AbstractTab(text, parent) {
     this->TabButtonSimple::setupUi();
+    fontSize = TabBtnConf::Tab::textMin;
 }
 
 void TabButtonSimple::setFontSize(double val) {
@@ -55,7 +56,6 @@ void TabButtonSimple::resizeEvent(QResizeEvent *event) {
 
 void TabButtonSimple::startAnimation() {
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
-    qInfo() << "Starting Animation";
 
     group->addAnimation(createAnimation("fontSize", fontSize, TabBtnConf::Tab::textAnimMax));
 

@@ -1,10 +1,16 @@
 #include "anilex/ui/VerticalTabBar.h"
+
+#include <QPainter>
+
 #include "anilex/ui/TabBar.h"
 #include "anilex/ui/TabButtonSimple.h"
 
 namespace TabBarConf {
     struct TabBar {
+        static constexpr double width = 0.3f;
+
         static constexpr uint maxHeight = 160;
+        static constexpr uint maxWidth = 300;
         static constexpr uint margin = 5;
     };
 }
@@ -44,7 +50,7 @@ void VerticalTabBar::setupUi() {
     indicator->setFixedWidth(3);
     indicator->raise();
 
-    this->setFixedWidth(160);
+    this->setFixedWidth(qMin(static_cast<uint>(this->window()->width() * TabBarConf::TabBar::width), TabBarConf::TabBar::maxWidth));
     this->setMaximumHeight(16777215);
 }
 
@@ -100,6 +106,7 @@ void VerticalTabBar::resizeEvent(QResizeEvent *event) {
     AbstractTabBar::resizeEvent(event);
     if (auto *activeBtn = qobject_cast<TabButtonSimple*>(buttonGroup->checkedButton())) {
         updateIndicator(activeBtn, true);
+        this->setFixedWidth(qMin(static_cast<uint>(this->window()->width() * TabBarConf::TabBar::width), TabBarConf::TabBar::maxWidth));
     }
 }
 
