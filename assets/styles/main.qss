@@ -1,0 +1,32 @@
+QFrame#navbarContainer {
+    background: qlineargradient(
+        x1: 1, y1: 1, x2: 0, y2: 0,
+        stop: 0 #101010,
+        stop: 0.5 #191919
+        stop: 1 #101010
+    );
+    border-bottom: 1px solid white;
+}
+
+QPushButton#tabButton {
+    font-weight: bold;
+    text-align: top;
+    background: transparent;
+    border-radius: none;
+}
+
+QPushButton#tabButtonSimple {
+    font-weight: bold;
+    text-align: center;
+    background: transparent;
+    border-radius: none;
+}
+
+QWidget#indicator {
+    background-color: #0078D4;
+}
+
+QFrame#tabBarBackground {
+   background-color: #1a1a1a;
+   border-bottom: 1px solid #333333;
+}

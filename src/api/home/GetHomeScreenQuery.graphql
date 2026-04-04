@@ -1,4 +1,4 @@
-query GetHomeScreenQuery($seasonYear: Int, $season: MediaSeason, $nextSeasonYear: Int, $nextSeason: MediaSeason) {
+query GetHomeScreenQuery($seasonYear: Int, $season: MediaSeason, $nextSeason: MediaSeason) {
     # =================
     # TRENDING
     # =================
@@ -82,7 +82,7 @@ query GetHomeScreenQuery($seasonYear: Int, $season: MediaSeason, $nextSeasonYear
         }
     }
     nextSeasonAnime: Page(page: 1, perPage: 25) {
-        media(seasonYear: $nextSeasonYear, season: $season, type: ANIME) {
+        media(seasonYear: $seasonYear, season: $nextSeason, type: ANIME) {
             id
             __replace_custom_nsea_entries__
         }
@@ -100,7 +100,7 @@ query GetHomeScreenQuery($seasonYear: Int, $season: MediaSeason, $nextSeasonYear
         }
     }
     nextSeasonManga: Page(page: 1, perPage: 25) {
-        media(seasonYear: $nextSeasonYear, season: $season, type: MANGA) {
+        media(seasonYear: $seasonYear, season: $nextSeason, type: MANGA) {
             id
             __replace_custom_nsem_entries__
         }

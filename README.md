@@ -42,6 +42,7 @@ If you're not a programmer and have no idea about coding, look here in the Notio
 ## Used in this Project
 - C++20
 - Qt6
+- QtKeychain
 
 ---
 
@@ -65,4 +66,3 @@ Any contribution, no matter how small, is welcome!
 Contact me via:
 - E-Mail: **contact@mail.x8laye4r.net**
 - Discord: **x8laye4r**
-

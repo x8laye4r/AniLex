@@ -12,6 +12,9 @@ query GetMediaRecomRelatQuery($id: Int, $page: Int, $perPage: Int) {
                     }
                 }
             }
+            pageInfo {
+                ...PageInfo
+            }
         }
         relations {
             edges {
@@ -23,6 +26,9 @@ query GetMediaRecomRelatQuery($id: Int, $page: Int, $perPage: Int) {
                         medium
                     }
                 }
+            }
+            pageInfo {
+                ...PageInfo
             }
         }
     }

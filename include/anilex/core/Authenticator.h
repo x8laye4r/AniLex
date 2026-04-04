@@ -6,6 +6,9 @@
 #include <QNetworkAccessManager>
 #include "anilex/core/SecretStorage.h"
 
+/**
+ * Just tested to get authenticated
+ */
 class Authenticator : public QObject {
     Q_OBJECT
 private:

@@ -11,7 +11,7 @@ set(CMAKE_AUTOUIC ON)
 
 include(FetchContent)
 
-find_package(Qt6 6.10.1 REQUIRED COMPONENTS Core Gui Widgets Network Test)
+find_package(Qt6 6.10.1 REQUIRED COMPONENTS Core Gui Widgets Network Test Svg)
 
 if(Qt6Core_VERSION VERSION_LESS "6.10.1")
     message(WARNING
@@ -95,6 +95,7 @@ target_link_libraries(anilex_lib PUBLIC
         Qt6::Gui
         Qt6::Widgets
         Qt6::Network
+        Qt6::Svg
 )
 
 if(ANILEX_KEYCHAIN_LIB)

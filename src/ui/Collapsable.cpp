@@ -1,6 +1,6 @@
 #include <QPropertyAnimation>
 
-#include "../../include/anilex/ui/Collapsable.h"
+#include "anilex/ui/Collapsable.h"
 
 Section::Section(const QString & title, const int animationDuration, QWidget* parent)
     : QWidget(parent), animationDuration(animationDuration)

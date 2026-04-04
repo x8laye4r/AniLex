@@ -1,14 +1,16 @@
 #include <QApplication>
 #include <qexception.h>
 #include <anilex/ui/MainWindow.h>
-#include <../include/anilex/ui/Collapsable.h>
 #include <version.h>
 #include <QString>
 
 #include "anilex/core/AniListEnums.h"
 #include "anilex/core/SecretStorage.h"
-#include "AniListApi.h"
+// #include "AniListApi.h"
+#include <QFile>
+
 #include "anilex/core/Authenticator.h"
+#include "anilex/core/GlobalSettings.h"
 
 template<typename T>
 QString enumToString(const T value) {
@@ -20,14 +22,30 @@ QString enumToString(const T value) {
 }
 
 
+void loadStylesheet(QApplication &app) {
+    QFile file(":/assets/styles/main.qss");
+    if (file.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&file);
+        app.setStyleSheet(in.readAll());
+    }
+}
+
+/*
+ * TODO: Redo all icons to make them look better
+ */
+
 int main(int argc, char *argv[]) {
     QApplication app_anilex(argc, argv);
+
+    GlobalSettings::instance().setValue("Network/Port", 8080);
 
     // Application Settings
     app_anilex.setApplicationName("AniLex");
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
     app_anilex.setApplicationVersion(VERSION_STR);
-    app_anilex.setDesktopFileName("com.example.anilex");
+    app_anilex.setOrganizationName("x8laye4r");
+
+    // app_anilex.setDesktopFileName("com.example.anilex");
 
     /*
     SecretStorage keyring;
@@ -38,12 +56,21 @@ int main(int argc, char *argv[]) {
     // keyring.getSecret("auth");
     */
 
-    Authenticator auth;
-    auth.startAuth();
+    //Authenticator auth;
+    //auth.startAuth();
 
-    MainWindow widget;
+    loadStylesheet(app_anilex);
+
+    QList<TabMeta> tabs;
+    tabs.append((TabMeta){.name = "HOME", .icon = QString(":/assets/icons/Home.svg")});
+    tabs.append((TabMeta){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.svg")});
+    tabs.append((TabMeta){.name = "BROWSE", .icon = QString(":/assets/icons/Browse.svg")});
+    tabs.append((TabMeta){.name = "SEARCH", .icon = QString(":/assets/icons/Search.svg")});
+    tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
+
+    MainWindow widget(tabs);
 
     widget.show();
 
-    return app_anilex.exec();
+    return QApplication::exec();
 }

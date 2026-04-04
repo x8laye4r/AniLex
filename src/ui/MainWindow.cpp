@@ -1,47 +1,80 @@
 #include "anilex/ui/MainWindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-    this->setupUI();
+#include "anilex/ui/TabBarSimple.h"
+#include "anilex/ui/VerticalTabBar.h"
+
+#define MINIMUM_HEIGHT 400
+#define MINIMUM_WIDTH 600
+
+// TODO trying to make a nice fade in fade out animation for the QStackedLayout
+
+static AbstractTabBar* chooseTabBar(const QList<TabMeta> &tabs, QWidget *parent = nullptr) {
+    QByteArray tab = GlobalSettings::instance().value("Settings/TabBar", "horizontal-complex").toByteArray();
+    if (tab == "horizontal-complex") {
+        return new TabBar(tabs, parent);
+    }
+    if (tab == "horizontal") {
+        return new TabBarSimple(tabs, parent);
+    }
+    if (tab == "vertical") {
+        return new VerticalTabBar(tabs, parent);
+    }
+    return new TabBar(tabs, parent);
+}
+
+MainWindow::MainWindow(const QList<TabMeta> &tabs, QWidget *parent) : QMainWindow(parent) {
+    QWidget *centralWidget = new QWidget(this);
+    this->setCentralWidget(centralWidget);
+
+    tabBar = chooseTabBar(tabs, this);
+    this->stackedLayout = new QStackedLayout();
+    this->stackedLayout->setObjectName("stackedLayout");
+
+    this->setupUI(tabs);
+    this->setMinimumSize(QSize(MINIMUM_WIDTH, MINIMUM_HEIGHT));
     this->setupConnections();
 }
 
-void MainWindow::setupUI() {
-    this->centralWidget = new QWidget(this);
-    this->setCentralWidget(this->centralWidget);
+void MainWindow::setupUI(const QList<TabMeta> &tabs) {
+    QByteArray direction = GlobalSettings::instance().value("Settings/TabBar", "horizontal-complex").toByteArray();
 
-    this->layout = new QVBoxLayout(centralWidget);
-
-    this->label = new QLabel("Test Label", centralWidget);
-    this->button = new QPushButton("Click for Testing", centralWidget);
-
-    this->picture_container = new QLabel(centralWidget);
-    QPixmap pm(":/assets/images/ShiinaV2.jpg");
-    if (pm.isNull()) {
-        qInfo() << "Pixmap could not be loaded!";
+    if (this->centralWidget()->layout()) {
+        delete this->centralWidget()->layout();
     }
-    this->picture_container->setPixmap(pm);
 
-    collapsable_ = new Section(tr("Section"), 300, this);
+    if (direction == "vertical") {
+        QHBoxLayout *hLayout = new QHBoxLayout(this->centralWidget());
+        hLayout->setContentsMargins(0, 0, 0, 0);
+        hLayout->setSpacing(0);
+        hLayout->addWidget(this->tabBar);
+        hLayout->addLayout(this->stackedLayout, 1);
+        this->layout = hLayout;
+    } else {
+        QVBoxLayout *vLayout = new QVBoxLayout(this->centralWidget());
+        vLayout->setContentsMargins(0, 0, 0, 0);
+        vLayout->setSpacing(0);
+        vLayout->addWidget(this->tabBar);
+        vLayout->addLayout(this->stackedLayout, 1);
+        this->layout = vLayout;
+    }
 
-    this->layout2 = new QVBoxLayout();
-
-    this->layout2->addWidget(new QLabel(tr("Some Text in Section"), collapsable_));
-    this->layout2->addWidget(new QPushButton(tr("Button in Section"), collapsable_));
-
-    collapsable_->setContentLayout(*this->layout2);
-
-    this->layout->addWidget(label);
-    this->layout->addWidget(button);
-    this->layout->addWidget(picture_container);
-    this->layout->addWidget(collapsable_);
-
-    this->layout->setAlignment(Qt::AlignCenter);
+    for (const auto &tab : tabs) {
+        this->stackedLayout->addWidget(createPage(tab.name));
+    }
 }
 
 void MainWindow::setupConnections() {
-    connect(this->button, &QPushButton::clicked, this, &MainWindow::onButtonClick);
+    connect(this->tabBar, &AbstractTabBar::tabChanged, this->stackedLayout, &QStackedLayout::setCurrentIndex);
 }
 
-void MainWindow::onButtonClick() {
-    qInfo() << "Button was Clicked";
+QWidget* MainWindow::createPage(const QString &text) {
+    QWidget *pageWidget = new QWidget();
+    QVBoxLayout *pageLayout = new QVBoxLayout(pageWidget);
+    pageLayout->setContentsMargins(0, 0, 0, 0);
+
+    QLabel *label = new QLabel(text);
+    label->setAlignment(Qt::AlignCenter);
+
+    pageLayout->addWidget(label);
+    return pageWidget;
 }

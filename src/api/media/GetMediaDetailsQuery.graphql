@@ -17,7 +17,7 @@ query GetMediaDetailsQuery($id: Int) {
         volumes
         countryOfOrigin
         source
-        hashtag
+        hasOfficial Twitter hashtags for htag
         studios {
             edges {
                 isMain

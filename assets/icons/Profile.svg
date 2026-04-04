@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="10mm"
+   height="10mm"
+   viewBox="0 0 10 10"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (ebf0e94, 2025-05-08)"
+   sodipodi:docname="Profile.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showguides="true"
+     inkscape:zoom="8.0328441"
+     inkscape:cx="9.1499348"
+     inkscape:cy="20.727403"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <sodipodi:guide
+       position="4.774545,8.9999997"
+       orientation="0,1"
+       id="guide1"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="5.7527445,0.99999997"
+       orientation="0,1"
+       id="guide2"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="0.99999997,5.341907"
+       orientation="-1,0"
+       id="guide3"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="8.9999997,4.7363549"
+       orientation="-1,0"
+       id="guide4"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#000000;fill-opacity:0;stroke:#ffffff;stroke-width:0.499999;stroke-linejoin:round"
+       id="rect5"
+       width="7.9999995"
+       height="8.1982431"
+       x="1.0000008"
+       y="6.4980397"
+       ry="2.1543679" />
+    <circle
+       style="fill:#000000;fill-opacity:0;stroke:#ffffff;stroke-width:0.499999;stroke-linejoin:round"
+       id="path5"
+       cx="5"
+       cy="3.0495608"
+       r="2.4454987" />
+  </g>
+</svg>

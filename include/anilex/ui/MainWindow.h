@@ -1,40 +1,28 @@
 #pragma once
-
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QPushButton>
-
+#include <QStackedLayout>
 #include "Collapsable.h"
-
+#include "TabBar.h"
+#include "TabButton.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(const QList<TabMeta> &tabs, QWidget *parent = nullptr);
 
 protected:
     QString currentUser = nullptr;
     int userId = 0;
 
 private:
+    QLayout *layout = nullptr;
+    AbstractTabBar *tabBar = nullptr;
+    QStackedLayout *stackedLayout = nullptr;
 
-    QVBoxLayout *layout = nullptr;
-    QWidget *centralWidget = nullptr;
-
-    QLabel *label = nullptr;
-    QPushButton *button = nullptr;
-
-    QLabel *picture_container = nullptr;
-
-    Section *collapsable_ = nullptr;
-
-    QVBoxLayout *layout2 = nullptr;
-
-    void setupUI();
+    void setupUI(const QList<TabMeta> &tabs);
     void setupConnections();
 
-private slots:
-    static void onButtonClick();
+    QWidget* createPage(const QString &text);
 };
-
