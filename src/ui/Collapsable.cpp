@@ -21,9 +21,9 @@ QString iconForState(Section::IconStyle style, bool expanded, bool useAnimatedVa
         }
         case Section::IconStyle::PlusMinus:
             return expanded ? QStringLiteral("−") : QStringLiteral("+");
-        default:
-            return expanded ? QStringLiteral("▼") : QStringLiteral("▶");
     }
+    Q_UNREACHABLE();
+    return QStringLiteral("▶");
 }
 }
 
