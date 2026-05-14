@@ -46,6 +46,7 @@ public:
         int iconSize = 14;
         IconStyle iconStyle = IconStyle::Arrow;
         bool shadowEnabled = false;
+        int shadowBlurRadius = 18;
         bool hoverEffectEnabled = true;
         bool iconAnimationEnabled = true;
         QMargins contentMargins = QMargins(10, 10, 10, 10);
@@ -77,6 +78,7 @@ private:
     int iconSize = 14;
     IconStyle iconStyle = IconStyle::Arrow;
     bool shadowEnabled = false;
+    int shadowBlurRadius = 18;
     bool hoverEffectEnabled = true;
     bool iconAnimationEnabled = true;
     QMargins contentMargins = QMargins(10, 10, 10, 10);
@@ -139,6 +141,9 @@ public:
 
     [[nodiscard]] bool isShadowEnabled() const;
     void setShadowEnabled(bool enabled);
+
+    [[nodiscard]] int getShadowBlurRadius() const;
+    void setShadowBlurRadius(int radius);
 
     [[nodiscard]] bool isHoverEffectEnabled() const;
     void setHoverEffectEnabled(bool enabled);

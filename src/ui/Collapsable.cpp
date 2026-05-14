@@ -5,13 +5,15 @@
 #include "anilex/ui/Collapsable.h"
 
 namespace {
-QString iconForState(Section::IconStyle style, bool expanded, bool animated) {
+constexpr int HOVER_LIGHTNESS_FACTOR = 115;
+
+QString iconForState(Section::IconStyle style, bool expanded, bool useAlternateChevronGlyph) {
     switch (style) {
         case Section::IconStyle::Arrow:
             return expanded ? QStringLiteral("▼") : QStringLiteral("▶");
         case Section::IconStyle::Chevron:
-            return expanded ? (animated ? QStringLiteral("▾") : QStringLiteral("⌄"))
-                            : (animated ? QStringLiteral("▸") : QStringLiteral("›"));
+            return expanded ? (useAlternateChevronGlyph ? QStringLiteral("▾") : QStringLiteral("⌄"))
+                            : (useAlternateChevronGlyph ? QStringLiteral("▸") : QStringLiteral("›"));
         case Section::IconStyle::PlusMinus:
             return expanded ? QStringLiteral("−") : QStringLiteral("+");
     }
@@ -33,6 +35,7 @@ Section::Section(const QString &title, const StyleOptions &styleOptions, const i
       headerHeight(styleOptions.headerHeight), iconColor(styleOptions.iconColor),
       iconSize(styleOptions.iconSize), iconStyle(styleOptions.iconStyle),
       shadowEnabled(styleOptions.shadowEnabled),
+      shadowBlurRadius(styleOptions.shadowBlurRadius),
       hoverEffectEnabled(styleOptions.hoverEffectEnabled),
       iconAnimationEnabled(styleOptions.iconAnimationEnabled),
       contentMargins(styleOptions.contentMargins), contentSpacing(styleOptions.contentSpacing),
@@ -241,6 +244,15 @@ void Section::setShadowEnabled(bool enabled) {
     applyStyle();
 }
 
+int Section::getShadowBlurRadius() const {
+    return shadowBlurRadius;
+}
+
+void Section::setShadowBlurRadius(int radius) {
+    shadowBlurRadius = qMax(0, radius);
+    applyStyle();
+}
+
 bool Section::isHoverEffectEnabled() const {
     return hoverEffectEnabled;
 }
@@ -289,7 +301,7 @@ void Section::applyStyle() {
     const QString headerFg = headerTextColor.name(QColor::HexArgb);
     const QString contentFg = contentTextColor.name(QColor::HexArgb);
     const QString border = borderColor.name(QColor::HexArgb);
-    const QString hoverBg = headerBackgroundColor.lighter(hoverEffectEnabled ? 115 : 100).name(QColor::HexArgb);
+    const QString hoverBg = headerBackgroundColor.lighter(hoverEffectEnabled ? HOVER_LIGHTNESS_FACTOR : 100).name(QColor::HexArgb);
 
     toggleButton->setStyleSheet(QStringLiteral(
         "QToolButton#sectionToggleButton {"
@@ -345,8 +357,7 @@ void Section::applyStyle() {
             setGraphicsEffect(shadow);
         }
 
-        const int shadowBlur = 18;
-        shadow->setBlurRadius(shadowBlur);
+        shadow->setBlurRadius(shadowBlurRadius);
         shadow->setOffset(0, 4);
         shadow->setColor(QColor(0, 0, 0, 100));
     } else {

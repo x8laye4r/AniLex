@@ -26,6 +26,7 @@ void TestSection::styleOptions_areApplied() {
     style.iconSize = 18;
     style.iconStyle = Section::IconStyle::PlusMinus;
     style.shadowEnabled = true;
+    style.shadowBlurRadius = 22;
     style.hoverEffectEnabled = false;
     style.iconAnimationEnabled = false;
     style.sectionSpacing = 6;
@@ -51,6 +52,7 @@ void TestSection::styleOptions_areApplied() {
     QCOMPARE(section.getIconSize(), style.iconSize);
     QCOMPARE(section.getIconStyle(), style.iconStyle);
     QCOMPARE(section.isShadowEnabled(), style.shadowEnabled);
+    QCOMPARE(section.getShadowBlurRadius(), style.shadowBlurRadius);
     QCOMPARE(section.isHoverEffectEnabled(), style.hoverEffectEnabled);
     QCOMPARE(section.isIconAnimationEnabled(), style.iconAnimationEnabled);
     QCOMPARE(section.getSectionSpacing(), style.sectionSpacing);
@@ -88,6 +90,7 @@ void TestSection::setters_updateRuntimeConfiguration() {
     section.setIconStyle(Section::IconStyle::Chevron);
     section.setHoverEffectEnabled(true);
     section.setIconAnimationEnabled(true);
+    section.setShadowBlurRadius(26);
 
     QFont headerFont(QStringLiteral("Sans Serif"), 12, QFont::DemiBold);
     QFont contentFont(QStringLiteral("Sans Serif"), 10, QFont::Medium);
@@ -115,6 +118,7 @@ void TestSection::setters_updateRuntimeConfiguration() {
     QCOMPARE(section.getIconStyle(), Section::IconStyle::Chevron);
     QVERIFY(section.isHoverEffectEnabled());
     QVERIFY(section.isIconAnimationEnabled());
+    QCOMPARE(section.getShadowBlurRadius(), 26);
     QCOMPARE(section.getHeaderFont(), headerFont);
     QCOMPARE(section.getContentFont(), contentFont);
 
