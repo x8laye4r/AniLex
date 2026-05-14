@@ -51,8 +51,8 @@ public:
         bool iconAnimationEnabled = true;
         QMargins contentMargins = QMargins(10, 10, 10, 10);
         int contentSpacing = 8;
-        QFont headerFont = QFont(QStringLiteral("Sans Serif"), 10, QFont::DemiBold);
-        QFont contentFont = QFont(QStringLiteral("Sans Serif"), 10, QFont::Normal);
+        QFont headerFont = QFont(QStringLiteral("Sans"), 10, QFont::DemiBold);
+        QFont contentFont = QFont(QStringLiteral("Sans"), 10, QFont::Normal);
     };
 
 private:
@@ -83,8 +83,8 @@ private:
     bool iconAnimationEnabled = true;
     QMargins contentMargins = QMargins(10, 10, 10, 10);
     int contentSpacing = 8;
-    QFont headerFont = QFont(QStringLiteral("Sans Serif"), 10, QFont::DemiBold);
-    QFont contentFont = QFont(QStringLiteral("Sans Serif"), 10, QFont::Normal);
+    QFont headerFont = QFont(QStringLiteral("Sans"), 10, QFont::DemiBold);
+    QFont contentFont = QFont(QStringLiteral("Sans"), 10, QFont::Normal);
 
     void applyStyle();
     void updateHeaderText(bool expanded);

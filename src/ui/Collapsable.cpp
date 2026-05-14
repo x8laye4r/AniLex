@@ -6,14 +6,19 @@
 
 namespace {
 constexpr int HOVER_LIGHTNESS_FACTOR = 115;
+constexpr int MIN_ICON_SIDE = 12;
+constexpr int ICON_SIDE_PADDING = 6;
 
 QString iconForState(Section::IconStyle style, bool expanded, bool useAlternateChevronGlyph) {
     switch (style) {
         case Section::IconStyle::Arrow:
             return expanded ? QStringLiteral("▼") : QStringLiteral("▶");
-        case Section::IconStyle::Chevron:
-            return expanded ? (useAlternateChevronGlyph ? QStringLiteral("▾") : QStringLiteral("⌄"))
-                            : (useAlternateChevronGlyph ? QStringLiteral("▸") : QStringLiteral("›"));
+        case Section::IconStyle::Chevron: {
+            if (expanded) {
+                return useAlternateChevronGlyph ? QStringLiteral("▾") : QStringLiteral("⌄");
+            }
+            return useAlternateChevronGlyph ? QStringLiteral("▸") : QStringLiteral("›");
+        }
         case Section::IconStyle::PlusMinus:
             return expanded ? QStringLiteral("−") : QStringLiteral("+");
         default:
@@ -366,7 +371,7 @@ void Section::applyStyle() {
 
 void Section::updateHeaderText(bool expanded) {
     const QString icon = iconForState(iconStyle, expanded, iconAnimationEnabled);
-    const int iconSide = qMax(12, iconSize + 6);
+    const int iconSide = qMax(MIN_ICON_SIDE, iconSize + ICON_SIDE_PADDING);
     QPixmap pixmap(iconSide, iconSide);
     pixmap.fill(Qt::transparent);
 

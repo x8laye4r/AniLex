@@ -33,10 +33,10 @@ void TestSection::styleOptions_areApplied() {
     style.contentMargins = QMargins(4, 5, 6, 7);
     style.contentSpacing = 11;
 
-    QFont headerFont(QStringLiteral("Sans Serif"), 11, QFont::Bold);
+    QFont headerFont(QStringLiteral("Sans"), 11, QFont::Bold);
     headerFont.setItalic(true);
     style.headerFont = headerFont;
-    style.contentFont = QFont(QStringLiteral("Sans Serif"), 9, QFont::Normal);
+    style.contentFont = QFont(QStringLiteral("Sans"), 9, QFont::Normal);
 
     Section section(QStringLiteral("Details"), style, 320);
 
@@ -93,8 +93,8 @@ void TestSection::setters_updateRuntimeConfiguration() {
     section.setIconAnimationEnabled(true);
     section.setShadowBlurRadius(26);
 
-    QFont headerFont(QStringLiteral("Sans Serif"), 12, QFont::DemiBold);
-    QFont contentFont(QStringLiteral("Sans Serif"), 10, QFont::Medium);
+    QFont headerFont(QStringLiteral("Sans"), 12, QFont::DemiBold);
+    QFont contentFont(QStringLiteral("Sans"), 10, QFont::Medium);
     section.setHeaderFont(headerFont);
     section.setContentFont(contentFont);
 
