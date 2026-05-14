@@ -8,7 +8,8 @@ local fontStandard = "color: white; font-size: 12;";
 local path = "data.MediaListCollection.lists";
 local fuzzyDate = "year month day";
 
-local DateLabel(desc, fieldName, isFuzzy=false) = {
+local DateLabel(display, desc, fieldName, isFuzzy=false) = {
+    displayName: display,
     type: date,
     role: "text.date",
     desc: desc,
@@ -16,7 +17,8 @@ local DateLabel(desc, fieldName, isFuzzy=false) = {
     graphQL: if isFuzzy then "%s { %s }" % [fieldName, fuzzyDate] else fieldName
 };
 
-local TextLabel(desc, fieldName, graphQL, style=fontStandard, animeOnly=false) = {
+local TextLabel(display, desc, fieldName, graphQL, style=fontStandard, animeOnly=false) = {
+    displayName: display,
     type: text,
     role: "text",
     desc: desc,
@@ -25,7 +27,8 @@ local TextLabel(desc, fieldName, graphQL, style=fontStandard, animeOnly=false) =
     animeOnly: animeOnly
 };
 
-local Scrollable(desc, fieldName, graphQL, scroll = "vert", animeOnly=false) = {
+local Scrollable(display, desc, fieldName, graphQL, scroll = "vert", animeOnly=false) = {
+    displayName: display,
     type: scrollable,
     role: "scroll.%s" % [scroll],
     desc: desc,
@@ -34,7 +37,8 @@ local Scrollable(desc, fieldName, graphQL, scroll = "vert", animeOnly=false) = {
     animeOnly: animeOnly
 };
 
-local Boolean(desc, fieldName, graphQL) = {
+local Boolean(display, desc, fieldName, graphQL) = {
+    displayName: display,
     type: bool,
     role: "bool",
     desc: desc,
@@ -42,7 +46,8 @@ local Boolean(desc, fieldName, graphQL) = {
     graphQL: graphQL,
 };
 
-local Image(desc, fieldName, graphQL, banner=false) = {
+local Image(display, desc, fieldName, graphQL, banner=false) = {
+    displayName: display,
     type: img,
     role: "img.%s" % [if banner then "banner" else "cover"],
     desc: desc,
@@ -51,57 +56,57 @@ local Image(desc, fieldName, graphQL, banner=false) = {
 };
 
 {
-    CompletedAtLabel: DateLabel("When the user finished the entry", "completedAt", true),
-    CreatedAtLabel:   DateLabel("When the user created the entry", "createdAt", false),
-    StartedAtLabel:   DateLabel("When the user started the entry", "startedAt", true),
-    UpdatedAtLabel:   DateLabel("When the user updated the entry", "updatedAt", false),
-    EndDateLabel:     DateLabel("Last official release of the media", "endDate", true),
-    StartDateLabel:   DateLabel("First official release of the media", "startDate", true),
-    IdLabel:          TextLabel("The global id of the media", "id", "id"),
-    MediaIdLabel:     TextLabel("The users id of the media", "mediaId", "mediaId"),
-    NotesLabel:       TextLabel("The users note of the media", "notes", "notes"),
-    PriorityLabel:    TextLabel("Priority the user set for the media", "priority", "priority"),
-    RepeatLabel:      TextLabel("How often the user repeated the media", "repeat", "repeat"),
-    ScoreLabel:       TextLabel("How the user rated the media", "score", "score"),
-    StatusLabel:      TextLabel("Which status the media has for the user", "status", "status"),
-    AverageScoreLabel:TextLabel("The average score of the media", "media.averageScore", "averageScore"),
-    CountryOfOriginLabel:TextLabel("Where the media is from", "media.countryOfOrigin", "countryOfOrigin"),
-    DescriptionLabel: TextLabel("The description of the media", "media.description", "description"),
-    DurationLabel:    TextLabel("Duration of the media", "media.duration", "duration"),
-    FavouritesLabel:  TextLabel("How many favorites the media has", "media.favourites", "favourites"),
-    FormatLabel:      TextLabel("Which format the media has", "media.format", "format"),
-    FormatHashtag:    TextLabel("Official Twitter/X Hashtag", "media.hashtag", "hashtag"),
-    MeanscoreLabel:   TextLabel("The mean score of the media", "media.meanscore", "meanscore"),
-    PopularityLabel:  TextLabel("Popularity of the media", "media.popularity", "popularity"),
-    SeasonLabel:      TextLabel("The season the media released", "media.season", "season"),
-    SeasonYearLabel:  TextLabel("The year the season was released", "media.seasonYear", "seasonYear"),
-    SourceLabel:      TextLabel("The source of the media", "media.source", "source"),
-    TitleLabel:       TextLabel("The title of the media", "media.title.userPreferred", "title { userPreferred }"),
-    TrendingLabel:    TextLabel("How much the media is trending (posts per hour)", "media.trending", "trending"),
-    TypeLabel:        TextLabel("What type the media is", "media.type", "type"),
-    NextAiringEpisodeLabel: TextLabel("The next airing episode of the Anime", "media.nextAiringEpisode.timeUntilAiring", "nextAiringEpisode { timeUntilAiring }", true),
-    TrailerLabel:     TextLabel("Trailer of the media (link only)", "media.trailer.site", "trailer { site }"),
-    AdvancedScoreScrollarea:    Scrollable("Your advanced scores of the media", "advancedScores", "advancedScores"),
-    CustomListsScrollarea:      Scrollable("Custom lists the media is in", "customLists", "customLists"),
-    AiringScheduleScrollarea:   Scrollable("The release dates of all episodes", "media.airingSchedule.nodes.timeUntilAiring", "airingSchedule { nodes { timeUntilAiring episode } }"),
-    ExternalLinksScrollarea:    Scrollable("All the external links of the media", "media.externalLinks.site", "externalLinks { site }"),
-    GenresScrollarea:           Scrollable("All genres of the media", "media.genres", "genres"),
-    RankingsScrollarea:         Scrollable("All the rankings of the media", "media.rankings.context;media.rankings.rank;media.rankings.season;media.rankings.year", "rankings { allTime context rank season year }"),
-    RelationsScrollarea:        Scrollable("All the relations of the media", "media.relations.nodes.title.userPreferred", "relations { nodes { id title { userPreferred } } }"),
-    StaffScrollarea:            Scrollable("The staff of the media (names only)", "media.staff.nodes.name.full", "staff { nodes { name { full } } }"),
-    ScoreDistributionScrollarea:Scrollable("The distribution of the score of the media", "media.scoreStats.scoreDistribution.score;media.scoreStats.scoreDistribution.amount", "scoreStats: stats { scoreDistribution { amount score } }"),
-    StatusDistributionScrollarea:Scrollable("The distribution of the status of the media", "media.statusStats.statusDistribution.status;media.statusStats.statusDistribution.amount", "statusStats: stats { statusDistribution { amount status } }"),
-    StudiosScrollarea:          Scrollable("The names of the studios", "media.studios.nodes.name", "studios { nodes { name } }"),
-    SynonymsScrollarea:         Scrollable("The synonyms of the media", "media.synonyms", "synonyms"),
-    TagsScrollarea:             Scrollable("The Tags of the media", "media.tags.name", "tags { name }"),
-    HiddenFromStatusListIcon:   Boolean("If the media is hidden from status list", "hiddenFromStatusLists", "hiddenFromStatusLists"),
-    PrivateIcon:                Boolean("If the media is set hidden from the public", "private", "private"),
-    IsAdultIcon:                Boolean("If the media is adult", "media.isAdult", "isAdult"),
-    IsFavoriteIcon:             Boolean("If the media is favorited by the user", "media.isFavourite", "isFavourite"),
-    IsLicensedIcon:             Boolean("If the media is somewhere licensed", "media.isLicensed", "isLicensed"),
-    IsLockedIcon:               Boolean("If the media is locked", "media.isLocked", "isLocked"),
-    IsRecommendationLockIcon:   Boolean("If the media is locked for recommendations", "media.isRecommendationBlocked", "isRecommendationBlocked"),
-    IsReviewBlockedIcon:        Boolean("If the media is review blocked", "media.isReviewBlocked", "isReviewBlocked"),
-    CoverImage:                 Image("Cover image of the media", "media.coverImage", "coverImage { extraLarge }"),
-    BannerImage:                Image("Banner image of the media", "media.bannerImage", "bannerImage")
+    CompletedAtLabel: DateLabel("Completed At", "The date the user finished the entry", "completedAt", true),
+    CreatedAtLabel:   DateLabel("Created At", "The date the entry was created", "createdAt", false),
+    StartedAtLabel:   DateLabel("Started At", "The date the user started the entry", "startedAt", true),
+    UpdatedAtLabel:   DateLabel("Updated At", "The date the entry was last updated", "updatedAt", false),
+    EndDateLabel:     DateLabel("End Date", "The final official release date of the media", "endDate", true),
+    StartDateLabel:   DateLabel("Start Date", "The first official release date of the media", "startDate", true),
+    IdLabel:          TextLabel("Global ID", "The unique global identifier for the media", "id", "id"),
+    MediaIdLabel:     TextLabel("Media ID", "The user-specific identifier for the media", "mediaId", "mediaId"),
+    NotesLabel:       TextLabel("Notes", "The user's personal notes regarding the media", "notes", "notes"),
+    PriorityLabel:    TextLabel("Priority", "The priority level set by the user", "priority", "priority"),
+    RepeatLabel:      TextLabel("Repeats", "Number of times the user has repeated the media", "repeat", "repeat"),
+    ScoreLabel:       TextLabel("Score", "The rating given by the user", "score", "score"),
+    StatusLabel:      TextLabel("Status", "The current status of the media for the user", "status", "status"),
+    AverageScoreLabel:TextLabel("Average Score", "The overall average score of the media", "media.averageScore", "averageScore"),
+    CountryOfOriginLabel:TextLabel("Origin", "The country where the media originated", "media.countryOfOrigin", "countryOfOrigin"),
+    DescriptionLabel: TextLabel("Description", "A brief overview or summary of the media", "media.description", "description"),
+    DurationLabel:    TextLabel("Duration", "The total length of the media", "media.duration", "duration"),
+    FavouritesLabel:  TextLabel("Favorites", "Total number of users who favorited the media", "media.favourites", "favourites"),
+    FormatLabel:      TextLabel("Format", "The release format of the media", "media.format", "format"),
+    FormatHashtag:    TextLabel("Hashtag", "The official social media hashtag", "media.hashtag", "hashtag"),
+    MeanscoreLabel:   TextLabel("Mean Score", "The mean score calculated for the media", "media.meanscore", "meanscore"),
+    PopularityLabel:  TextLabel("Popularity", "The popularity ranking of the media", "media.popularity", "popularity"),
+    SeasonLabel:      TextLabel("Season", "The release season of the media", "media.season", "season"),
+    SeasonYearLabel:  TextLabel("Season Year", "The year the release season occurred", "media.seasonYear", "seasonYear"),
+    SourceLabel:      TextLabel("Source", "The original source material of the media", "media.source", "source"),
+    TitleLabel:       TextLabel("Title", "The user's preferred title for the media", "media.title.userPreferred", "title { userPreferred }"),
+    TrendingLabel:    TextLabel("Trending", "Current trending status based on posts per hour", "media.trending", "trending"),
+    TypeLabel:        TextLabel("Type", "The category or type of the media", "media.type", "type"),
+    NextAiringEpisodeLabel: TextLabel("Next Episode", "Information regarding the next scheduled episode", "media.nextAiringEpisode.timeUntilAiring", "nextAiringEpisode { timeUntilAiring }", fontStandard, true),
+    TrailerLabel:     TextLabel("Trailer", "Link to the official media trailer", "media.trailer.site", "trailer { site }"),
+    AdvancedScoreScrollarea:    Scrollable("Advanced Scores", "Detailed user-specific scores", "advancedScores", "advancedScores"),
+    CustomListsScrollarea:      Scrollable("Custom Lists", "Custom user lists containing this media", "customLists", "customLists"),
+    AiringScheduleScrollarea:   Scrollable("Airing Schedule", "Release dates and times for all episodes", "media.airingSchedule.nodes.timeUntilAiring", "airingSchedule { nodes { timeUntilAiring episode } }"),
+    ExternalLinksScrollarea:    Scrollable("External Links", "All associated external links for the media", "media.externalLinks.site", "externalLinks { site }"),
+    GenresScrollarea:           Scrollable("Genres", "All genres associated with the media", "media.genres", "genres"),
+    RankingsScrollarea:         Scrollable("Rankings", "Global and seasonal rankings of the media", "media.rankings.context;media.rankings.rank;media.rankings.season;media.rankings.year", "rankings { allTime context rank season year }"),
+    RelationsScrollarea:        Scrollable("Relations", "All related media entries", "media.relations.nodes.title.userPreferred", "relations { nodes { id title { userPreferred } } }"),
+    StaffScrollarea:            Scrollable("Staff", "The production staff of the media", "media.staff.nodes.name.full", "staff { nodes { name { full } } }"),
+    ScoreDistributionScrollarea:Scrollable("Score Distribution", "The global distribution of user scores", "media.scoreStats.scoreDistribution.score;media.scoreStats.scoreDistribution.amount", "scoreStats: stats { scoreDistribution { amount score } }"),
+    StatusDistributionScrollarea:Scrollable("Status Distribution", "The global distribution of media statuses", "media.statusStats.statusDistribution.status;media.statusStats.statusDistribution.amount", "statusStats: stats { statusDistribution { amount status } }"),
+    StudiosScrollarea:          Scrollable("Studios", "The names of the involved production studios", "media.studios.nodes.name", "studios { nodes { name } }"),
+    SynonymsScrollarea:         Scrollable("Synonyms", "Alternative titles for the media", "media.synonyms", "synonyms"),
+    TagsScrollarea:             Scrollable("Tags", "Metadata tags associated with the media", "media.tags.name", "tags { name }"),
+    HiddenFromStatusListIcon:   Boolean("Hidden", "Whether the media is hidden from the status list", "hiddenFromStatusLists", "hiddenFromStatusLists"),
+    PrivateIcon:                Boolean("Private", "Whether the entry is hidden from public view", "private", "private"),
+    IsAdultIcon:                Boolean("Adult", "Whether the media is classified as adult content", "media.isAdult", "isAdult"),
+    IsFavoriteIcon:             Boolean("Favorite", "Whether the user has favorited this media", "media.isFavourite", "isFavourite"),
+    IsLicensedIcon:             Boolean("Licensed", "Whether the media is officially licensed", "media.isLicensed", "isLicensed"),
+    IsLockedIcon:               Boolean("Locked", "Whether the media entry is locked", "media.isLocked", "isLocked"),
+    IsRecommendationLockIcon:   Boolean("Recommendation Blocked", "Whether the media is blocked for recommendations", "media.isRecommendationBlocked", "isRecommendationBlocked"),
+    IsReviewBlockedIcon:        Boolean("Review Blocked", "Whether reviews are blocked for this media", "media.isReviewBlocked", "isReviewBlocked"),
+    CoverImage:                 Image("Cover Image", "The primary cover image of the media", "media.coverImage", "coverImage { extraLarge }"),
+    BannerImage:                Image("Banner Image", "The background banner image of the media", "media.bannerImage", "bannerImage", true)
 }

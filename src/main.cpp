@@ -11,6 +11,8 @@
 
 #include "anilex/core/Authenticator.h"
 #include "anilex/core/GlobalSettings.h"
+#include "anilex/ui/designer/Designer.h"
+#include "anilex/utils/Helper.h"
 
 template<typename T>
 QString enumToString(const T value) {
@@ -37,8 +39,6 @@ void loadStylesheet(QApplication &app) {
 int main(int argc, char *argv[]) {
     QApplication app_anilex(argc, argv);
 
-    GlobalSettings::instance().setValue("Network/Port", 8080);
-
     // Application Settings
     app_anilex.setApplicationName("AniLex");
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
@@ -59,8 +59,6 @@ int main(int argc, char *argv[]) {
     //Authenticator auth;
     //auth.startAuth();
 
-    loadStylesheet(app_anilex);
-
     QList<TabMeta> tabs;
     tabs.append((TabMeta){.name = "HOME", .icon = QString(":/assets/icons/Home.svg")});
     tabs.append((TabMeta){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.svg")});
@@ -69,8 +67,16 @@ int main(int argc, char *argv[]) {
     tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
 
     MainWindow widget(tabs);
-
     widget.show();
+
+    /*
+    loadStylesheet(app_anilex);
+
+    Designer designer;
+
+    designer.show();
+    */
+
 
     return QApplication::exec();
 }

@@ -80,7 +80,7 @@ endif()
 # ================
 # Build app code as a library so tests can link it
 # ================
-add_library(anilex_lib STATIC
+add_library(anilex_lib SHARED
         ${SOURCES}
         ${HEADERS}
         ${UI_FILES}

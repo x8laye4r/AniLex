@@ -1,0 +1,463 @@
+{
+   "AdvancedScoreScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.advancedScores",
+      "desc": "Detailed user-specific scores",
+      "displayName": "Advanced Scores",
+      "graphQL": "advancedScores",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "AiringScheduleScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.airingSchedule.nodes.timeUntilAiring",
+      "desc": "Release dates and times for all episodes",
+      "displayName": "Airing Schedule",
+      "graphQL": "airingSchedule { nodes { timeUntilAiring episode } }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "AverageScoreLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.averageScore",
+      "desc": "The overall average score of the media",
+      "displayName": "Average Score",
+      "graphQL": "averageScore",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "BannerImage": {
+      "dataSource": "data.MediaListCollection.lists.media.bannerImage",
+      "desc": "The background banner image of the media",
+      "displayName": "Banner Image",
+      "graphQL": "bannerImage",
+      "role": "img.banner",
+      "type": "IMAGE"
+   },
+   "CompletedAtLabel": {
+      "dataSource": "data.MediaListCollection.lists.completedAt",
+      "desc": "The date the user finished the entry",
+      "displayName": "Completed At",
+      "graphQL": "completedAt { year month day }",
+      "role": "text.date",
+      "type": "DATE_TEXT"
+   },
+   "CountryOfOriginLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.countryOfOrigin",
+      "desc": "The country where the media originated",
+      "displayName": "Origin",
+      "graphQL": "countryOfOrigin",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "CoverImage": {
+      "dataSource": "data.MediaListCollection.lists.media.coverImage",
+      "desc": "The primary cover image of the media",
+      "displayName": "Cover Image",
+      "graphQL": "coverImage { extraLarge }",
+      "role": "img.cover",
+      "type": "IMAGE"
+   },
+   "CreatedAtLabel": {
+      "dataSource": "data.MediaListCollection.lists.createdAt",
+      "desc": "The date the entry was created",
+      "displayName": "Created At",
+      "graphQL": "createdAt",
+      "role": "text.date",
+      "type": "DATE_TEXT"
+   },
+   "CustomListsScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.customLists",
+      "desc": "Custom user lists containing this media",
+      "displayName": "Custom Lists",
+      "graphQL": "customLists",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "DescriptionLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.description",
+      "desc": "A brief overview or summary of the media",
+      "displayName": "Description",
+      "graphQL": "description",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "DurationLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.duration",
+      "desc": "The total length of the media",
+      "displayName": "Duration",
+      "graphQL": "duration",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "EndDateLabel": {
+      "dataSource": "data.MediaListCollection.lists.endDate",
+      "desc": "The final official release date of the media",
+      "displayName": "End Date",
+      "graphQL": "endDate { year month day }",
+      "role": "text.date",
+      "type": "DATE_TEXT"
+   },
+   "ExternalLinksScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.externalLinks.site",
+      "desc": "All associated external links for the media",
+      "displayName": "External Links",
+      "graphQL": "externalLinks { site }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "FavouritesLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.favourites",
+      "desc": "Total number of users who favorited the media",
+      "displayName": "Favorites",
+      "graphQL": "favourites",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "FormatHashtag": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.hashtag",
+      "desc": "The official social media hashtag",
+      "displayName": "Hashtag",
+      "graphQL": "hashtag",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "FormatLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.format",
+      "desc": "The release format of the media",
+      "displayName": "Format",
+      "graphQL": "format",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "GenresScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.genres",
+      "desc": "All genres associated with the media",
+      "displayName": "Genres",
+      "graphQL": "genres",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "HiddenFromStatusListIcon": {
+      "dataSource": "data.MediaListCollection.lists.hiddenFromStatusLists",
+      "desc": "Whether the media is hidden from the status list",
+      "displayName": "Hidden",
+      "graphQL": "hiddenFromStatusLists",
+      "role": "bool",
+      "type": "BOOLEAN"
+   },
+   "IdLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.id",
+      "desc": "The unique global identifier for the media",
+      "displayName": "Global ID",
+      "graphQL": "id",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "IsAdultIcon": {
+      "dataSource": "data.MediaListCollection.lists.media.isAdult",
+      "desc": "Whether the media is classified as adult content",
+      "displayName": "Adult",
+      "graphQL": "isAdult",
+      "role": "bool",
+      "type": "BOOLEAN"
+   },
+   "IsFavoriteIcon": {
+      "dataSource": "data.MediaListCollection.lists.media.isFavourite",
+      "desc": "Whether the user has favorited this media",
+      "displayName": "Favorite",
+      "graphQL": "isFavourite",
+      "role": "bool",
+      "type": "BOOLEAN"
+   },
+   "IsLicensedIcon": {
+      "dataSource": "data.MediaListCollection.lists.media.isLicensed",
+      "desc": "Whether the media is officially licensed",
+      "displayName": "Licensed",
+      "graphQL": "isLicensed",
+      "role": "bool",
+      "type": "BOOLEAN"
+   },
+   "IsLockedIcon": {
+      "dataSource": "data.MediaListCollection.lists.media.isLocked",
+      "desc": "Whether the media entry is locked",
+      "displayName": "Locked",
+      "graphQL": "isLocked",
+      "role": "bool",
+      "type": "BOOLEAN"
+   },
+   "IsRecommendationLockIcon": {
+      "dataSource": "data.MediaListCollection.lists.media.isRecommendationBlocked",
+      "desc": "Whether the media is blocked for recommendations",
+      "displayName": "Recommendation Blocked",
+      "graphQL": "isRecommendationBlocked",
+      "role": "bool",
+      "type": "BOOLEAN"
+   },
+   "IsReviewBlockedIcon": {
+      "dataSource": "data.MediaListCollection.lists.media.isReviewBlocked",
+      "desc": "Whether reviews are blocked for this media",
+      "displayName": "Review Blocked",
+      "graphQL": "isReviewBlocked",
+      "role": "bool",
+      "type": "BOOLEAN"
+   },
+   "MeanscoreLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.meanscore",
+      "desc": "The mean score calculated for the media",
+      "displayName": "Mean Score",
+      "graphQL": "meanscore",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "MediaIdLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.mediaId",
+      "desc": "The user-specific identifier for the media",
+      "displayName": "Media ID",
+      "graphQL": "mediaId",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "NextAiringEpisodeLabel": {
+      "animeOnly": true,
+      "dataSource": "data.MediaListCollection.lists.media.nextAiringEpisode.timeUntilAiring",
+      "desc": "Information regarding the next scheduled episode",
+      "displayName": "Next Episode",
+      "graphQL": "nextAiringEpisode { timeUntilAiring }",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "NotesLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.notes",
+      "desc": "The user's personal notes regarding the media",
+      "displayName": "Notes",
+      "graphQL": "notes",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "PopularityLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.popularity",
+      "desc": "The popularity ranking of the media",
+      "displayName": "Popularity",
+      "graphQL": "popularity",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "PriorityLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.priority",
+      "desc": "The priority level set by the user",
+      "displayName": "Priority",
+      "graphQL": "priority",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "PrivateIcon": {
+      "dataSource": "data.MediaListCollection.lists.private",
+      "desc": "Whether the entry is hidden from public view",
+      "displayName": "Private",
+      "graphQL": "private",
+      "role": "bool",
+      "type": "BOOLEAN"
+   },
+   "RankingsScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.rankings.context;media.rankings.rank;media.rankings.season;media.rankings.year",
+      "desc": "Global and seasonal rankings of the media",
+      "displayName": "Rankings",
+      "graphQL": "rankings { allTime context rank season year }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "RelationsScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.relations.nodes.title.userPreferred",
+      "desc": "All related media entries",
+      "displayName": "Relations",
+      "graphQL": "relations { nodes { id title { userPreferred } } }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "RepeatLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.repeat",
+      "desc": "Number of times the user has repeated the media",
+      "displayName": "Repeats",
+      "graphQL": "repeat",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "ScoreDistributionScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.scoreStats.scoreDistribution.score;media.scoreStats.scoreDistribution.amount",
+      "desc": "The global distribution of user scores",
+      "displayName": "Score Distribution",
+      "graphQL": "scoreStats: stats { scoreDistribution { amount score } }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "ScoreLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.score",
+      "desc": "The rating given by the user",
+      "displayName": "Score",
+      "graphQL": "score",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "SeasonLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.season",
+      "desc": "The release season of the media",
+      "displayName": "Season",
+      "graphQL": "season",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "SeasonYearLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.seasonYear",
+      "desc": "The year the release season occurred",
+      "displayName": "Season Year",
+      "graphQL": "seasonYear",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "SourceLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.source",
+      "desc": "The original source material of the media",
+      "displayName": "Source",
+      "graphQL": "source",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "StaffScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.staff.nodes.name.full",
+      "desc": "The production staff of the media",
+      "displayName": "Staff",
+      "graphQL": "staff { nodes { name { full } } }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "StartDateLabel": {
+      "dataSource": "data.MediaListCollection.lists.startDate",
+      "desc": "The first official release date of the media",
+      "displayName": "Start Date",
+      "graphQL": "startDate { year month day }",
+      "role": "text.date",
+      "type": "DATE_TEXT"
+   },
+   "StartedAtLabel": {
+      "dataSource": "data.MediaListCollection.lists.startedAt",
+      "desc": "The date the user started the entry",
+      "displayName": "Started At",
+      "graphQL": "startedAt { year month day }",
+      "role": "text.date",
+      "type": "DATE_TEXT"
+   },
+   "StatusDistributionScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.statusStats.statusDistribution.status;media.statusStats.statusDistribution.amount",
+      "desc": "The global distribution of media statuses",
+      "displayName": "Status Distribution",
+      "graphQL": "statusStats: stats { statusDistribution { amount status } }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "StatusLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.status",
+      "desc": "The current status of the media for the user",
+      "displayName": "Status",
+      "graphQL": "status",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "StudiosScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.studios.nodes.name",
+      "desc": "The names of the involved production studios",
+      "displayName": "Studios",
+      "graphQL": "studios { nodes { name } }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "SynonymsScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.synonyms",
+      "desc": "Alternative titles for the media",
+      "displayName": "Synonyms",
+      "graphQL": "synonyms",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "TagsScrollarea": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.tags.name",
+      "desc": "Metadata tags associated with the media",
+      "displayName": "Tags",
+      "graphQL": "tags { name }",
+      "role": "scroll.vert",
+      "type": "SCROLLABLE"
+   },
+   "TitleLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.title.userPreferred",
+      "desc": "The user's preferred title for the media",
+      "displayName": "Title",
+      "graphQL": "title { userPreferred }",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "TrailerLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.trailer.site",
+      "desc": "Link to the official media trailer",
+      "displayName": "Trailer",
+      "graphQL": "trailer { site }",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "TrendingLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.trending",
+      "desc": "Current trending status based on posts per hour",
+      "displayName": "Trending",
+      "graphQL": "trending",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "TypeLabel": {
+      "animeOnly": false,
+      "dataSource": "data.MediaListCollection.lists.media.type",
+      "desc": "The category or type of the media",
+      "displayName": "Type",
+      "graphQL": "type",
+      "role": "text",
+      "type": "TEXT"
+   },
+   "UpdatedAtLabel": {
+      "dataSource": "data.MediaListCollection.lists.updatedAt",
+      "desc": "The date the entry was last updated",
+      "displayName": "Updated At",
+      "graphQL": "updatedAt",
+      "role": "text.date",
+      "type": "DATE_TEXT"
+   }
+}
