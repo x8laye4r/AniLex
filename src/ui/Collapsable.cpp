@@ -355,7 +355,7 @@ void Section::applyStyle() {
     if (shadowEnabled) {
         auto *shadow = qobject_cast<QGraphicsDropShadowEffect *>(graphicsEffect());
         if (shadow == nullptr) {
-            shadow = new QGraphicsDropShadowEffect(this);
+            shadow = new QGraphicsDropShadowEffect();
             setGraphicsEffect(shadow);
         }
 
