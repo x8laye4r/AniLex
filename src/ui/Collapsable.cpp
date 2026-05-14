@@ -16,8 +16,9 @@ QString iconForState(Section::IconStyle style, bool expanded, bool useAlternateC
                             : (useAlternateChevronGlyph ? QStringLiteral("▸") : QStringLiteral("›"));
         case Section::IconStyle::PlusMinus:
             return expanded ? QStringLiteral("−") : QStringLiteral("+");
+        default:
+            return expanded ? QStringLiteral("▼") : QStringLiteral("▶");
     }
-    return QStringLiteral("▶");
 }
 }
 
@@ -349,10 +350,6 @@ void Section::applyStyle() {
     if (shadowEnabled) {
         auto *shadow = qobject_cast<QGraphicsDropShadowEffect *>(graphicsEffect());
         if (shadow == nullptr) {
-            auto *previousEffect = graphicsEffect();
-            if (previousEffect != nullptr) {
-                delete previousEffect;
-            }
             shadow = new QGraphicsDropShadowEffect(this);
             setGraphicsEffect(shadow);
         }
@@ -361,10 +358,7 @@ void Section::applyStyle() {
         shadow->setOffset(0, 4);
         shadow->setColor(QColor(0, 0, 0, 100));
     } else {
-        auto *effect = graphicsEffect();
-        if (effect != nullptr) {
-            delete effect;
-        }
+        setGraphicsEffect(nullptr);
     }
 
     updateHeaderText(toggleButton->isChecked());

@@ -64,6 +64,7 @@ void TestSection::styleOptions_areApplied() {
     auto *button = section.findChild<QToolButton *>(QStringLiteral("sectionToggleButton"));
     QVERIFY(button != nullptr);
     QCOMPARE(button->minimumHeight(), style.headerHeight);
+    QVERIFY(!button->isChecked());
 }
 
 void TestSection::setters_updateRuntimeConfiguration() {
