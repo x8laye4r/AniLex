@@ -334,15 +334,26 @@ void Section::applyStyle() {
             .arg(border)
             .arg(borderRadius));
 
-    const int shadowBlur = shadowEnabled ? 18 : 0;
-    if (shadowBlur > 0) {
-        auto *shadow = new QGraphicsDropShadowEffect(this);
+    if (shadowEnabled) {
+        auto *shadow = qobject_cast<QGraphicsDropShadowEffect *>(graphicsEffect());
+        if (shadow == nullptr) {
+            auto *previousEffect = graphicsEffect();
+            if (previousEffect != nullptr) {
+                delete previousEffect;
+            }
+            shadow = new QGraphicsDropShadowEffect(this);
+            setGraphicsEffect(shadow);
+        }
+
+        const int shadowBlur = 18;
         shadow->setBlurRadius(shadowBlur);
         shadow->setOffset(0, 4);
         shadow->setColor(QColor(0, 0, 0, 100));
-        setGraphicsEffect(shadow);
     } else {
-        setGraphicsEffect(nullptr);
+        auto *effect = graphicsEffect();
+        if (effect != nullptr) {
+            delete effect;
+        }
     }
 
     updateHeaderText(toggleButton->isChecked());
@@ -371,8 +382,9 @@ void Section::updateHeaderText(bool expanded) {
 
 void Section::updateAnimationTimings() {
     for (int i = 0; i < toggleAnimation->animationCount(); ++i) {
-        auto *animation = static_cast<QPropertyAnimation *>(toggleAnimation->animationAt(i));
-        animation->setDuration(animationDuration);
+        if (auto *animation = qobject_cast<QPropertyAnimation *>(toggleAnimation->animationAt(i)); animation != nullptr) {
+            animation->setDuration(animationDuration);
+        }
     }
 }
 
@@ -381,12 +393,15 @@ void Section::refreshContentMetrics() {
     const auto contentHeight = contentWidget->sizeHint().height();
 
     for (int i = 0; i < toggleAnimation->animationCount() - 1; ++i) {
-        auto *sectionAnimation = static_cast<QPropertyAnimation *>(toggleAnimation->animationAt(i));
-        sectionAnimation->setStartValue(collapsedHeight);
-        sectionAnimation->setEndValue(collapsedHeight + contentHeight);
+        if (auto *sectionAnimation = qobject_cast<QPropertyAnimation *>(toggleAnimation->animationAt(i)); sectionAnimation != nullptr) {
+            sectionAnimation->setStartValue(collapsedHeight);
+            sectionAnimation->setEndValue(collapsedHeight + contentHeight);
+        }
     }
 
-    auto *contentAnimation = static_cast<QPropertyAnimation *>(toggleAnimation->animationAt(toggleAnimation->animationCount() - 1));
-    contentAnimation->setStartValue(0);
-    contentAnimation->setEndValue(contentHeight);
+    if (auto *contentAnimation = qobject_cast<QPropertyAnimation *>(toggleAnimation->animationAt(toggleAnimation->animationCount() - 1));
+        contentAnimation != nullptr) {
+        contentAnimation->setStartValue(0);
+        contentAnimation->setEndValue(contentHeight);
+    }
 }
