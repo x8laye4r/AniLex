@@ -125,6 +125,10 @@ void TestSection::setters_updateRuntimeConfiguration() {
 
     QCOMPARE(layout->contentsMargins(), QMargins(1, 2, 3, 4));
     QCOMPARE(layout->spacing(), 7);
+
+    auto *contentWidget = section.findChild<QWidget *>(QStringLiteral("sectionContentWidget"));
+    QVERIFY(contentWidget != nullptr);
+    QVERIFY(contentWidget->styleSheet().contains(QStringLiteral("ff9ca3af")));
 }
 
 QTEST_MAIN(TestSection)

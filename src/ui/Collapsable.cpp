@@ -9,15 +9,15 @@ constexpr int HOVER_LIGHTNESS_FACTOR = 115;
 constexpr int MIN_ICON_SIDE = 12;
 constexpr int ICON_SIDE_PADDING = 6;
 
-QString iconForState(Section::IconStyle style, bool expanded, bool useAlternateChevronGlyph) {
+QString iconForState(Section::IconStyle style, bool expanded, bool useAnimatedVariant) {
     switch (style) {
         case Section::IconStyle::Arrow:
             return expanded ? QStringLiteral("▼") : QStringLiteral("▶");
         case Section::IconStyle::Chevron: {
             if (expanded) {
-                return useAlternateChevronGlyph ? QStringLiteral("▾") : QStringLiteral("⌄");
+                return useAnimatedVariant ? QStringLiteral("▾") : QStringLiteral("⌄");
             }
-            return useAlternateChevronGlyph ? QStringLiteral("▸") : QStringLiteral("›");
+            return useAnimatedVariant ? QStringLiteral("▸") : QStringLiteral("›");
         }
         case Section::IconStyle::PlusMinus:
             return expanded ? QStringLiteral("−") : QStringLiteral("+");
