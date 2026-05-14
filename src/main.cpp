@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 
     //Authenticator auth;
     //auth.startAuth();
-
+    /*
     QList<TabMeta> tabs;
     tabs.append((TabMeta){.name = "HOME", .icon = QString(":/assets/icons/Home.svg")});
     tabs.append((TabMeta){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.svg")});
@@ -68,15 +68,13 @@ int main(int argc, char *argv[]) {
 
     MainWindow widget(tabs);
     widget.show();
+    */
 
-    /*
     loadStylesheet(app_anilex);
 
     Designer designer;
 
     designer.show();
-    */
-
 
     return QApplication::exec();
 }

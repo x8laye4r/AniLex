@@ -14,7 +14,7 @@
  * category and the value is a QList of associated widgets.
  * @return A QMap grouping widgets into QLists, indexed by their category type
  */
-QMap<QString, QList<QJsonObject>> getDesignerWidgetsCategorized() {
+static QMap<QString, QList<QJsonObject>> getDesignerWidgetsCategorized() {
   QMap<QString, QList<QJsonObject>> categorizedWidgets;
 
   QFile file(":/assets/designer_presets.json");

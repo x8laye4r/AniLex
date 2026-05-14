@@ -1,5 +1,8 @@
 #pragma once
 #include <QFrame>
+#include <QLabel>
+#include <QList>
+#include <QJsonObject>
 
 #include "DesignerWidgetsList.h"
 
@@ -12,9 +15,15 @@ public:
 private:
   DesignerView *m_designerView;
   DesignerWidgetsList *m_widgetList;
+  QLabel *m_widgetListLabel;
+
+  QHBoxLayout *m_frameLayout;
+  QVBoxLayout *m_viewLayout;
 
   void setupUi();
-signals:
-  // void openDesigner();
-  // void closeDesigner();
+
+public slots:
+  void exportWidgetsAsJson();
+  void openDesigner();
+  void closeDesigner();
 };
