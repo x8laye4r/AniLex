@@ -29,7 +29,7 @@ public:
         QMetaEnum metaEnum = QMetaEnum::fromType<T>();
         if (!metaEnum.isValid()) {
             qWarning() << "EnumConverter::toString() - Not a valid Q_ENUM";
-            return QString();
+            return QString("UNKNOWN");
         }
         return QString::fromUtf8(metaEnum.valueToKey(static_cast<int>(value))).toUpper();
     }

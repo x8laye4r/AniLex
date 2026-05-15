@@ -5,6 +5,7 @@
 #include <QJsonObject>
 
 #include "DesignerWidgetsList.h"
+#include "anilex/core/AniListEnums.h"
 
 class DesignerView;
 
@@ -23,7 +24,8 @@ private:
   void setupUi();
 
 public slots:
-  void exportWidgetsAsJson();
+  void exportWidgetsAsJson(AniListEnums::MediaStatus cardToExportFor) const;
   void openDesigner();
   void closeDesigner();
+  void clearView();
 };

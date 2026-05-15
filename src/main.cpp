@@ -12,6 +12,8 @@
 #include "anilex/core/Authenticator.h"
 #include "anilex/core/GlobalSettings.h"
 #include "anilex/ui/designer/Designer.h"
+#include "anilex/ui/designer/DesignerItemFactory.h"
+#include "anilex/ui/designer/item/DesignerTextItem.h"
 #include "anilex/utils/Helper.h"
 
 template<typename T>
@@ -73,6 +75,8 @@ int main(int argc, char *argv[]) {
     loadStylesheet(app_anilex);
 
     Designer designer;
+
+    DesignerItemFactory::instance().printAll();
 
     designer.show();
 
