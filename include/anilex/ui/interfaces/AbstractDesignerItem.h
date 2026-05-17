@@ -9,8 +9,7 @@
 
 class AbstractDesignerItem : public QGraphicsProxyWidget {
   Q_OBJECT
-
-public:
+public:                   
   explicit AbstractDesignerItem(QGraphicsItem *parent = nullptr) : QGraphicsProxyWidget(parent) {
     this->setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
   }
@@ -35,9 +34,30 @@ public:
 
     if (this->isSelected()) {
       painter->save();
+
+      QRectF boundingRect = this->boundingRect();
+
+      // draw outline
       painter->setPen(QPen(Qt::white, 2, Qt::SolidLine));
       painter->setBrush(Qt::NoBrush);
-      painter->drawRect(this->boundingRect());
+      painter->drawRect(boundingRect);
+
+      // draw corner rects to resize
+      const qreal xLeft = boundingRect.left() - 5;
+      const qreal xRight = boundingRect.right() - 5;
+      const qreal yTop = boundingRect.top() - 5;
+      const qreal yBottom = boundingRect.bottom() - 5;
+
+      const QRectF rects[] = {
+        QRectF(xLeft, yTop,    10, 10), // bottom left
+        QRectF(xLeft,yBottom, 10, 10), // top left
+        QRectF(xRight,yTop,    10, 10), // top right
+        QRectF(xRight, yBottom, 10, 10)  // bottom right
+    };
+
+      painter->setBrush(Qt::white);
+      painter->drawRects(rects, std::size(rects));
+
       painter->restore();
     }
   }
@@ -72,9 +92,9 @@ protected:
     QGraphicsProxyWidget::mouseReleaseEvent(event);
   }
 
-private:
+protected:
   QPointF m_dragOffset;
   qreal m_zOrder;
-  DesignerType::DesignerItemType m_designerType;
+  DesignerType::DesignerItemType m_designerType{};
   bool m_drag = false;
 };

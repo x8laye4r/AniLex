@@ -10,7 +10,7 @@ class AniListEnums : public QObject {
 public:
     explicit AniListEnums(QObject *parent = nullptr) : QObject(parent) {}
 
-    enum MediaStatus {
+    enum class MediaStatus {
         CANCELLED,
         FINISHED,
         HIATUS,
@@ -18,12 +18,12 @@ public:
         RELEASING
     }; Q_ENUM(MediaStatus)
 
-    enum MediaType {
+    enum class MediaType {
         ANIME,
         MANGA
     }; Q_ENUM(MediaType)
 
-    enum ReviewRating {
+    enum class ReviewRating {
         DOWN_VOTE,
         NO_VOTE,
         UP_VOTE

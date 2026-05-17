@@ -45,7 +45,6 @@ int main(int argc, char *argv[]) {
     app_anilex.setApplicationName("AniLex");
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
     app_anilex.setApplicationVersion(VERSION_STR);
-    app_anilex.setOrganizationName("x8laye4r");
 
     // app_anilex.setDesktopFileName("com.example.anilex");
 

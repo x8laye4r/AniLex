@@ -1,13 +1,12 @@
 #pragma once
-#include <QFrame>
 #include <QLabel>
-#include <QList>
 #include <QJsonObject>
+#include <QPushButton>
 
-#include "DesignerWidgetsList.h"
+#include "anilex/ui/designer/DesignerWidgetsList.h"
+#include "anilex/ui/designer/DesignerView.h"
 #include "anilex/core/AniListEnums.h"
-
-class DesignerView;
+#include "anilex/ui/designer/DesignerType.h"
 
 class Designer : public QFrame {
   Q_OBJECT
@@ -17,14 +16,19 @@ private:
   DesignerView *m_designerView;
   DesignerWidgetsList *m_widgetList;
   QLabel *m_widgetListLabel;
+  QPushButton *m_exportCardButton;
 
   QHBoxLayout *m_frameLayout;
   QVBoxLayout *m_viewLayout;
+  QVBoxLayout *m_listViewLayout;
+  QVBoxLayout *m_propertiesLayout;
 
-  void setupUi();
+  void setupUi() const;
+  void setupObjectNames();
+  void setupConnections();
 
 public slots:
-  void exportWidgetsAsJson(AniListEnums::MediaStatus cardToExportFor) const;
+  void exportWidgetsAsJson(DesignerType::DesignerCreatorItems cardToExportFor) const;
   void openDesigner();
   void closeDesigner();
   void clearView();
