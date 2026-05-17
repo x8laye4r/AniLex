@@ -12,6 +12,8 @@ namespace {
 
 /*
  * TODO: fix so you can move the items inside the View
+ * fix: make a wrapper for the QGraphicsProxyWidget like a QGraphicsItem post:
+ * https://stackoverflow.com/questions/15413564/make-qgraphicsproxywidget-movable-selectable
  */
 
 DesignerView::DesignerView(QWidget *parent)

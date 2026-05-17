@@ -12,6 +12,7 @@ class AbstractDesignerItem : public QGraphicsProxyWidget {
 public:                   
   explicit AbstractDesignerItem(QGraphicsItem *parent = nullptr) : QGraphicsProxyWidget(parent) {
     this->setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
+    this->setAcceptHoverEvents(false);
   }
 
   virtual QJsonObject toJson() const {
