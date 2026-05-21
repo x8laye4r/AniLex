@@ -5,6 +5,7 @@
 #include <QMimeData>
 
 #include "anilex/ui/designer/DesignerItemFactory.h"
+#include "anilex/ui/designer/item/DesignerWrapperItem.h"
 
 namespace {
   constexpr qreal kAspectRatio = 4.0 / 2.5;
@@ -53,16 +54,22 @@ void DesignerView::dropEvent(QDropEvent *event) {
 
     if (std::unique_ptr<AbstractDesignerItem> newItem = DesignerItemFactory::instance().getItem(type)) {
       QPoint viewPos = event->position().toPoint();
-
       QPointF scenePos = this->mapToScene(viewPos);
 
-      newItem->setPos(scenePos);
-      this->m_scene->addItem(newItem.release());
+      DesignerWrapperItem *wrapperItem = new DesignerWrapperItem();
+      wrapperItem->setRect(newItem->boundingRect());
+      wrapperItem->setPos(scenePos);
+
+      AbstractDesignerItem* rawItem = newItem.release();
+      rawItem->setPos(0, 0);
+      rawItem->setParentItem(wrapperItem);
+
+      this->m_scene->addItem(wrapperItem);
     } else {
       qInfo() << "Could not find designer-item";
     }
     event->acceptProposedAction();
-  }else {
+  } else {
     event->ignore();
   }
 }

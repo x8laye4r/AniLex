@@ -1,7 +1,6 @@
 #pragma once
 #include "anilex/ui/interfaces/AbstractDesignerItem.h"
 
-
 class DesignerTextItem : public AbstractDesignerItem {
   Q_OBJECT
 public:
