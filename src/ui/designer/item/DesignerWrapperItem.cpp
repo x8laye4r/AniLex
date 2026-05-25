@@ -3,7 +3,7 @@
 
 DesignerWrapperItem::DesignerWrapperItem(QGraphicsItem *parent)
   : QGraphicsRectItem(parent), m_signal(new ItemSignalProxy()) {
-  this->setFlags(ItemIsMovable | ItemIsSelectable);
+  this->setFlags(ItemIsMovable | ItemIsSelectable | ItemStacksBehindParent);
   this->setAcceptHoverEvents(true);
 }
 
@@ -56,16 +56,22 @@ QRectF DesignerWrapperItem::getResizeButtonRect(ResizeDirection direction) const
 }
 
 DesignerWrapperItem::ResizeDirection DesignerWrapperItem::getResizeDirection(QPointF clickPos) const {
-  if (getResizeButtonRect(ResizeDirection::TopLeft).contains(clickPos)) {
+  const qreal tolerance = 5.0;
+
+  auto hitBox = [tolerance](const QRectF& rect) {
+    return rect.adjusted(-tolerance, -tolerance, tolerance, tolerance);
+  };
+
+  if (hitBox(getResizeButtonRect(ResizeDirection::TopLeft)).contains(clickPos)) {
     return ResizeDirection::TopLeft;
   }
-  if (getResizeButtonRect(ResizeDirection::TopRight).contains(clickPos)) {
+  if (hitBox(getResizeButtonRect(ResizeDirection::TopRight)).contains(clickPos)) {
     return ResizeDirection::TopRight;
   }
-  if (getResizeButtonRect(ResizeDirection::BottomLeft).contains(clickPos)) {
+  if (hitBox(getResizeButtonRect(ResizeDirection::BottomLeft)).contains(clickPos)) {
     return ResizeDirection::BottomLeft;
   }
-  if (getResizeButtonRect(ResizeDirection::BottomRight).contains(clickPos)) {
+  if (hitBox(getResizeButtonRect(ResizeDirection::BottomRight)).contains(clickPos)) {
     return ResizeDirection::BottomRight;
   }
 
@@ -94,7 +100,7 @@ void DesignerWrapperItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
   if (event->buttons() & Qt::LeftButton && m_resizeDirection != ResizeDirection::None) {
     QPointF delta = event->pos() - m_startDragPosition;
 
-    QRectF resizedRect = this->rect();
+    QRectF resizedRect = m_startRect;
     switch (m_resizeDirection) {
       case ResizeDirection::TopLeft:
         resizedRect.setTopLeft(resizedRect.topLeft() + delta);
@@ -112,14 +118,12 @@ void DesignerWrapperItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
         break;
     }
 
-    constexpr qreal minHeight = 40.0;
-    constexpr qreal minWidth = 40.0;
 
-    if (resizedRect.width() >= minWidth && resizedRect.height() >= minHeight) {
-      this->prepareGeometryChange();
-      this->setRect(resizedRect);
-      m_signal->resizedItem(resizedRect);
-    }
+    resizedRect = resizedRect.normalized();
+
+    this->prepareGeometryChange();
+    this->setRect(resizedRect);
+    emit m_signal->resizedItem(resizedRect);
     event->accept();
   } else {
     QGraphicsRectItem::mouseMoveEvent(event);
@@ -133,6 +137,7 @@ void DesignerWrapperItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (m_resizeDirection != ResizeDirection::None) {
       event->accept();
       m_startDragPosition = event->pos();
+      m_startRect = this->rect();
       return;
     }
   }
@@ -141,4 +146,23 @@ void DesignerWrapperItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
 void DesignerWrapperItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   QGraphicsRectItem::mouseReleaseEvent(event);
+}
+
+QPainterPath DesignerWrapperItem::shape() const {
+  QPainterPath path;
+  path.addRect(this->rect());
+
+  if (isSelected()) {
+    const qreal tolerance = 5.0;
+    auto hitBox = [tolerance](const QRectF& rect) {
+      return rect.adjusted(-tolerance, -tolerance, tolerance, tolerance);
+    };
+
+    path.addRect(hitBox(getResizeButtonRect(ResizeDirection::TopLeft)));
+    path.addRect(hitBox(getResizeButtonRect(ResizeDirection::TopRight)));
+    path.addRect(hitBox(getResizeButtonRect(ResizeDirection::BottomLeft)));
+    path.addRect(hitBox(getResizeButtonRect(ResizeDirection::BottomRight)));
+  }
+
+  return path;
 }

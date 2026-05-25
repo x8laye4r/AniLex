@@ -3,6 +3,7 @@
 #include <QJsonObject>
 #include <QPushButton>
 
+#include "DesignerPropertyEditor.h"
 #include "anilex/ui/designer/DesignerWidgetsList.h"
 #include "anilex/ui/designer/DesignerView.h"
 #include "anilex/core/AniListEnums.h"
@@ -17,6 +18,7 @@ private:
   DesignerWidgetsList *m_widgetList;
   QLabel *m_widgetListLabel;
   QPushButton *m_exportCardButton;
+  DesignerPropertyEditor *m_designerPropertyEditor;
 
   QHBoxLayout *m_frameLayout;
   QVBoxLayout *m_viewLayout;

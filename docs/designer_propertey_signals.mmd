@@ -1,0 +1,45 @@
+sequenceDiagram
+    autonumber
+    actor User
+    participant View as DesignerView
+    participant Scene as QGraphicsScene
+    participant Core as Designer
+    participant Editor as DesignerPropertyEditor
+
+%% Procedure 1: Selecting an item
+    rect gray
+        Note over User, Editor: Widget update and selection
+        User->>View: clicks on widget
+        activate View
+        View->>Scene: reacts on click and updates selection
+        activate Scene
+        Scene-->>Core: emit selectionChanged()
+        deactivate Scene
+        deactivate View
+
+        activate Core
+        Note over Core: check selectable items<br/>(childrenItems + qgraphicsitem_cast)
+        Core->>Editor: send signal with pointer/data of the item
+        deactivate Core
+
+        activate Editor
+        Note over Editor: updates ui with the properties <br/> of the selected item
+        deactivate Editor
+    end
+
+%% Procedure 2: Changing a property value
+    rect gray
+        Note over User, Editor: Update Properties
+        User->>Editor: Changes value in editor
+        activate Editor
+        Editor->>Core: update value via the setProperty() slot
+        deactivate Editor
+
+        activate Core
+        Note over Core: update the property of the selected item
+        Core->>Scene: update()
+        activate Scene
+        Scene-->>View: repaint of widget
+        deactivate Scene
+        deactivate Core
+    end

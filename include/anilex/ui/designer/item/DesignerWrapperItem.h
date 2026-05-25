@@ -4,7 +4,7 @@
 class ItemSignalProxy : public QObject {
   Q_OBJECT
 signals:
-  void resizedItem(QRectF &resizedRect);
+  void resizedItem(const QRectF &resizedRect);
 };
 
 class DesignerWrapperItem : public QGraphicsRectItem {
@@ -22,12 +22,14 @@ protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+  QPainterPath shape() const override;
 private:
   enum class ResizeDirection { None, TopLeft, TopRight, BottomLeft, BottomRight };
 
   static constexpr qreal m_resizeButtonSize = 10.0;
   QPointF m_startDragPosition;
   ResizeDirection m_resizeDirection = ResizeDirection::None;
+  QRectF m_startRect;
 
   ResizeDirection getResizeDirection(QPointF clickPos) const;
   QRectF getResizeButtonRect(ResizeDirection direction) const;

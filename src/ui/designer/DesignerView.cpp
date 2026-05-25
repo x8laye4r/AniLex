@@ -22,11 +22,18 @@ DesignerView::DesignerView(QWidget *parent)
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   setAlignment(Qt::AlignCenter);
   setRenderHint(QPainter::Antialiasing);
-  setDragMode(QGraphicsView::ScrollHandDrag);
+  setDragMode(QGraphicsView::NoDrag);
+
+  // set to no scrollbars
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   m_scene = new QGraphicsScene(this);
   this->setScene(m_scene);
   this->setAcceptDrops(true);
+
+  // set so the view doesn't move and stays in one place
+  this->setSceneRect(this->mapToScene(this->viewport()->rect()).boundingRect());
 }
 
 QSize DesignerView::sizeHint() const {
@@ -63,6 +70,11 @@ void DesignerView::dropEvent(QDropEvent *event) {
       AbstractDesignerItem* rawItem = newItem.release();
       rawItem->setPos(0, 0);
       rawItem->setParentItem(wrapperItem);
+      rawItem->setAcceptedMouseButtons(Qt::NoButton);
+      rawItem->setFlag(QGraphicsItem::ItemIsMovable, false);
+      rawItem->setFlag(QGraphicsItem::ItemIsSelectable, false);
+
+      connect(wrapperItem->m_signal, &ItemSignalProxy::resizedItem, rawItem, &AbstractDesignerItem::resizeRect);
 
       this->m_scene->addItem(wrapperItem);
     } else {

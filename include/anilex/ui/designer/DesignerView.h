@@ -1,5 +1,6 @@
 #pragma once
 #include <QGraphicsView>
+#include "anilex/ui/interfaces/AbstractDesignerItem.h"
 
 class DesignerView : public QGraphicsView {
   Q_OBJECT

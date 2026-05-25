@@ -9,6 +9,12 @@
 
 class AbstractDesignerItem : public QGraphicsProxyWidget {
   Q_OBJECT
+
+public slots:
+  void resizeRect(const QRectF &resizedRect) {
+    this->setPos(resizedRect.topLeft());
+    this->resize(resizedRect.width(), resizedRect.height());
+  }
 public:                   
   explicit AbstractDesignerItem(QGraphicsItem *parent = nullptr) : QGraphicsProxyWidget(parent) {
     this->setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemSendsScenePositionChanges);

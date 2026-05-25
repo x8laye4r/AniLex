@@ -3,6 +3,7 @@
 #include <anilex/ui/MainWindow.h>
 #include <version.h>
 #include <QString>
+#include <QLineEdit>
 
 #include "anilex/core/AniListEnums.h"
 #include "anilex/core/SecretStorage.h"
@@ -72,6 +73,8 @@ int main(int argc, char *argv[]) {
     */
 
     loadStylesheet(app_anilex);
+
+    QLabel test("Hello, World!");
 
     Designer designer;
 
