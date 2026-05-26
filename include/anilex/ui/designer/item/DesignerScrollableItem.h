@@ -1,6 +1,12 @@
 #pragma once
 #include "anilex/ui/interfaces/AbstractDesignerItem.h"
 
+// some macros to for not writing as much
+#define HORIZONTAL_SCROLLBAR_ON(scrollbar) scrollbar->horizontalScrollBarPolicy() == Qt::ScrollBarAsNeeded \
+&& scrollArea->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff
+#define VERTICAL_SCROLLBAR_ON(scrollbar) scrollbar->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff \
+&& scrollArea->verticalScrollBarPolicy() == Qt::ScrollBarAsNeeded
+
 class DesignerScrollableItem : public AbstractDesignerItem {
   Q_OBJECT
 
@@ -13,7 +19,7 @@ class DesignerScrollableItem : public AbstractDesignerItem {
   // properties scrollArea items
   Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor)
   Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
-  Q_PROPERTY(QString itemStylesheet READ itemStylesheet WRITE itemSetStylesheet)
+  Q_PROPERTY(QString itemStylesheet READ itemStylesheet WRITE setItemStylesheet)
   Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment)
   Q_PROPERTY(int margin READ margin WRITE setMargin)
   Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize)
@@ -32,7 +38,7 @@ public:
   void setShowScrollBar(bool show);
 
   QString stylesheet() const;
-  void setStylesheet(QString stylesheet);
+  void setStylesheet(const QString &stylesheet);
 
   QColor textColor() const;
   void setTextColor(QColor color);
@@ -41,7 +47,7 @@ public:
   void setBackgroundColor(QColor color);
 
   QString itemStylesheet() const;
-  void setItemStylesheet(QString stylesheet);
+  void setItemStylesheet(const QString &stylesheet);
 
   Qt::Alignment alignment() const;
   void setAlignment(Qt::Alignment alignment);
@@ -54,4 +60,16 @@ public:
 
   void fromJson(const QJsonObject &json) override;
   QJsonObject toJson() const override;
+
+private:
+  void updateItemsLayout();
+  void updateItemStyle();
+
+  bool m_showScrollBar = true;
+  QColor m_textColor = Qt::black;
+  QColor m_textBackgroundColor = Qt::transparent;
+  QString m_itemStylesheet = "";
+  Qt::Alignment m_alignment = Qt::AlignCenter;
+  int m_margin = 0;
+  int m_fontSize = 0;
 };

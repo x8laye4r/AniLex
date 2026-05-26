@@ -20,6 +20,7 @@ public:
     this->setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
     this->setAcceptHoverEvents(false);
   }
+  virtual ~AbstractDesignerItem() override = default;
 
   virtual QJsonObject toJson() const {
     QJsonObject json;
@@ -34,7 +35,12 @@ public:
     return json;
   }
 
-  virtual void fromJson(const QJsonObject &json) = 0;
+  virtual void fromJson(const QJsonObject &json) {
+    json.contains("type") ? m_designerType = EnumConverter::convertTo<DesignerType::DesignerItemType>(json["type"].toString()) : m_designerType = DesignerType::DesignerItemType::UNKNOWN;
+    json.contains("x") ? this->setX(json["x"].toDouble()) : this->setX(0);
+    json.contains("y") ? this->setY(json["y"].toDouble()) : this->setY(0);
+    json.contains("width") && json.contains("height") ? this->resize(json["width"].toDouble(), json["height"].toDouble()) : this->resize(100, 100);
+  }
 
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
     QGraphicsProxyWidget::paint(painter, option, widget);

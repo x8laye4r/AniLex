@@ -12,6 +12,7 @@ set(CMAKE_AUTOUIC ON)
 include(FetchContent)
 
 find_package(Qt6 6.10.1 REQUIRED COMPONENTS Core Gui Widgets Network Test Svg)
+find_package(Qt6Keychain REQUIRED)
 
 if(Qt6Core_VERSION VERSION_LESS "6.10.1")
     message(WARNING
@@ -20,18 +21,9 @@ if(Qt6Core_VERSION VERSION_LESS "6.10.1")
     )
 endif()
 
-# Fetch QtKeychain for easy Keyring support (Linux needs libsecret installed)
-FetchContent_Declare(
-        qtkeychain
-        GIT_REPOSITORY https://github.com/frankosterfeld/qtkeychain.git
-        GIT_TAG 0.15.0
-)
-
 set(BUILD_WITH_QT6 ON  CACHE BOOL "" FORCE)
 set(BUILD_TEST_APPLICATION OFF CACHE BOOL "" FORCE)
 set(BUILD_TRANSLATIONS OFF CACHE BOOL "" FORCE)
-
-FetchContent_MakeAvailable(qtkeychain)
 
 # ================
 # Set all files
@@ -65,17 +57,6 @@ configure_file(
         @ONLY
 )
 
-# ================
-# Keychain QKeychain helper
-# ================
-set(ANILEX_KEYCHAIN_LIB "")
-if(TARGET Qt6Keychain::Qt6Keychain)
-    set(ANILEX_KEYCHAIN_LIB Qt6Keychain::Qt6Keychain)
-elseif(TARGET qt6keychain)
-    set(ANILEX_KEYCHAIN_LIB qt6keychain)
-else()
-    message(WARNING "Qt6Keychain target not found. Building without keychain support.")
-endif()
 
 # ================
 # Build app code as a library so tests can link it
@@ -98,9 +79,7 @@ target_link_libraries(anilex_lib PUBLIC
         Qt6::Svg
 )
 
-if(ANILEX_KEYCHAIN_LIB)
-    target_link_libraries(anilex_lib PUBLIC ${ANILEX_KEYCHAIN_LIB})
-endif()
+target_link_libraries(anilex_lib PUBLIC Qt6Keychain::Qt6Keychain)
 
 # ================
 # Main executable

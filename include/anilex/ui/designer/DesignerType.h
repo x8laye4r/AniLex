@@ -9,7 +9,8 @@ public:
     DATE_TEXT,
     BOOLEAN,
     IMAGE,
-    SCROLLABLE
+    SCROLLABLE,
+    UNKNOWN
   }; Q_ENUM(DesignerItemType)
 
   enum class DesignerCreatorItems {
