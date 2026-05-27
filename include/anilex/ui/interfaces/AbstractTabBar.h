@@ -1,7 +1,7 @@
 #pragma once
 #include <QFrame>
 #include <QWidget>
-#include "anilex/ui/interfaces/AbstractTab.h"
+#include "AbstractTab.h"
 
 /**
  * @class AbstractTabBar

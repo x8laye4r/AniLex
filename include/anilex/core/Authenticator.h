@@ -4,7 +4,7 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QNetworkAccessManager>
-#include "anilex/core/SecretStorage.h"
+#include "SecretStorage.h"
 
 /**
  * Just tested to get authenticated

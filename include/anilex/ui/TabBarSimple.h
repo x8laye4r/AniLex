@@ -1,6 +1,6 @@
 #pragma once
 #include "TabButtonSimple.h"
-#include "anilex/ui/interfaces/AbstractTabBar.h"
+#include "interfaces/AbstractTabBar.h"
 
 /**
  * @class TabBarSimple

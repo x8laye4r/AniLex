@@ -5,7 +5,7 @@
 #include <QButtonGroup>
 #include "TabButton.h"
 #include "anilex/core/TabMeta.h"
-#include "anilex/ui/interfaces/AbstractTabBar.h"
+#include "interfaces/AbstractTabBar.h"
 
 /**
  * @class TabBar
