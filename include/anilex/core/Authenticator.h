@@ -16,21 +16,25 @@ private:
     static constexpr int port = 55000;
     static constexpr auto auth_url = "https://anilist.co/api/v2/oauth/authorize?client_id=28840&response_type=token";
     static constexpr auto api_url = "https://graphql.anilist.co";
-    SecretStorage keyring;
-    QNetworkAccessManager *manager;
-    QString username;
-    int userId;
+    SecretStorage m_keyring;
+    QNetworkAccessManager *m_manager;
+    QString m_username;
+    QString m_pendingToken;
+    int m_userId;
+    QTcpServer m_server;
+private slots:
+    void onUserFetchFinished(bool ok);
 public:
     Authenticator();
-    ~Authenticator();
+    ~Authenticator() override;
 
-    QTcpServer server;
-
-    void startAuth();
+    static void startAuth();
     void handleRequest(QTcpSocket *socket);
     void saveApiToken(const QString &token);
     void getUser(const QString &token);
 
 signals:
     void finishedAuth(bool ok);
+    void userFetchFinished(bool ok);
+    void readyToSendResponse(bool success);
 };

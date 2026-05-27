@@ -43,7 +43,6 @@ int main(int argc, char *argv[]) {
     app_anilex.setApplicationName("AniLex");
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
     app_anilex.setApplicationVersion(VERSION_STR);
-    app_anilex.setOrganizationName("x8laye4r");
 
     // app_anilex.setDesktopFileName("com.example.anilex");
 
@@ -69,6 +68,17 @@ int main(int argc, char *argv[]) {
     tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
 
     MainWindow widget(tabs);
+
+    Authenticator authenticator;
+
+    QObject::connect(&authenticator, &Authenticator::finishedAuth, [&widget](bool ok) {
+        if (ok) {
+            qInfo() << "Authentication successful!";
+        } else {
+            qWarning() << "Authentication failed!";
+        }
+    });
+    authenticator.startAuth();
 
     widget.show();
 
