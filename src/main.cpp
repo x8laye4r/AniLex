@@ -3,6 +3,7 @@
 #include <anilex/ui/MainWindow.h>
 #include <version.h>
 #include <QString>
+#include <QMessageBox>
 
 #include "anilex/core/AniListEnums.h"
 #include "anilex/core/SecretStorage.h"
@@ -10,6 +11,7 @@
 #include <QFile>
 
 #include "anilex/core/Authenticator.h"
+#include "anilex/core/AuthServer.h"
 #include "anilex/core/GlobalSettings.h"
 
 template<typename T>
@@ -43,7 +45,6 @@ int main(int argc, char *argv[]) {
     app_anilex.setApplicationName("AniLex");
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
     app_anilex.setApplicationVersion(VERSION_STR);
-    app_anilex.setOrganizationName("x8laye4r");
 
     // app_anilex.setDesktopFileName("com.example.anilex");
 
@@ -69,6 +70,21 @@ int main(int argc, char *argv[]) {
     tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
 
     MainWindow widget(tabs);
+
+    AuthServer server;
+    const Authenticator authenticator;
+
+
+    QObject::connect(&server, &AuthServer::tokenReceived, &authenticator, &Authenticator::saveApiToken);
+    QObject::connect(&authenticator, &Authenticator::finishedAuth, &server, &AuthServer::onAuthResult);
+    QObject::connect(&authenticator, &Authenticator::finishedAuth, &server, [&widget](bool success) {
+        if (success) {
+            QMessageBox::information(&widget, QObject::tr("Success"), QObject::tr("Token saved! You can now browse your list!"));
+        } else {
+            QMessageBox::warning(&widget, QObject::tr("Success"), QObject::tr("Token saved! You can now browse your list!"));
+        }
+    });
+    Authenticator::startAuth();
 
     widget.show();
 
