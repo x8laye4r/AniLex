@@ -3,6 +3,7 @@
 #include <anilex/ui/MainWindow.h>
 #include <version.h>
 #include <QString>
+#include <QMessageBox>
 
 #include "anilex/core/AniListEnums.h"
 #include "anilex/core/SecretStorage.h"
@@ -10,6 +11,7 @@
 #include <QFile>
 
 #include "anilex/core/Authenticator.h"
+#include "anilex/core/AuthServer.h"
 #include "anilex/core/GlobalSettings.h"
 
 template<typename T>
@@ -69,16 +71,20 @@ int main(int argc, char *argv[]) {
 
     MainWindow widget(tabs);
 
-    Authenticator authenticator;
+    AuthServer server;
+    const Authenticator authenticator;
 
-    QObject::connect(&authenticator, &Authenticator::finishedAuth, [&widget](bool ok) {
-        if (ok) {
-            qInfo() << "Authentication successful!";
+
+    QObject::connect(&server, &AuthServer::tokenReceived, &authenticator, &Authenticator::saveApiToken);
+    QObject::connect(&authenticator, &Authenticator::finishedAuth, &server, &AuthServer::onAuthResult);
+    QObject::connect(&authenticator, &Authenticator::finishedAuth, &server, [&widget](bool success) {
+        if (success) {
+            QMessageBox::information(&widget, QObject::tr("Success"), QObject::tr("Token saved! You can now browse your list!"));
         } else {
-            qWarning() << "Authentication failed!";
+            QMessageBox::warning(&widget, QObject::tr("Success"), QObject::tr("Token saved! You can now browse your list!"));
         }
     });
-    authenticator.startAuth();
+    Authenticator::startAuth();
 
     widget.show();
 
