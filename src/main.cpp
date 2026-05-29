@@ -25,7 +25,7 @@ QString enumToString(const T value) {
 
 
 void loadStylesheet(QApplication &app) {
-    QFile file(":/assets/styles/main.qss");
+    QFile file(":/styles/main.qss");
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream in(&file);
         app.setStyleSheet(in.readAll());
@@ -63,11 +63,11 @@ int main(int argc, char *argv[]) {
     loadStylesheet(app_anilex);
 
     QList<TabMeta> tabs;
-    tabs.append((TabMeta){.name = "HOME", .icon = QString(":/assets/icons/Home.svg")});
-    tabs.append((TabMeta){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.svg")});
-    tabs.append((TabMeta){.name = "BROWSE", .icon = QString(":/assets/icons/Browse.svg")});
-    tabs.append((TabMeta){.name = "SEARCH", .icon = QString(":/assets/icons/Search.svg")});
-    tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
+    tabs.append((TabMeta){.name = "HOME", .icon = QString(":/icons/Home.svg")});
+    tabs.append((TabMeta){.name = "LIBRARY", .icon = QString(":/icons/Lists.svg")});
+    tabs.append((TabMeta){.name = "BROWSE", .icon = QString(":/icons/Browse.svg")});
+    tabs.append((TabMeta){.name = "SEARCH", .icon = QString(":/icons/Search.svg")});
+    tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/icons/Profile.svg")});
 
     MainWindow widget(tabs);
 

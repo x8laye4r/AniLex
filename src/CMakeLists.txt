@@ -1,0 +1,136 @@
+add_library(anilex_sources SHARED
+        ./core/AuthServer.cpp
+        ./core/AniListEnums.cpp
+        ./core/SecretStorage.cpp
+        ./core/Authenticator.cpp
+        ./api/graphql.config.yml
+        ./ui/TabBarSimple.cpp
+        ./ui/VerticalTabBar.cpp
+        ./ui/TabButtonSimple.cpp
+        ./ui/TabButton.cpp
+        ./ui/Collapsable.cpp
+        ./ui/MainWindow.cpp
+        ./ui/TabBar.cpp
+        ./CMakeLists.txt
+        ./utils/AppPaths.cpp
+        ./main.cpp
+
+        ../include/version.h
+        ../include/version.h.in
+        ../include/anilex/core/Authenticator.h
+        ../include/anilex/core/AuthServer.h
+        ../include/anilex/core/GlobalSettings.h
+        ../include/anilex/core/SecretStorage.h
+        ../include/anilex/core/TabMeta.h
+        ../include/anilex/core/AniListEnums.h
+        ../include/anilex/ui/TabButton.h
+        ../include/anilex/ui/VerticalTabBar.h
+        ../include/anilex/ui/Collapsable.h
+        ../include/anilex/ui/TabBarSimple.h
+        ../include/anilex/ui/MainWindow.h
+        ../include/anilex/ui/interfaces/AbstractTabBar.h
+        ../include/anilex/ui/interfaces/AbstractTab.h
+        ../include/anilex/ui/TabBar.h
+        ../include/anilex/ui/TabButtonSimple.h
+        ../include/anilex/utils/AppPaths.h
+)
+
+target_include_directories(anilex_sources PUBLIC
+    "${CMAKE_SOURCE_DIR}/include"
+)
+
+target_link_libraries(anilex_sources PUBLIC
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
+        Qt6::Network
+        Qt6::Svg
+        Qt6Keychain::Qt6Keychain
+)
+
+qt_add_executable(${PROJECT_NAME} main.cpp)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE anilex_sources)
+
+qt_add_resources(${PROJECT_NAME} "graphql_queries"
+        PREFIX "/graphql"
+        BASE "${CMAKE_SOURCE_DIR}/src/api"
+        FILES
+            ./api/character/GetCharacterDetailsQuery.graphql
+            ./api/character/SearchCharacterQuery.graphql
+            ./api/media/SaveMediaListMutation.graphql
+            ./api/media/GetMediaCharactersQuery.graphql
+            ./api/media/GetMediaStaffQuery.graphql
+            ./api/media/GetMediaListCollectionQuery.graphql
+            ./api/media/GetMediaDetailsQuery.graphql
+            ./api/media/GetMediaStatsQuery.graphql
+            ./api/media/DeleteMediaListMutation.graphql
+            ./api/media/SearchMangaQuery.graphql
+            ./api/media/SearchAnimeQuery.graphql
+            ./api/media/GetMediaRecomRelatQuery.graphql
+            ./api/staff/GetStaffCharactersQuery.graphql
+            ./api/staff/GetStaffMediaQuery.graphql
+            ./api/staff/GetStaffDetailsQuery.graphql
+            ./api/staff/SearchStaffQuery.graphql
+            ./api/profile/FollowingListQuery.graphql
+            ./api/profile/FollowerListQuery.graphql
+            ./api/profile/ToggleFollowMutation.graphql
+            ./api/FuzzyDate.graphql
+            ./api/ToggleLikeMutation.graphql
+            ./api/schema.graphqls.graphql
+            ./api/home/GetReleasingMoreQuery.graphql
+            ./api/home/GetSeasonMoreQuery.graphql
+            ./api/home/GetAiringScheduleQuery.graphql
+            ./api/home/GetTrendingMoreQuery.graphql
+            ./api/home/GetNewMoreQuery.graphql
+            ./api/home/GetPopularMoreQuery.graphql
+            ./api/home/GetHomeScreenQuery.graphql
+            ./api/activity/ActivityDetailsQuery.graphql
+            ./api/activity/ActivityFeedQuery.graphql
+            ./api/activity/ToggleActivityPinMutation.graphql
+            ./api/activity/ToggleActivitySubscriptionMutation.graphql
+            ./api/activity/DeleteActivityMutation.graphql
+            ./api/activity/DeleteActivityReplyMutation.graphql
+            ./api/activity/SaveActivityReplyMutation.graphql
+            ./api/activity/SaveMessageActivityMutation.graphql
+            ./api/activity/SaveTextActivityMutation.graphql
+            ./api/user/SearchUserQuery.graphql
+            ./api/user/GetUnreadNotificationsQuery.graphql
+            ./api/user/stats/GetUserStatsQuery.graphql
+            ./api/user/stats/GetStaffMangaQuery.graphql
+            ./api/user/stats/GetAnimeOverviewQuery.graphql
+            ./api/user/stats/GetMangaOverviewQuery.graphql
+            ./api/user/stats/GetStudiosQuery.graphql
+            ./api/user/stats/GetStaffAnimeQuery.graphql
+            ./api/user/stats/GetVoiceActorsAnimeQuery.graphql
+            ./api/user/GetUserNotificationsQuery.graphql
+            ./api/user/DeleteCustomListMutation.graphql
+            ./api/user/CreateCustomListMutation.graphql
+            ./api/user/GetUserOptionsQuery.graphql
+            ./api/user/GetUserProfileQuery.graphql
+            ./api/viewer/GetViewerQuery.graphql
+            ./api/favorite/GetUserFavoriteStaffQuery.graphql
+            ./api/favorite/GetUserFavoriteCharacterQuery.graphql
+            ./api/favorite/GetUserFavoriteStudioQuery.graphql
+            ./api/favorite/ToggleFavoriteMutation.graphql
+            ./api/favorite/GetUserFavoriteAnimeQuery.graphql
+            ./api/favorite/GetUserFavoriteMangaQuery.graphql
+            ./api/studio/GetStudioInfoQuery.graphql
+            ./api/studio/SearchStudioQuery.graphql
+            ./api/PageInfo.graphql
+            ./api/MediaTagCollectionQuery.graphql
+            ./api/review/GetReviewsQuery.graphql
+            ./api/review/RateReviewMutation.graphql
+            ./api/review/GetReviewDetailsQuery.graphql
+            ./api/GenreTagCollectionQuery.graphql
+            ./api/old_queries/DeleteActivityMutation.graphql
+            ./api/old_queries/DeleteActivityReplyMutation.graphql
+            ./api/old_queries/ActivityUpdateMutation.graphql
+            ./api/old_queries/ActivityUpdateReplyMutation.graphql
+            ./api/thread/DeleteThreadMutation.graphql
+            ./api/thread/GetThreadQuery.graphql
+            ./api/thread/ToggleThreadSubscriptionMutation.graphql
+            ./api/thread/GetThreadCommentsQuery.graphql
+            ./api/thread/DeleteThreadCommentMutation.graphql
+            ./api/thread/UpdateThreadMutation.graphql
+)

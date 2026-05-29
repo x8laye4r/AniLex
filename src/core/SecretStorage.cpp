@@ -1,5 +1,5 @@
 #include "anilex/core/SecretStorage.h"
-#include <qtkeychain/keychain.h>
+#include <qt6keychain/keychain.h>
 
 
 SecretStorage::SecretStorage(QObject *parent) : QObject(parent) {}
