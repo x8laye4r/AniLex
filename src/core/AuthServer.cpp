@@ -56,14 +56,14 @@ void AuthServer::handleRequest(QTcpSocket *socket) {
     return;
   }
 
-  QString filePath = ":/assets/index.html";
+  QString filePath = ":/index.html";
   QString contentType = "text/html";
 
   if (requestLine.contains("/styles.css")) {
-    filePath = ":/assets/styles.css";
+    filePath = ":/styles.css";
     contentType = "text/css";
   } else if (requestLine.contains("/script.js")) {
-    filePath = ":/assets/script.js";
+    filePath = ":/script.js";
     contentType = "text/javascript";
   }
 
