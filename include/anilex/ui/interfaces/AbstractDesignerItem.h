@@ -20,17 +20,25 @@ public:
     this->setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
     this->setAcceptHoverEvents(false);
   }
-  virtual ~AbstractDesignerItem() override = default;
+  ~AbstractDesignerItem() override = default;
 
   virtual QJsonObject toJson() const {
     QJsonObject json;
 
     json["type"] = EnumConverter::toString(m_designerType);
-    json["x"] = this->pos().x();
-    json["y"] = this->pos().y();
-
-    json["width"] = this->rect().width();
-    json["height"] = this->rect().height();
+    if (this->widget()) {
+      qInfo() << "Setting widget pos";
+      json["x"] = this->scenePos().x();
+      json["y"] = this->scenePos().y();
+      json["width"] = this->widget()->rect().width();
+      json["height"] = this->widget()->rect().height();
+    } else [[unlikely]] {
+      qInfo() << "Setting general pos";
+      json["x"] = 0;
+      json["y"] = 0;
+      json["width"] = 100;
+      json["height"] = 100;
+    }
 
     return json;
   }

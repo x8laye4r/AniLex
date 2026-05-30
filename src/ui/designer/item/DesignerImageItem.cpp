@@ -4,6 +4,8 @@
 DesignerImageItem::DesignerImageItem() {
   m_pixmap = new CustomPixmap();
 
+  m_designerType = DesignerType::DesignerItemType::IMAGE;
+
   this->setWidget(m_pixmap);
 }
 
@@ -68,7 +70,20 @@ void DesignerImageItem::fromJson(const QJsonObject &json) {
 }
 
 QJsonObject DesignerImageItem::toJson() const {
-  return AbstractDesignerItem::toJson();
+  QJsonObject json = AbstractDesignerItem::toJson();
+
+  const QMetaObject *metaObject = this->metaObject();
+  const int count = metaObject->propertyCount();
+  const int offset = metaObject->propertyOffset();
+
+  for (int i = offset; i < count; ++i) {
+    QMetaProperty property = metaObject->property(i);
+    if (property.isValid() && property.isReadable()) {
+      json[property.name()] = QJsonValue::fromVariant(property.read(this));
+    }
+  }
+
+  return json;
 }
 
 REGISTER_DESIGNER_ITEM(DesignerImageItem, "IMAGE")
