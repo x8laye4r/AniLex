@@ -15,6 +15,7 @@ protected:
   void dropEvent(QDropEvent *event) override;
   void dragEnterEvent(QDragEnterEvent *event) override;
   void dragMoveEvent(QDragMoveEvent *event) override;
+  void mousePressEvent(QMouseEvent *event) override;
 private:
   QGraphicsScene *m_scene = nullptr;
 };
