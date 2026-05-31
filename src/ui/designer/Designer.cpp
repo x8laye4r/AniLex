@@ -1,11 +1,15 @@
 #include "anilex/ui/designer/Designer.h"
-
-#include <qjsonarray.h>
-
 #include "anilex/ui/designer/DesignerView.h"
 #include "anilex/ui/interfaces/AbstractDesignerItem.h"
 #include "anilex/utils/AppPaths.h"
 #include "anilex/utils/Helper.h"
+
+#include <QJsonArray>
+#include <QShortcut>
+#include <QMenu>
+#include <QApplication>
+
+#include "anilex/core/MenuRClickFilter.h"
 
 Designer::Designer(QWidget *parent)
   : QFrame(parent) {
@@ -27,9 +31,10 @@ Designer::Designer(QWidget *parent)
   m_widgetList->addWidgetSections(widgetCategoriesList);
 
   this->setFrameStyle(Plain);
-  this->setWindowFlag(Qt::Tool);
+  // this->setWindowFlag(Qt::Tool); seems to make the context menu not render in the right place
   this->setupObjectNames();
   this->setupUi();
+  this->setupActions();
   this->setupConnections();
 }
 
@@ -39,6 +44,7 @@ void Designer::setupUi() const {
 
   m_viewLayout->addStretch(1);
   m_viewLayout->addWidget(m_designerView);
+  m_designerView->setContextMenuPolicy(Qt::CustomContextMenu);
   m_viewLayout->addStretch(1);
 
   m_propertiesLayout->addWidget(m_designerPropertyEditor);
@@ -47,6 +53,10 @@ void Designer::setupUi() const {
   m_frameLayout->addLayout(m_listViewLayout);
   m_frameLayout->addLayout(m_viewLayout);
   m_frameLayout->addLayout(m_propertiesLayout);
+}
+
+void Designer::setupActions() {
+  m_deleteWidgetShortcut = new QShortcut(QKeySequence::Delete, this);
 }
 
 void Designer::setupObjectNames() {
@@ -79,6 +89,34 @@ void Designer::setupConnections() {
     auto *item = qgraphicsitem_cast<AbstractDesignerItem*>(temp.first());
     item ? m_designerPropertyEditor->widgetChanged(item) : m_designerPropertyEditor->widgetChanged(nullptr);
   });
+
+  connect(m_deleteWidgetShortcut, &QShortcut::activated, this, &Designer::deleteSelectedWidgets);
+  connect(m_designerView, &DesignerView::customContextMenuRequested, this, &Designer::showCustomContextMenu);
+}
+
+void Designer::deleteSelectedWidgets() const {
+  auto selected = m_designerView->scene()->selectedItems();
+  for (QGraphicsItem *item : selected) {
+    if (item->parentItem() && selected.contains(item->parentItem())) {
+      continue;
+    }
+    delete item;
+  }
+}
+
+void Designer::showCustomContextMenu(const QPoint &pos) {
+  QMenu contextMenu(m_designerView);
+  contextMenu.setObjectName("contextMenu");
+
+  QAction *deleteSelectedAction = new QAction("Delete Selected", &contextMenu);
+  deleteSelectedAction->setObjectName("contextMenuSelection");
+  connect(deleteSelectedAction, &QAction::triggered, this, &Designer::deleteSelectedWidgets);
+
+  MenuRClickFilter *eventFilter = new MenuRClickFilter();
+  contextMenu.installEventFilter(eventFilter);
+
+  contextMenu.addAction(deleteSelectedAction);
+  contextMenu.exec(m_designerView->viewport()->mapToGlobal(pos));
 }
 
 void Designer::exportWidgetsAsJson(DesignerType::DesignerCreatorItems cardToExportFor) const {

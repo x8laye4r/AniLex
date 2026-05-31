@@ -101,3 +101,13 @@ void DesignerView::dragMoveEvent(QDragMoveEvent *event) {
     event->ignore();
   }
 }
+
+void DesignerView::mousePressEvent(QMouseEvent *event) {
+  if (event->button() == Qt::RightButton) {
+    if (const size_t count = m_scene->selectedItems().size(); count > 0) {
+      event->accept();
+      return;
+    }
+  }
+  QGraphicsView::mousePressEvent(event);
+}
