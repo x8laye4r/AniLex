@@ -7,6 +7,9 @@
 #include <QJsonArray>
 #include <QShortcut>
 #include <QMenu>
+#include <QApplication>
+
+#include "anilex/core/MenuRClickFilter.h"
 
 Designer::Designer(QWidget *parent)
   : QFrame(parent) {
@@ -28,7 +31,7 @@ Designer::Designer(QWidget *parent)
   m_widgetList->addWidgetSections(widgetCategoriesList);
 
   this->setFrameStyle(Plain);
-  this->setWindowFlag(Qt::Tool);
+  // this->setWindowFlag(Qt::Tool); seems to make the context menu not render in the right place
   this->setupObjectNames();
   this->setupUi();
   this->setupActions();
@@ -91,7 +94,7 @@ void Designer::setupConnections() {
   connect(m_designerView, &DesignerView::customContextMenuRequested, this, &Designer::showCustomContextMenu);
 }
 
-void Designer::deleteSelectedWidgets() {
+void Designer::deleteSelectedWidgets() const {
   auto selected = m_designerView->scene()->selectedItems();
   for (QGraphicsItem *item : selected) {
     if (item->parentItem() && selected.contains(item->parentItem())) {
@@ -102,10 +105,15 @@ void Designer::deleteSelectedWidgets() {
 }
 
 void Designer::showCustomContextMenu(const QPoint &pos) {
-  QMenu contextMenu(this);
+  QMenu contextMenu(m_designerView);
+  contextMenu.setObjectName("contextMenu");
 
-  QAction *deleteSelectedAction = new QAction("Delete Selected", this);
+  QAction *deleteSelectedAction = new QAction("Delete Selected", &contextMenu);
+  deleteSelectedAction->setObjectName("contextMenuSelection");
   connect(deleteSelectedAction, &QAction::triggered, this, &Designer::deleteSelectedWidgets);
+
+  MenuRClickFilter *eventFilter = new MenuRClickFilter();
+  contextMenu.installEventFilter(eventFilter);
 
   contextMenu.addAction(deleteSelectedAction);
   contextMenu.exec(m_designerView->viewport()->mapToGlobal(pos));

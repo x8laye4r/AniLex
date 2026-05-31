@@ -31,7 +31,7 @@ private:
   void setupObjectNames();
   void setupConnections();
 private slots:
-  void deleteSelectedWidgets();
+  void deleteSelectedWidgets() const;
   void showCustomContextMenu(const QPoint &pos);
 public slots:
   void exportWidgetsAsJson(DesignerType::DesignerCreatorItems cardToExportFor) const;
