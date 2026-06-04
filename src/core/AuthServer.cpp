@@ -76,10 +76,10 @@ void AuthServer::handleRequest(QTcpSocket *socket) {
   }
 }
 
-void AuthServer::onAuthResult(bool success) {
+void AuthServer::onAuthResult(const AuthErrors::Errors success) {
   if (!m_pendingSocket) return;
 
-  if (success) {
+  if (success == AuthErrors::Errors::NoError) {
     sendResponse(m_pendingSocket, "<p>OK</p>", "text/html; charset=utf-8");
   } else {
     const QByteArray response =

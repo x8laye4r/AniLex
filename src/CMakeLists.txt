@@ -3,6 +3,7 @@ add_library(anilex_sources SHARED
         ./core/AniListEnums.cpp
         ./core/SecretStorage.cpp
         ./core/Authenticator.cpp
+        ./core/AuthenticatorPinFallback.cpp
         ./api/graphql.config.yml
         ./ui/TabBarSimple.cpp
         ./ui/VerticalTabBar.cpp
@@ -22,6 +23,8 @@ add_library(anilex_sources SHARED
         ../include/anilex/core/GlobalSettings.h
         ../include/anilex/core/SecretStorage.h
         ../include/anilex/core/TabMeta.h
+        ../include/anilex/core/AuthenticatorPinFallback.h
+        ../include/anilex/core/AuthErrors.h
         ../include/anilex/core/AniListEnums.h
         ../include/anilex/ui/TabButton.h
         ../include/anilex/ui/VerticalTabBar.h
