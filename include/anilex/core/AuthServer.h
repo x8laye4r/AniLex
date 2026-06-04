@@ -3,6 +3,8 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
+#include "AuthErrors.h"
+
 class AuthServer : public QObject {
   Q_OBJECT
 public:
@@ -18,7 +20,7 @@ private:
   void handleRequest(QTcpSocket *socket);
 
 public slots:
-  void onAuthResult(bool success);
+  void onAuthResult(AuthErrors::Errors success);
 
 signals:
   void tokenReceived(const QString &token);

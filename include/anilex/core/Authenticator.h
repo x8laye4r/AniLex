@@ -4,6 +4,8 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QNetworkAccessManager>
+
+#include "AuthErrors.h"
 #include "SecretStorage.h"
 
 /**
@@ -34,6 +36,6 @@ private slots:
   void onUserFetchFinished(bool ok);
 
 signals:
-  void finishedAuth(bool success);
+  void finishedAuth(AuthErrors::Errors success);
   void userFetchFinished(bool success);
 };

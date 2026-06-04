@@ -1,55 +1,30 @@
-#include "anilex/core/Authenticator.h"
+#include "anilex/core/AuthenticatorPinFallback.h"
 
-#include <QUrl>
-#include <QFile>
 #include <QDesktopServices>
-#include <QJsonDocument>
+#include <QFile>
 #include <QJsonObject>
 #include <QNetworkReply>
-#include <QNetworkRequest>
 
 #include "anilex/utils/AppPaths.h"
 
-Authenticator::Authenticator(QObject *parent)
-  : QObject(parent) {
-  m_networkAccessManager = new QNetworkAccessManager(this);
+AuthenticatorPinFallback::AuthenticatorPinFallback(QObject *parent) {
+  m_secretStorage = new SecretStorage(this);
 
-  connect(this, &Authenticator::userFetchFinished, this, &Authenticator::onUserFetchFinished);
-
-  connect(&m_secretStorage, &SecretStorage::secretStored, this, [this](const QString &key) {
-    if (key == "auth") {
-      emit finishedAuth(AuthErrors::Errors::NoError);
-    }
+  connect(this, &AuthenticatorPinFallback::userFetchFinished, this, &AuthenticatorPinFallback::onUserFetchFinished);
+  connect(m_secretStorage, &SecretStorage::secretStored, this, [this](const QString &key) {
+      if (!key.isEmpty() && key == "auth") {
+          emit finishedAuth(AuthErrors::Errors::NoError);
+      } else {
+          emit finishedAuth(AuthErrors::Errors::KeyringSaveError);
+      }
   });
 }
 
-Authenticator::~Authenticator() = default;
-
-void Authenticator::startAuth() {
-  QDesktopServices::openUrl(QUrl(AUTH_URL));
+void AuthenticatorPinFallback::startAuth() {
+    QDesktopServices::openUrl(QUrl(URL));
 }
 
-void Authenticator::saveApiToken(const QString &token) {
-  if (token.isEmpty()) {
-    qCritical() << "Access Token is empty, cannot save.";
-    emit finishedAuth(AuthErrors::Errors::KeyringSaveError);
-    return;
-  }
-  m_pendingToken = token;
-  getUser(token);
-}
-
-void Authenticator::onUserFetchFinished(const bool ok) {
-  if (!ok) {
-    qCritical() << "Failed to fetch user";
-    emit finishedAuth(AuthErrors::Errors::UserFetchError);
-    return;
-  }
-  m_secretStorage.saveSecret("auth", m_pendingToken);
-}
-
-// will probably be later extracted into another class
-void Authenticator::getUser(const QString &token) {
+void AuthenticatorPinFallback::getUser(const QString &token) {
     QNetworkRequest request;
     request.setUrl(QUrl(API_URL));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -58,7 +33,7 @@ void Authenticator::getUser(const QString &token) {
 
     QFile file(":/graphql/viewer/GetViewerQuery.graphql");
     QJsonObject payload;
-    if (!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Could not open GraphQL file:" << file.errorString();
         emit userFetchFinished(false);
         return;
@@ -66,9 +41,10 @@ void Authenticator::getUser(const QString &token) {
     payload["query"] = QString::fromUtf8(file.readAll());
     file.close();
 
-    QNetworkReply *reply = m_networkAccessManager->post(request, QJsonDocument(payload).toJson());
+    QNetworkReply *reply = m_networkAccessManager.post(request, QJsonDocument(payload).toJson());
 
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        reply->deleteLater();
         const QByteArray body = reply->readAll();
 
         if (reply->error() != QNetworkReply::NoError) {
@@ -99,14 +75,13 @@ void Authenticator::getUser(const QString &token) {
             root.value("data").toObject()
                 .value("Viewer").toObject();
 
-        m_username = viewer.value("name").toString();
-        m_userId   = viewer.value("id").toInt();
-        qInfo() << "username:" << m_username << "id:" << m_userId;
-        reply->deleteLater();
+        const QString username = viewer.value("name").toString();
+        const qint32 userId = viewer.value("id").toInt();
+        qInfo() << "username:" << username << "id:" << userId;
 
         QJsonObject json;
-        json["username"]         = m_username;
-        json["id"]               = m_userId;
+        json["username"] = username;
+        json["id"] = userId;
         json["token_expires_at"] = QDateTime::currentDateTime().addDays(365).toString(Qt::ISODate);
 
         QFile outFile(AppPaths::appDataPath() + "/user.json");
@@ -122,3 +97,17 @@ void Authenticator::getUser(const QString &token) {
         emit userFetchFinished(true);
     });
 }
+
+void AuthenticatorPinFallback::onUserFetchFinished(const bool ok) {
+    if (ok) {
+        m_secretStorage->saveSecret("auth", m_pendingToken);
+    } else {
+        emit finishedAuth(AuthErrors::Errors::UserFetchError);
+    }
+}
+
+void AuthenticatorPinFallback::fetchUser(const QString &token) {
+    m_pendingToken = token;
+    getUser(token);
+}
+

@@ -77,11 +77,11 @@ int main(int argc, char *argv[]) {
 
     QObject::connect(&server, &AuthServer::tokenReceived, &authenticator, &Authenticator::saveApiToken);
     QObject::connect(&authenticator, &Authenticator::finishedAuth, &server, &AuthServer::onAuthResult);
-    QObject::connect(&authenticator, &Authenticator::finishedAuth, &server, [&widget](bool success) {
-        if (success) {
+    QObject::connect(&authenticator, &Authenticator::finishedAuth, &server, [&widget](AuthErrors::Errors success) {
+        if (success == AuthErrors::Errors::NoError) {
             QMessageBox::information(&widget, QObject::tr("Success"), QObject::tr("Token saved! You can now browse your list!"));
         } else {
-            QMessageBox::warning(&widget, QObject::tr("Success"), QObject::tr("Token saved! You can now browse your list!"));
+            QMessageBox::warning(&widget, QObject::tr("Error"), AuthErrors::convertToErrorString(success));
         }
     });
     Authenticator::startAuth();
