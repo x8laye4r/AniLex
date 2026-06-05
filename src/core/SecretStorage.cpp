@@ -5,7 +5,7 @@
 SecretStorage::SecretStorage(QObject *parent) : QObject(parent) {}
 
 void SecretStorage::saveSecret(const QString &key, const QString &value) {
-    auto *job = new QKeychain::WritePasswordJob(service, this);
+    auto *job = new QKeychain::WritePasswordJob(SERVICE, this);
     job->setKey(key);
     job->setTextData(value);
 
@@ -19,7 +19,7 @@ void SecretStorage::saveSecret(const QString &key, const QString &value) {
 }
 
 void SecretStorage::getSecret(const QString &key) {
-    auto *job = new QKeychain::ReadPasswordJob(service, this);
+    auto *job = new QKeychain::ReadPasswordJob(SERVICE, this);
     job->setKey(key);
 
     connect(job, &QKeychain::Job::finished, this, [this, job, key]() {
@@ -34,7 +34,7 @@ void SecretStorage::getSecret(const QString &key) {
 }
 
 void SecretStorage::deleteSecret(const QString &key) {
-    auto *job = new QKeychain::DeletePasswordJob(service, this);
+    auto *job = new QKeychain::DeletePasswordJob(SERVICE, this);
     job->setKey(key);
 
     connect(job, &QKeychain::Job::finished, this, [this, job, key]() {

@@ -11,17 +11,17 @@ public:
   explicit AuthServer(QObject *parent = nullptr);
   ~AuthServer() override;
 
-private:
-  static constexpr int PORT = 55000;
-
-  QTcpServer m_server;
-  QTcpSocket *m_pendingSocket = nullptr;
-
-  void handleRequest(QTcpSocket *socket);
+signals:
+  void tokenReceived(const QString &token);
 
 public slots:
   void onAuthResult(AuthErrors::Errors success);
 
-signals:
-  void tokenReceived(const QString &token);
+private:
+  static constexpr int PORT = 55000;
+
+  void handleRequest(QTcpSocket *socket);
+
+  QTcpServer m_server;
+  QTcpSocket *m_pendingSocket = nullptr;
 };

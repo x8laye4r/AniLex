@@ -17,9 +17,16 @@ public:
   explicit Authenticator(QObject *parent = nullptr);
   ~Authenticator() override;
 
-  static void startAuth();
+  static void startAuth(); // move to slot later
   void saveApiToken(const QString &token);
   void getUser(const QString &token);
+
+signals:
+  void finishedAuth(AuthErrors::Errors success);
+  void userFetchFinished(bool success);
+
+private slots:
+  void onUserFetchFinished(bool ok);
 
 private:
   static constexpr int CLIENT_ID = 28840;
@@ -31,11 +38,4 @@ private:
   QString m_username;
   QString m_pendingToken;
   int m_userId = 0;
-
-private slots:
-  void onUserFetchFinished(bool ok);
-
-signals:
-  void finishedAuth(AuthErrors::Errors success);
-  void userFetchFinished(bool success);
 };

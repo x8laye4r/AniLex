@@ -27,7 +27,15 @@ public:
      * @param parent parent element
      */
     explicit AbstractTab(const QString &text, QWidget *parent = nullptr) : QPushButton(text, parent) {}
-    virtual ~AbstractTab() = default;
+    ~AbstractTab() override = default;
+
+public slots:
+    /** @brief triggers the entry animation of the tab */
+    virtual void startAnimation() = 0;
+    /** @brief triggers the exit animation of the tab */
+    virtual void endAnimation() = 0;
+    /** @brief sets the tab to the final animated state */
+    virtual void animationInstant() = 0;
 
 protected:
     virtual void setupUi() = 0;
@@ -49,12 +57,4 @@ protected:
             QEasingCurve::OutCubic).toEasingCurve());
         return animation;
     }
-
-public slots:
-    /** @brief triggers the entry animation of the tab */
-    virtual void startAnimation() = 0;
-    /** @brief triggers the exit animation of the tab */
-    virtual void endAnimation() = 0;
-    /** @brief sets the tab to the final animated state */
-    virtual void animationInstant() = 0;
 };

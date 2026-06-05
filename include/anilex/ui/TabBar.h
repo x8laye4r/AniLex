@@ -19,8 +19,14 @@
  */
 class TabBar : public AbstractTabBar {
     Q_OBJECT
-private:
-    int pendingIndex = 0;
+public:
+    /**
+     * @param tabs tabs which should be rendered
+     * @param parent parent widget
+     */
+    explicit TabBar(const QList<TabMeta> &tabs, QWidget *parent = nullptr);
+    void addTab(const TabMeta &tab, int index) override;
+    void addTabs(const QList<TabMeta> &tabs) override;
 
 protected:
     /** @brief initialized the UI */
@@ -30,12 +36,6 @@ protected:
     /** @brief handles when a tab is toggled */
     void onButtonClicked(QAbstractButton* btn, bool checked) override;
 
-public:
-    /**
-     * @param tabs tabs which should be rendered
-     * @param parent parent widget
-     */
-    explicit TabBar(const QList<TabMeta> &tabs, QWidget *parent = nullptr);
-    void addTab(const TabMeta &tab, int index) override;
-    void addTabs(const QList<TabMeta> &tabs) override;
+private:
+    int pendingIndex = 0;
 };

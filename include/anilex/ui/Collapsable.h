@@ -11,6 +11,10 @@
  */
 class Section : public QWidget {
     Q_OBJECT
+public:
+    explicit Section(const QString & title = "", const int animationDuration = 100, QWidget* parent = 0);
+    void setContentLayout(QLayout & contentLayout);
+
 private:
     QGridLayout* mainLayout = nullptr;
     QToolButton* toggleButton = nullptr;
@@ -18,8 +22,4 @@ private:
     QParallelAnimationGroup* toggleAnimation = nullptr;
     QScrollArea* contentArea = nullptr;
     int animationDuration;
-public:
-    explicit Section(const QString & title = "", const int animationDuration = 100, QWidget* parent = 0);
-
-    void setContentLayout(QLayout & contentLayout);
 };

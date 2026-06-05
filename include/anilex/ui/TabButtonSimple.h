@@ -15,8 +15,6 @@ class TabButtonSimple : public AbstractTab {
     Q_OBJECT
     /** @property fontSize: property for resizing the font-size */
     Q_PROPERTY(double fontSize READ getFontSize WRITE setFontSize)
-private:
-    double fontSize;
 public:
     TabButtonSimple(const QString &text, QWidget *parent);
 
@@ -28,11 +26,6 @@ public:
     double getFontSize() const { return fontSize; }
     /** @} */
 
-protected:
-    /** handles the rescaling of the font and height */
-    void resizeEvent(QResizeEvent* event) override;
-    /** @brief is setting up the ui */
-    void setupUi() override;
 public slots:
     /** @brief triggers the entry animation of the tab */
     void startAnimation() override;
@@ -40,6 +33,15 @@ public slots:
     void endAnimation() override;
     /** @brief sets the tab to the final animated state */
     void animationInstant() override;
+
+protected:
+    /** handles the rescaling of the font and height */
+    void resizeEvent(QResizeEvent* event) override;
+    /** @brief is setting up the ui */
+    void setupUi() override;
+
+private:
+    double fontSize;
 };
 
 

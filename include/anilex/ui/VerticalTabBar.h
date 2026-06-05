@@ -14,9 +14,14 @@
  */
 class VerticalTabBar : public AbstractTabBar {
     Q_OBJECT
-private:
-    /** @brief the indicator showing which tab is active */
-    QWidget *indicator = nullptr;
+public:
+    /**
+     * @param tabs tabs which should be rendered
+     * @param parent parent widget
+     */
+    explicit VerticalTabBar(const QList<TabMeta> &tabs, QWidget *parent = nullptr);
+    void addTab(const TabMeta &tab, int index) override;
+    void addTabs(const QList<TabMeta> &tabs) override;
 
 protected:
     /** @brief initialized the UI */
@@ -30,12 +35,7 @@ protected:
     /** @brief handles updating the indicator */
     void updateIndicator(TabButtonSimple * target, bool immediate);
 
-public:
-    /**
-     * @param tabs tabs which should be rendered
-     * @param parent parent widget
-     */
-    explicit VerticalTabBar(const QList<TabMeta> &tabs, QWidget *parent = nullptr);
-    void addTab(const TabMeta &tab, int index) override;
-    void addTabs(const QList<TabMeta> &tabs) override;
+private:
+    /** @brief the indicator showing which tab is active */
+    QWidget *indicator = nullptr;
 };

@@ -24,13 +24,6 @@ class TabButton : public AbstractTab {
     /** @property dy: property for the circle bigger when moving down **/
     Q_PROPERTY(double sizeDiff READ getSizeDiff WRITE setSizeDiff)
 
-private:
-    QSvgRenderer *renderer = nullptr;
-    double sizeDiff = 0.0; // modifier for the making the circle bigger
-
-    int dy = 0; // modifier for the y-axis moving of the circle
-    int alpha = 0; // modifier for the alpha channel for the circle
-
 public:
     /**
      * @param text Text which is shown
@@ -53,6 +46,14 @@ public:
     double getSizeDiff() const { return sizeDiff; }
     /** @} */
 
+public slots:
+    /** @brief triggers the entry animation of the tab */
+    void startAnimation() override;
+    /** @brief triggers the exit animation of the tab */
+    void endAnimation() override;
+    /** @brief sets the tab to the final animated state */
+    void animationInstant() override;
+
 protected:
     /**
      * @brief custom paint event to draw the svg and draw a circle around the picture
@@ -63,11 +64,11 @@ protected:
     /** @brief is setting up the ui */
     void setupUi() override;
 
-public slots:
-    /** @brief triggers the entry animation of the tab */
-    void startAnimation() override;
-    /** @brief triggers the exit animation of the tab */
-    void endAnimation() override;
-    /** @brief sets the tab to the final animated state */
-    void animationInstant() override;
+private:
+    QSvgRenderer *renderer = nullptr;
+    double sizeDiff = 0.0; // modifier for the making the circle bigger
+
+    int dy = 0; // modifier for the y-axis moving of the circle
+    int alpha = 0; // modifier for the alpha channel for the circle
+
 };

@@ -21,16 +21,6 @@
  */
 class AbstractTabBar : public QWidget {
     Q_OBJECT
-protected:
-    QList<AbstractTab*> tabButtons;
-    QFrame *container = nullptr;
-    QLayout *layout = nullptr;
-    QButtonGroup *buttonGroup = nullptr;
-    QTimer *timer = nullptr;
-
-    virtual void setupUi() = 0;
-    virtual void setupConnections() = 0;
-    virtual void onButtonClicked(QAbstractButton* button, bool checked) = 0;
 
 public:
     /**
@@ -47,4 +37,15 @@ signals:
      * @param index index of the newly selected tab
      */
     void tabChanged(int index);
+
+protected:
+    virtual void setupUi() = 0;
+    virtual void setupConnections() = 0;
+    virtual void onButtonClicked(QAbstractButton* button, bool checked) = 0;
+
+    QList<AbstractTab*> tabButtons;
+    QFrame *container = nullptr;
+    QLayout *layout = nullptr;
+    QButtonGroup *buttonGroup = nullptr;
+    QTimer *timer = nullptr;
 };

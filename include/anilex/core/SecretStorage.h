@@ -17,6 +17,6 @@ signals:
     void errorOccurred(const QString &key, const QString &message);
 
 private:
-    static constexpr auto service = "AniLex";
+    static constexpr auto SERVICE = "AniLex";
 };
 

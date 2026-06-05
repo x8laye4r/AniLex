@@ -17,12 +17,11 @@ protected:
     int userId = 0;
 
 private:
+    void setupUI(const QList<TabMeta> &tabs);
+    void setupConnections();
+    QWidget* createPage(const QString &text);
+
     QLayout *layout = nullptr;
     AbstractTabBar *tabBar = nullptr;
     QStackedLayout *stackedLayout = nullptr;
-
-    void setupUI(const QList<TabMeta> &tabs);
-    void setupConnections();
-
-    QWidget* createPage(const QString &text);
 };
