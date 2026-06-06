@@ -9,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC OFF)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 6.10.1 REQUIRED COMPONENTS Core Gui Widgets Network Test Svg)
+find_package(Qt6 6.10.1 REQUIRED COMPONENTS Core Gui Widgets Network Test Svg LinguistTools)
 find_package(Qt6Keychain REQUIRED)
 
 if(Qt6Core_VERSION VERSION_LESS "6.10.1")

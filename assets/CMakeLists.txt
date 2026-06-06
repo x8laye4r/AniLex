@@ -16,3 +16,9 @@ qt_add_resources(${PROJECT_NAME} "anilex_assets"
             designer_presets.jsonnet
             styles/main.qss
 )
+
+qt_add_translations(${PROJECT_NAME} "anilex_translations"
+        TS_FILES
+            translations/anilex_en.ts
+            translations/anilex_de.ts
+)
