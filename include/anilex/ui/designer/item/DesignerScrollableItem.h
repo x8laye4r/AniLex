@@ -11,20 +11,20 @@ class DesignerScrollableItem : public AbstractDesignerItem {
   Q_OBJECT
 
   // scrollArea properties
-  Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation);
-  Q_PROPERTY(bool widgetResizable READ widgetResizable WRITE setWidgetResizable);
-  Q_PROPERTY(bool showScrollBar READ showScrollBar WRITE setShowScrollBar);
-  Q_PROPERTY(QString ScrollAreaStylesheet READ stylesheet WRITE setStylesheet)
+  Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation DESIGNABLE true);
+  Q_PROPERTY(bool widgetResizable READ widgetResizable WRITE setWidgetResizable DESIGNABLE true);
+  Q_PROPERTY(bool showScrollBar READ showScrollBar WRITE setShowScrollBar DESIGNABLE true);
+  Q_PROPERTY(QString ScrollAreaStylesheet READ stylesheet WRITE setStylesheet DESIGNABLE false )
 
   // properties scrollArea items
-  Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor)
-  Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
-  Q_PROPERTY(QString itemStylesheet READ itemStylesheet WRITE setItemStylesheet)
-  Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment)
-  Q_PROPERTY(int margin READ margin WRITE setMargin)
-  Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize)
+  Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor DESIGNABLE true)
+  Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor DESIGNABLE true)
+  Q_PROPERTY(QString itemStylesheet READ itemStylesheet WRITE setItemStylesheet DESIGNABLE false)
+  Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment DESIGNABLE true)
+  Q_PROPERTY(int margin READ margin WRITE setMargin DESIGNABLE true)
+  Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize DESIGNABLE true)
 
-  Q_PROPERTY(int zValue READ zValue WRITE setZValue)
+  Q_PROPERTY(int zValue READ zValue WRITE setZValue DESIGNABLE true)
 public:
   DesignerScrollableItem();
 

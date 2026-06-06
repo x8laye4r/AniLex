@@ -2,9 +2,9 @@
 #include "anilex/ui/interfaces/AbstractDesignerItem.h"
 
 class DesignerIconItem : public AbstractDesignerItem {
-  Q_PROPERTY(bool showIcon READ showIcon WRITE setShowIcon);
-  Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor);
-  Q_PROPERTY(int borderThickness READ borderThickness WRITE setBorderThickness);
+  Q_PROPERTY(bool showIcon READ showIcon WRITE setShowIcon DESIGNABLE true);
+  Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor DESIGNABLE true);
+  Q_PROPERTY(int borderThickness READ borderThickness WRITE setBorderThickness DESIGNABLE true);
 public:
   DesignerIconItem();
   ~DesignerIconItem() override;

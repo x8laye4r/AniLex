@@ -6,17 +6,17 @@ class DesignerTextItem : public AbstractDesignerItem {
   Q_OBJECT
 
   // All changeable properties for the user
-  Q_PROPERTY(QString text READ text WRITE setText)
-  Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor)
-  Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
-  Q_PROPERTY(QString stylesheet READ stylesheet WRITE setStylesheet)
-  Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment)
-  Q_PROPERTY(bool bold READ bold WRITE setBold)
-  Q_PROPERTY(bool wordWrap READ wordWrap WRITE setWordWrap)
-  Q_PROPERTY(int margin READ margin WRITE setMargin)
-  Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize)
+  Q_PROPERTY(QString text READ text WRITE setText DESIGNABLE true)
+  Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor DESIGNABLE true)
+  Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor DESIGNABLE true)
+  Q_PROPERTY(QString stylesheet READ stylesheet WRITE setStylesheet DESIGNABLE true)
+  Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment DESIGNABLE true)
+  Q_PROPERTY(bool bold READ bold WRITE setBold DESIGNABLE true)
+  Q_PROPERTY(bool wordWrap READ wordWrap WRITE setWordWrap DESIGNABLE true)
+  Q_PROPERTY(int margin READ margin WRITE setMargin DESIGNABLE true)
+  Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize DESIGNABLE true)
 
-  Q_PROPERTY(int zValue READ zValue WRITE setZValue)
+  Q_PROPERTY(int zValue READ zValue WRITE setZValue DESIGNABLE true)
 public:
   DesignerTextItem();
 
