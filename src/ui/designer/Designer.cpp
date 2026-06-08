@@ -108,14 +108,20 @@ void Designer::showCustomContextMenu(const QPoint &pos) {
   QMenu contextMenu(m_designerView);
   contextMenu.setObjectName("contextMenu");
 
-  QAction *deleteSelectedAction = new QAction("Delete Selected", &contextMenu);
+  QAction *deleteSelectedAction = new QAction(tr("Delete Selected"), &contextMenu);
   deleteSelectedAction->setObjectName("contextMenuSelection");
+
+  QAction *clearAllAction = new QAction(tr("Clear All"), &contextMenu);
+  clearAllAction->setObjectName("contextMenuSelection");
+
   connect(deleteSelectedAction, &QAction::triggered, this, &Designer::deleteSelectedWidgets);
+  connect(clearAllAction, &QAction::triggered, this, &Designer::clearView);
 
   MenuRClickFilter *eventFilter = new MenuRClickFilter();
   contextMenu.installEventFilter(eventFilter);
 
   contextMenu.addAction(deleteSelectedAction);
+  contextMenu.addAction(clearAllAction);
   contextMenu.exec(m_designerView->viewport()->mapToGlobal(pos));
 }
 
@@ -155,6 +161,6 @@ void Designer::closeDesigner() {
   this->close();
 }
 
-void Designer::clearView() {
+void Designer::clearView() const {
   m_designerView->scene()->clear();
 }

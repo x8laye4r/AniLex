@@ -9,12 +9,23 @@
 
 class AbstractDesignerItem : public QGraphicsProxyWidget {
   Q_OBJECT
+  Q_PROPERTY(int x READ getX WRITE setX NOTIFY xChanged)
+  Q_PROPERTY(int y READ getY WRITE setY NOTIFY yChanged)
+  Q_PROPERTY(int width READ getWidth WRITE setWidth NOTIFY widthChanged)
+  Q_PROPERTY(int height READ getHeight WRITE setHeight NOTIFY heightChanged)
+
+signals:
+  void xChanged();
+  void yChanged();
+  void widthChanged();
+  void heightChanged();
 
 public slots:
   void resizeRect(const QRectF &resizedRect) {
     this->setPos(resizedRect.topLeft());
     this->resize(resizedRect.width(), resizedRect.height());
   }
+
 public:                   
   explicit AbstractDesignerItem(QGraphicsItem *parent = nullptr) : QGraphicsProxyWidget(parent) {
     this->setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges | ItemSendsScenePositionChanges);
@@ -98,6 +109,10 @@ protected:
     if (m_drag && event->button() == Qt::LeftButton) {
       QPointF newPos = event->scenePos() - m_dragOffset;
       setPos(newPos);
+
+      emit xChanged();
+      emit yChanged();
+
       event->accept();
       return;
     }
@@ -113,9 +128,21 @@ protected:
     QGraphicsProxyWidget::mouseReleaseEvent(event);
   }
 
-protected:
   QPointF m_dragOffset;
   qreal m_zOrder;
   DesignerType::DesignerItemType m_designerType{};
   bool m_drag = false;
+
+public:
+  int getX() const { return this->scenePos().x(); }
+  void setX(int x) { this->setPos(x, this->scenePos().y()); emit xChanged(); }
+
+  int getY() const { return this->scenePos().y(); }
+  void setY(int y) { this->setPos(this->scenePos().x(), y); emit yChanged(); }
+
+  int getWidth() const { return this->widget()->rect().width(); }
+  void setWidth(int w) { this->widget()->resize(w, this->widget()->rect().height()); emit widthChanged(); }
+
+  int getHeight() const { return this->widget()->rect().height(); }
+  void setHeight(int h) { this->widget()->resize(this->widget()->rect().width(), h); emit heightChanged(); }
 };

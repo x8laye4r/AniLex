@@ -12,6 +12,7 @@ public:
   explicit DesignerPropertyEditor(QWidget* parent = nullptr);
 public slots:
   void widgetChanged(AbstractDesignerItem *item);
+  void clearEditor(QLayout* layoutToClear = nullptr);
 
 private:
   AbstractDesignerItem* m_selectedItem = nullptr;

@@ -8,6 +8,10 @@
 #include <QLabel>
 #include <QPushButton>
 
+/*
+ * TODO: fix the issue with the new properties of the base class AbstractDesignerItem
+ */
+
 DesignerPropertyEditor::DesignerPropertyEditor(QWidget *parent)
   : QScrollArea(parent) {
 
@@ -25,21 +29,35 @@ DesignerPropertyEditor::DesignerPropertyEditor(QWidget *parent)
   this->initRegistry();
 }
 
-static void clearLayout(QLayout* layout) {
-  if (!layout) return;
+void DesignerPropertyEditor::clearEditor(QLayout *layoutToClear) {
+  if (!layoutToClear) {
+    layoutToClear = m_scrollLayout;
+  }
 
   QLayoutItem* item;
 
-  while ((item = layout->takeAt(0)) != nullptr) {
+  while ((item = m_scrollLayout->takeAt(0)) != nullptr) {
     if (QWidget* widget = item->widget()) {
       widget->hide();
       widget->deleteLater();
     }
     else if (QLayout* childLayout = item->layout()) {
-      clearLayout(childLayout);
+      clearEditor(childLayout);
       childLayout->deleteLater();
     }
     delete item;
+  }
+}
+
+static void getProperties(const QMetaObject *metaObject, QList<QMetaProperty> &properties) {
+  const int property_count = metaObject->propertyCount();
+  const int property_offset = metaObject->propertyOffset();
+
+  for (int i = property_offset; i < property_count; ++i) {
+    QMetaProperty property = metaObject->property(i);
+    if (property.isWritable()) {
+      properties.append(property);
+    }
   }
 }
 
@@ -47,22 +65,16 @@ void DesignerPropertyEditor::widgetChanged(AbstractDesignerItem *item) {
   if (item == nullptr) {
     return;
   }
-  clearLayout(m_scrollLayout);
+  clearEditor();
 
   m_selectedItem = item;
 
-  const QMetaObject *meta_object = item->metaObject();
-  const int property_count = meta_object->propertyCount();
-  const int property_offset = meta_object->propertyOffset();
+  const QMetaObject *childClass = item->metaObject();
+  const QMetaObject *parentClass = childClass->superClass();
 
   QList<QMetaProperty> writeableProperties;
-
-  for (int i = property_offset; i < property_count; ++i) {
-    QMetaProperty property = meta_object->property(i);
-    if (property.isWritable()) {
-      writeableProperties.append(property);
-    }
-  }
+  getProperties(childClass, writeableProperties);
+  getProperties(parentClass, writeableProperties);
 
   this->createEditorWidget(writeableProperties);
 }
@@ -72,6 +84,7 @@ void DesignerPropertyEditor::initRegistry() {
     auto* edit = new QLineEdit(parent);
     edit->setText(val.toString());
     QObject::connect(edit, &QLineEdit::textChanged, setter);
+
     return edit;
   };
 

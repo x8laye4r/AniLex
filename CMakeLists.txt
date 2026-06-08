@@ -11,7 +11,7 @@ set(CMAKE_AUTOUIC ON)
 
 include(FetchContent)
 
-find_package(Qt6 6.10.1 REQUIRED COMPONENTS Core Gui Widgets Network Test Svg)
+find_package(Qt6 6.10.1 REQUIRED COMPONENTS Core Gui Widgets Network Test Svg LinguistTools)
 find_package(Qt6Keychain REQUIRED)
 
 if(Qt6Core_VERSION VERSION_LESS "6.10.1")
@@ -95,6 +95,12 @@ qt_add_resources(${PROJECT_NAME} "graphql_queries"
         PREFIX "/graphql"
         BASE "${CMAKE_CURRENT_SOURCE_DIR}/src/api"
         FILES ${GRAPHQL_FILES}
+)
+
+qt_add_translations(${PROJECT_NAME} "anilex_translations"
+        TS_FILES
+            assets/translations/anilex_en.ts
+            assets/translations/anilex_de.ts
 )
 
 # ================

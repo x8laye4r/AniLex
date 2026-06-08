@@ -3,8 +3,9 @@
 #include "anilex/ui/Collapsable.h"
 
 class DesignerWidgetsListSection : public Section {
+  Q_OBJECT
 public:
-  explicit DesignerWidgetsListSection(QString &name, QList<QJsonObject> &widgetsList, QWidget *parent = nullptr);
+  explicit DesignerWidgetsListSection(const QString &name, const QList<QJsonObject> &widgetsList, QWidget *parent = nullptr);
 
 private:
   QString m_name;

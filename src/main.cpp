@@ -3,7 +3,7 @@
 #include <anilex/ui/MainWindow.h>
 #include <version.h>
 #include <QString>
-#include <QLineEdit>
+#include <QTranslator>
 
 #include "anilex/core/AniListEnums.h"
 #include "anilex/core/SecretStorage.h"
@@ -62,15 +62,23 @@ int main(int argc, char *argv[]) {
     //auth.startAuth();
     /*
     QList<TabMeta> tabs;
-    tabs.append((TabMeta){.name = "HOME", .icon = QString(":/assets/icons/Home.svg")});
-    tabs.append((TabMeta){.name = "LIBRARY", .icon = QString(":/assets/icons/Lists.svg")});
-    tabs.append((TabMeta){.name = "BROWSE", .icon = QString(":/assets/icons/Browse.svg")});
-    tabs.append((TabMeta){.name = "SEARCH", .icon = QString(":/assets/icons/Search.svg")});
-    tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/assets/icons/Profile.svg")});
+    tabs.append((TabMeta){.name = QObject::tr("HOME"), .icon = QString(":/assets/icons/Home.svg")});
+    tabs.append((TabMeta){.name = QObject::tr("LIBRARY"), .icon = QString(":/assets/icons/Lists.svg")});
+    tabs.append((TabMeta){.name = QObject::tr("BROWSE"), .icon = QString(":/assets/icons/Browse.svg")});
+    tabs.append((TabMeta){.name = QObject::tr("SEARCH"), .icon = QString(":/assets/icons/Search.svg")});
+    tabs.append((TabMeta){.name = QObject::tr("PROFILE"), .icon = QString(":/assets/icons/Profile.svg")});
 
     MainWindow widget(tabs);
     widget.show();
     */
+
+    QTranslator translator;
+
+    if (translator.load("../assets/translations/anilex_de.qm")) {
+        QApplication::installTranslator(&translator);
+    } else {
+        qWarning() << "Failed to load translation file for locale:" << QLocale::system().name();
+    }
 
     loadStylesheet(app_anilex);
 
