@@ -81,3 +81,7 @@ fabric.properties
 .filenignore
 docs/html
 docs/latex
+
+.nextcloudsync.log
+.sync_ae1a6e656c40.db
+.sync_ae1a6e656c40.db-wal

@@ -43,9 +43,9 @@ int main(int argc, char *argv[]) {
     QApplication app_anilex(argc, argv);
 
     // Application Settings
-    app_anilex.setApplicationName("AniLex");
-    app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
-    app_anilex.setApplicationVersion(VERSION_STR);
+    QApplication::setApplicationName("AniLex");
+    QApplication::setApplicationDisplayName("AniLex - AniList Tracker");
+    QApplication::setApplicationVersion(VERSION_STR);
 
     // app_anilex.setDesktopFileName("com.example.anilex");
 
@@ -72,22 +72,20 @@ int main(int argc, char *argv[]) {
     widget.show();
     */
 
-    QTranslator translator;
+    const QString locale = QLocale::system().name();
 
-    if (translator.load("../assets/translations/anilex_de.qm")) {
-        QApplication::installTranslator(&translator);
+    QTranslator *translator = new QTranslator(&app_anilex);
+    if (translator->load(locale, "anilex", "_", ":/i18n")) {
+        qInfo() << "Loaded translation for locale:" << locale;
+        QApplication::installTranslator(translator);
     } else {
-        qWarning() << "Failed to load translation file for locale:" << QLocale::system().name();
+        qCritical() << "Failed to load translation for locale:" << locale;
     }
 
     loadStylesheet(app_anilex);
 
-    QLabel test("Hello, World!");
-
     Designer designer;
-
     DesignerItemFactory::instance().printAll();
-
     designer.show();
 
     return QApplication::exec();

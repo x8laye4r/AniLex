@@ -99,7 +99,7 @@ qt_add_resources(${PROJECT_NAME} "graphql_queries"
 
 qt_add_translations(${PROJECT_NAME} "anilex_translations"
         TS_FILES
-            assets/translations/anilex_en.ts
+        assets/translations/anilex_en_US.ts
             assets/translations/anilex_de.ts
 )
 
