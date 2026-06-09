@@ -3,7 +3,7 @@
 
 DesignerWrapperItem::DesignerWrapperItem(QGraphicsItem *parent)
   : QGraphicsRectItem(parent), m_signal(new ItemSignalProxy()) {
-  this->setFlags(ItemIsMovable | ItemIsSelectable | ItemStacksBehindParent);
+  this->setFlags(ItemIsMovable | ItemIsSelectable | ItemStacksBehindParent | ItemSendsGeometryChanges);
   this->setAcceptHoverEvents(true);
 }
 
@@ -165,4 +165,11 @@ QPainterPath DesignerWrapperItem::shape() const {
   }
 
   return path;
+}
+
+QVariant DesignerWrapperItem::itemChange(GraphicsItemChange change, const QVariant &value) {
+  if (change == ItemPositionHasChanged) {
+    emit m_signal->movedItem();
+  }
+  return QGraphicsRectItem::itemChange(change, value);
 }

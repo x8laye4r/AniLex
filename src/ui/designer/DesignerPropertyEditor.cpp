@@ -139,6 +139,35 @@ QWidget *DesignerPropertyEditor::createEnumCreator(const QMetaProperty &property
   return comboBox;
 }
 
+static void checkIfChangeableItemViaViewAndConnect(QString &propName, QWidget *newEditorWidget, AbstractDesignerItem *selectedItem) {
+  if (propName == "x" || propName == "y" || propName == "width" || propName == "height") {
+    if (auto *spinBox = qobject_cast<QSpinBox*>(newEditorWidget)) {
+
+      if (propName == "x") {
+        QObject::connect(selectedItem, &AbstractDesignerItem::xChanged, spinBox, [spinBox, selectedItem] {
+          const QSignalBlocker blocker(spinBox);
+          spinBox->setValue(selectedItem->getX());
+        });
+      } else if (propName == "y") {
+        QObject::connect(selectedItem, &AbstractDesignerItem::yChanged, spinBox, [spinBox, selectedItem] {
+          const QSignalBlocker blocker(spinBox);
+          spinBox->setValue(selectedItem->getY());
+        });
+      } else if (propName == "width") {
+        QObject::connect(selectedItem, &AbstractDesignerItem::widthChanged, spinBox, [spinBox, selectedItem] {
+          const QSignalBlocker blocker(spinBox);
+          spinBox->setValue(selectedItem->getWidth());
+        });
+      } else if (propName == "height") {
+        QObject::connect(selectedItem, &AbstractDesignerItem::heightChanged, spinBox, [spinBox, selectedItem] {
+          const QSignalBlocker blocker(spinBox);
+          spinBox->setValue(selectedItem->getHeight());
+        });
+      }
+    }
+  }
+}
+
 void DesignerPropertyEditor::createEditorWidget(QList<QMetaProperty> &properties) {
   for (const QMetaProperty &property : properties) {
     QString propName = property.name();
@@ -162,6 +191,8 @@ void DesignerPropertyEditor::createEditorWidget(QList<QMetaProperty> &properties
     }
 
     if (newEditorWidget) {
+      checkIfChangeableItemViaViewAndConnect(propName, newEditorWidget, m_selectedItem);
+
       QHBoxLayout *layout = new QHBoxLayout;
 
       layout->addWidget(new QLabel(tr("%1:").arg(propName)));

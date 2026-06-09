@@ -5,6 +5,7 @@ class ItemSignalProxy : public QObject {
   Q_OBJECT
 signals:
   void resizedItem(const QRectF &resizedRect);
+  void movedItem();
 };
 
 class DesignerWrapperItem : public QGraphicsRectItem {
@@ -23,6 +24,7 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
   QPainterPath shape() const override;
+  QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 private:
   enum class ResizeDirection { None, TopLeft, TopRight, BottomLeft, BottomRight };
 

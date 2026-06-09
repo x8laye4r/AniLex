@@ -76,6 +76,11 @@ void DesignerView::dropEvent(QDropEvent *event) {
 
       connect(wrapperItem->m_signal, &ItemSignalProxy::resizedItem, rawItem, &AbstractDesignerItem::resizeRect);
 
+      connect(wrapperItem->m_signal, &ItemSignalProxy::movedItem, rawItem, [rawItem]() {
+        emit rawItem->xChanged();
+        emit rawItem->yChanged();
+      });
+
       this->m_scene->addItem(wrapperItem);
     } else {
       qInfo() << "Could not find designer-item";

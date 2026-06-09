@@ -20,10 +20,17 @@ signals:
   void widthChanged();
   void heightChanged();
 
+  void propertyUpdated(int propertyIndex);
+
 public slots:
   void resizeRect(const QRectF &resizedRect) {
     this->setPos(resizedRect.topLeft());
     this->resize(resizedRect.width(), resizedRect.height());
+
+    emit xChanged();
+    emit yChanged();
+    emit widthChanged();
+    emit heightChanged();
   }
 
 public:                   
@@ -135,14 +142,48 @@ protected:
 
 public:
   int getX() const { return this->scenePos().x(); }
-  void setX(int x) { this->setPos(x, this->scenePos().y()); emit xChanged(); }
+  void setX(int x) {
+    if (this->parentItem()) {
+      this->parentItem()->setPos(x, this->parentItem()->y());
+    } else {
+      this->setPos(x, this->scenePos().y());
+    }
+    emit xChanged();
+  }
 
   int getY() const { return this->scenePos().y(); }
-  void setY(int y) { this->setPos(this->scenePos().x(), y); emit yChanged(); }
+  void setY(int y) {
+    if (this->parentItem()) {
+      this->parentItem()->setPos(this->scenePos().x(), y);
+    } else {
+      this->setPos(this->scenePos().y(), y);
+    }
+    emit yChanged();
+  }
 
   int getWidth() const { return this->widget()->rect().width(); }
-  void setWidth(int w) { this->widget()->resize(w, this->widget()->rect().height()); emit widthChanged(); }
+  void setWidth(int w) {
+    if (auto *wrapper = qgraphicsitem_cast<QGraphicsRectItem*>(this->parentItem())) {
+      QRectF r = wrapper->rect();
+      r.setWidth(w);
+      wrapper->setRect(r);
+    }
+    if (this->widget()) {
+      this->widget()->resize(w, this->widget()->rect().height());
+    }
+    emit widthChanged();
+  }
 
   int getHeight() const { return this->widget()->rect().height(); }
-  void setHeight(int h) { this->widget()->resize(this->widget()->rect().width(), h); emit heightChanged(); }
+  void setHeight(int h) {
+    if (auto *wrapper = qgraphicsitem_cast<QGraphicsRectItem*>(this->parentItem())) {
+      QRectF r = wrapper->rect();
+      r.setHeight(h);
+      wrapper->setRect(r);
+    }
+    if (this->widget()) {
+      this->widget()->resize(this->widget()->rect().width(), h);
+    }
+    emit heightChanged();
+  }
 };
