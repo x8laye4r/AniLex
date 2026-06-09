@@ -40,9 +40,9 @@ If you're not a programmer and have no idea about coding, look here in the Notio
 ---
 
 ## Used in this Project
-- C++20
-- Qt6
-- QtKeychain
+- [C++20](https://isocpp.org/)
+- [Qt6](https://www.qt.io/development/qt-framework/qt6)
+- [QtKeychain](https://github.com/frankosterfeld/qtkeychain)
 
 ---
 

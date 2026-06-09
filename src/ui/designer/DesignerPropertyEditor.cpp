@@ -76,6 +76,13 @@ void DesignerPropertyEditor::widgetChanged(AbstractDesignerItem *item) {
   getProperties(childClass, writeableProperties);
   getProperties(parentClass, writeableProperties);
 
+  connect(m_selectedItem, &AbstractDesignerItem::propertyUpdated, this, [this](const int propIdx) {
+    QMetaProperty property = m_selectedItem->metaObject()->property(propIdx);
+    QVariant newValue = property.read(m_selectedItem);
+
+    m_propertyUpdaters[propIdx](newValue);
+  });
+
   this->createEditorWidget(writeableProperties);
 }
 
@@ -119,7 +126,7 @@ void DesignerPropertyEditor::initRegistry() {
     auto updater = [check](const QVariant &value) {
       QSignalBlocker blocker(check);
       check->setChecked(value.toBool());
-    }
+    };
 
     return {check, updater};
   };
@@ -144,7 +151,7 @@ void DesignerPropertyEditor::initRegistry() {
   };
 }
 
-QWidget *DesignerPropertyEditor::createEnumCreator(const QMetaProperty &property, const QVariant &value, auto setter) {
+EditorComponent DesignerPropertyEditor::createEnumCreator(const QMetaProperty &property, const QVariant &value, auto setter) {
   QMetaEnum metaEnum = property.enumerator();
 
   QComboBox *comboBox = new QComboBox(this);
@@ -162,36 +169,13 @@ QWidget *DesignerPropertyEditor::createEnumCreator(const QMetaProperty &property
         setter(comboBox->itemData(index).toInt());
   });
 
-  return comboBox;
-}
+  auto updater = [comboBox](const QVariant &value) {
+    const QSignalBlocker blocker(comboBox);
+    int idx = comboBox->findData(value.toInt());
+    if (idx != -1) comboBox->setCurrentIndex(idx);
+  };
 
-static void checkIfChangeableItemViaViewAndConnect(QString &propName, QWidget *newEditorWidget, AbstractDesignerItem *selectedItem) {
-  if (propName == "x" || propName == "y" || propName == "width" || propName == "height") {
-    if (auto *spinBox = qobject_cast<QSpinBox*>(newEditorWidget)) {
-
-      if (propName == "x") {
-        QObject::connect(selectedItem, &AbstractDesignerItem::xChanged, spinBox, [spinBox, selectedItem] {
-          const QSignalBlocker blocker(spinBox);
-          spinBox->setValue(selectedItem->getX());
-        });
-      } else if (propName == "y") {
-        QObject::connect(selectedItem, &AbstractDesignerItem::yChanged, spinBox, [spinBox, selectedItem] {
-          const QSignalBlocker blocker(spinBox);
-          spinBox->setValue(selectedItem->getY());
-        });
-      } else if (propName == "width") {
-        QObject::connect(selectedItem, &AbstractDesignerItem::widthChanged, spinBox, [spinBox, selectedItem] {
-          const QSignalBlocker blocker(spinBox);
-          spinBox->setValue(selectedItem->getWidth());
-        });
-      } else if (propName == "height") {
-        QObject::connect(selectedItem, &AbstractDesignerItem::heightChanged, spinBox, [spinBox, selectedItem] {
-          const QSignalBlocker blocker(spinBox);
-          spinBox->setValue(selectedItem->getHeight());
-        });
-      }
-    }
-  }
+  return {comboBox, updater};
 }
 
 void DesignerPropertyEditor::createEditorWidget(QList<QMetaProperty> &properties) {
@@ -206,24 +190,25 @@ void DesignerPropertyEditor::createEditorWidget(QList<QMetaProperty> &properties
       }
     };
 
-    QWidget *newEditorWidget = nullptr;
+    EditorComponent editorComponent;
 
     if (property.isEnumType()) {
-      newEditorWidget = createEnumCreator(property, propValue, setter);
+      editorComponent = createEnumCreator(property, propValue, setter);
     } else {
       int typeId = property.typeId();
       if (m_editorRegistries.contains(typeId)) {
-        newEditorWidget = m_editorRegistries[typeId](this, propValue, setter);
+        editorComponent = m_editorRegistries[typeId](this, propValue, setter);
       }
     }
 
-    if (newEditorWidget) {
-      checkIfChangeableItemViaViewAndConnect(propName, newEditorWidget, m_selectedItem);
+    if (editorComponent.widget) {
+
+      m_propertyUpdaters[propIdx] = editorComponent.updater;
 
       QHBoxLayout *layout = new QHBoxLayout;
 
       layout->addWidget(new QLabel(tr("%1:").arg(propName)));
-      layout->addWidget(newEditorWidget);
+      layout->addWidget(editorComponent.widget);
 
       m_scrollLayout->addLayout(layout);
     }

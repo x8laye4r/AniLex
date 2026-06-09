@@ -4,6 +4,13 @@
 #include <QVariant>
 #include <QDebug>
 
+// concept for better type safety
+template<typename T>
+concept IsQtEnum = std::is_enum_v<T> && requires {
+    { qt_getEnumMetaObject(T{}) } -> std::same_as<const QMetaObject*>;
+    { qt_getEnumName(T{}) } -> std::same_as<const char*>;
+};
+
 /**
  * @class EnumConverter
  * @brief this class is used for converting Q_ENUMS into strings and converting them back into enums
@@ -22,9 +29,9 @@ public:
      * @tparam T any enum which is defined with the Qt-Enums macros
      * @param value the enum which should be converted to a string
      * @return uppercase QString
-     * @warning won't work with C++ enums
+     * @warning won't work with ordinary C++ enums
      */
-    template<typename T>
+    template<IsQtEnum T>
     static QString toString(const T &value) {
         QMetaEnum metaEnum = QMetaEnum::fromType<T>();
         if (!metaEnum.isValid()) {
@@ -43,7 +50,7 @@ public:
      * @note the given string must be written the same as the defined enum
      * @warning won't work with normal C++ enums
      */
-    template<typename T>
+    template<IsQtEnum T>
     static T convertTo(const QString &name, bool *ok = nullptr) {
         QMetaEnum metaEnum = QMetaEnum::fromType<T>();
         if (!metaEnum.isValid()) {

@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     const QString locale = QLocale::system().name();
 
     QTranslator *translator = new QTranslator(&app_anilex);
-    if (translator->load(locale, "anilex", "_", ":/i18n")) {
+    if (translator->load(locale, "anilex" , "_", ":/i18n")) {
         qInfo() << "Loaded translation for locale:" << locale;
         QApplication::installTranslator(translator);
     } else {

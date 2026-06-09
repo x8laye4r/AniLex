@@ -11,22 +11,16 @@ namespace {
   constexpr qreal kAspectRatio = 4.0 / 2.5;
 }
 
-/*
- * TODO: fix so you can move the items inside the View
- * fix: make a wrapper for the QGraphicsProxyWidget like a QGraphicsItem post:
- * https://stackoverflow.com/questions/15413564/make-qgraphicsproxywidget-movable-selectable
- */
-
 DesignerView::DesignerView(QWidget *parent)
   : QGraphicsView(parent) {
-  setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-  setAlignment(Qt::AlignCenter);
-  setRenderHint(QPainter::Antialiasing);
-  setDragMode(QGraphicsView::NoDrag);
+  this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  this->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  this->setRenderHint(QPainter::Antialiasing);
+  this->setDragMode(NoDrag);
 
   // set to no scrollbars
-  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   m_scene = new QGraphicsScene(this);
   this->setScene(m_scene);
@@ -60,8 +54,8 @@ void DesignerView::dropEvent(QDropEvent *event) {
     qInfo() << type;
 
     if (std::unique_ptr<AbstractDesignerItem> newItem = DesignerItemFactory::instance().getItem(type)) {
-      QPoint viewPos = event->position().toPoint();
-      QPointF scenePos = this->mapToScene(viewPos);
+      const QPoint viewPos = event->position().toPoint();
+      const QPointF scenePos = this->mapToScene(viewPos);
 
       DesignerWrapperItem *wrapperItem = new DesignerWrapperItem();
       wrapperItem->setRect(newItem->boundingRect());
@@ -77,8 +71,25 @@ void DesignerView::dropEvent(QDropEvent *event) {
       connect(wrapperItem->m_signal, &ItemSignalProxy::resizedItem, rawItem, &AbstractDesignerItem::resizeRect);
 
       connect(wrapperItem->m_signal, &ItemSignalProxy::movedItem, rawItem, [rawItem]() {
-        emit rawItem->xChanged();
-        emit rawItem->yChanged();
+        const int xIdx = rawItem->metaObject()->indexOfProperty("x");
+        const int yIdx = rawItem->metaObject()->indexOfProperty("y");
+
+        emit rawItem->propertyUpdated(xIdx);
+        emit rawItem->propertyUpdated(yIdx);
+      });
+
+      static int xIdx = rawItem->metaObject()->indexOfProperty("x");
+      static int yIdx = rawItem->metaObject()->indexOfProperty("y");
+      static int wIdx = rawItem->metaObject()->indexOfProperty("width");
+      static int hIdx = rawItem->metaObject()->indexOfProperty("height");
+
+      connect(rawItem, &AbstractDesignerItem::propertyUpdated, m_scene, [wrapperItem, rawItem](const int propIndex) {
+        if (propIndex == wIdx || propIndex == hIdx) {
+          wrapperItem->setRect(rawItem->boundingRect());
+        }
+        else if (propIndex == xIdx || propIndex == yIdx) {
+          wrapperItem->setPos(rawItem->scenePos());
+        }
       });
 
       this->m_scene->addItem(wrapperItem);
