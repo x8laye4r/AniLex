@@ -80,30 +80,51 @@ void DesignerPropertyEditor::widgetChanged(AbstractDesignerItem *item) {
 }
 
 void DesignerPropertyEditor::initRegistry() {
-  m_editorRegistries[QMetaType::QString] = [](QWidget* parent, const QVariant& val, auto setter) {
+  m_editorRegistries[QMetaType::QString] = [](QWidget* parent, const QVariant& val, auto setter) -> EditorComponent {
     auto* edit = new QLineEdit(parent);
     edit->setText(val.toString());
     QObject::connect(edit, &QLineEdit::textChanged, setter);
 
-    return edit;
+    auto updater = [edit](const QVariant &value) {
+      const QSignalBlocker blocker(edit);
+      edit->setText(value.toString());
+    };
+
+    return {edit, updater};
   };
 
-  m_editorRegistries[QMetaType::Int] = [](QWidget* parent, const QVariant& val, auto setter) {
+  m_editorRegistries[QMetaType::Int] = [](QWidget* parent, const QVariant& val, auto setter) -> EditorComponent {
     auto* spin = new QSpinBox(parent);
     spin->setRange(-9999, 9999);
     spin->setValue(val.toInt());
-    QObject::connect(spin, &QSpinBox::valueChanged, [setter](const int i) { setter(i); });
-    return spin;
+    QObject::connect(spin, &QSpinBox::valueChanged, [setter](const int i) {
+      setter(i);
+    });
+
+    auto updater = [spin](const QVariant &value) {
+      const QSignalBlocker blocker(spin);
+      spin->setValue(value.toInt());
+    };
+
+    return {spin, updater};
   };
 
-  m_editorRegistries[QMetaType::Bool] = [](QWidget* parent, const QVariant& val, auto setter) {
+  m_editorRegistries[QMetaType::Bool] = [](QWidget* parent, const QVariant& val, auto setter) -> EditorComponent {
     auto* check = new QCheckBox(parent);
     check->setChecked(val.toBool());
-    QObject::connect(check, &QCheckBox::toggled, [setter](const bool b) { setter(b); });
-    return check;
+    QObject::connect(check, &QCheckBox::toggled, [setter](const bool b) {
+      setter(b);
+    });
+
+    auto updater = [check](const QVariant &value) {
+      QSignalBlocker blocker(check);
+      check->setChecked(value.toBool());
+    }
+
+    return {check, updater};
   };
 
-  m_editorRegistries[QMetaType::QColor] = [](QWidget* parent, const QVariant& val, auto setter) {
+  m_editorRegistries[QMetaType::QColor] = [](QWidget* parent, const QVariant& val, auto setter) -> EditorComponent {
     auto* button = new QPushButton(parent);
     button->setText(QObject::tr("Choose Color"));
     QObject::connect(button, &QPushButton::clicked, [parent, val, setter] {
@@ -114,7 +135,12 @@ void DesignerPropertyEditor::initRegistry() {
         setter(color);
       });
     });
-    return button;
+
+    auto updater = [](const QVariant &value) {
+      // nothing should happen there
+    };
+
+    return {button, updater};
   };
 }
 
@@ -170,6 +196,7 @@ static void checkIfChangeableItemViaViewAndConnect(QString &propName, QWidget *n
 
 void DesignerPropertyEditor::createEditorWidget(QList<QMetaProperty> &properties) {
   for (const QMetaProperty &property : properties) {
+    int propIdx = property.propertyIndex();
     QString propName = property.name();
     QVariant propValue = m_selectedItem->property(propName.toUtf8().constData());
 
