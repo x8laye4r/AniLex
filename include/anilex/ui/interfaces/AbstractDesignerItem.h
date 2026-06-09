@@ -27,10 +27,15 @@ public slots:
     this->setPos(resizedRect.topLeft());
     this->resize(resizedRect.width(), resizedRect.height());
 
-    emit xChanged();
-    emit yChanged();
-    emit widthChanged();
-    emit heightChanged();
+    const int xIdx = this->metaObject()->indexOfProperty("x");
+    const int yIdx = this->metaObject()->indexOfProperty("y");
+    const int widthIdx = this->metaObject()->indexOfProperty("width");
+    const int heightIdx = this->metaObject()->indexOfProperty("height");
+
+    emit propertyUpdated(xIdx);
+    emit propertyUpdated(yIdx);
+    emit propertyUpdated(widthIdx);
+    emit propertyUpdated(heightIdx);
   }
 
 public:                   
@@ -148,7 +153,8 @@ public:
     } else {
       this->setPos(x, this->scenePos().y());
     }
-    emit xChanged();
+    const int idx = this->metaObject()->indexOfProperty("x");
+    emit propertyUpdated(idx);
   }
 
   int getY() const { return this->scenePos().y(); }
@@ -158,7 +164,8 @@ public:
     } else {
       this->setPos(this->scenePos().y(), y);
     }
-    emit yChanged();
+    const int idx = this->metaObject()->indexOfProperty("y");
+    emit propertyUpdated(idx);
   }
 
   int getWidth() const { return this->widget()->rect().width(); }
@@ -171,7 +178,8 @@ public:
     if (this->widget()) {
       this->widget()->resize(w, this->widget()->rect().height());
     }
-    emit widthChanged();
+    const int idx = this->metaObject()->indexOfProperty("width");
+    emit propertyUpdated(idx);
   }
 
   int getHeight() const { return this->widget()->rect().height(); }
@@ -184,6 +192,7 @@ public:
     if (this->widget()) {
       this->widget()->resize(this->widget()->rect().width(), h);
     }
-    emit heightChanged();
+    const int idx = this->metaObject()->indexOfProperty("height");
+    emit propertyUpdated(idx);
   }
 };

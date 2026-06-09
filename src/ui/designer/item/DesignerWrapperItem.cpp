@@ -1,4 +1,6 @@
 #include "anilex/ui/designer/item/DesignerWrapperItem.h"
+
+#include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
 DesignerWrapperItem::DesignerWrapperItem(QGraphicsItem *parent)
@@ -100,19 +102,25 @@ void DesignerWrapperItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
   if (event->buttons() & Qt::LeftButton && m_resizeDirection != ResizeDirection::None) {
     QPointF delta = event->pos() - m_startDragPosition;
 
+    const qreal minSize = 20.0f;
+
     QRectF resizedRect = m_startRect;
     switch (m_resizeDirection) {
       case ResizeDirection::TopLeft:
-        resizedRect.setTopLeft(resizedRect.topLeft() + delta);
+        resizedRect.setLeft(std::min(m_startRect.left() + delta.x(), m_startRect.right() - minSize));
+        resizedRect.setTop(std::min(m_startRect.top() + delta.y(), m_startRect.bottom() - minSize));
         break;
       case ResizeDirection::TopRight:
-        resizedRect.setTopRight(resizedRect.topRight() + delta);
+        resizedRect.setRight(std::max(m_startRect.right() + delta.x(), m_startRect.left() + minSize));
+        resizedRect.setTop(std::min(m_startRect.top() + delta.y(), m_startRect.bottom() - minSize));
         break;
       case ResizeDirection::BottomLeft:
-        resizedRect.setBottomLeft(resizedRect.bottomLeft() + delta);
+        resizedRect.setLeft(std::min(m_startRect.left() + delta.x(), m_startRect.right() - minSize));
+        resizedRect.setBottom(std::max(m_startRect.bottom() + delta.y(), m_startRect.top() + minSize));
         break;
       case ResizeDirection::BottomRight:
-        resizedRect.setBottomRight(resizedRect.bottomRight() + delta);
+        resizedRect.setRight(std::max(m_startRect.right() + delta.x(), m_startRect.left() + minSize));
+        resizedRect.setBottom(std::max(m_startRect.bottom() + delta.y(), m_startRect.top() + minSize));
         break;
       case ResizeDirection::None:
         break;
@@ -171,5 +179,6 @@ QVariant DesignerWrapperItem::itemChange(GraphicsItemChange change, const QVaria
   if (change == ItemPositionHasChanged) {
     emit m_signal->movedItem();
   }
+
   return QGraphicsRectItem::itemChange(change, value);
 }
