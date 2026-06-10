@@ -31,9 +31,6 @@ private:
   void setupObjectNames();
   void setupConnections();
 
-signals:
-
-
 private slots:
   void deleteSelectedWidgets() const;
   void showCustomContextMenu(const QPoint &pos);

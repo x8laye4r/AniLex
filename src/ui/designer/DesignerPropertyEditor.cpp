@@ -29,6 +29,7 @@ DesignerPropertyEditor::DesignerPropertyEditor(QWidget *parent)
   this->initRegistry();
 }
 
+// idk why this is not working 
 void DesignerPropertyEditor::clearEditor(QLayout *layoutToClear) {
   if (!layoutToClear) {
     layoutToClear = m_scrollLayout;
@@ -136,8 +137,10 @@ void DesignerPropertyEditor::initRegistry() {
     button->setText(QObject::tr("Choose Color"));
     QObject::connect(button, &QPushButton::clicked, [parent, val, setter] {
       QColorDialog *colorDialog = new QColorDialog(parent);
+      colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
       colorDialog->setCurrentColor(val.value<QColor>());
       colorDialog->show();
+      colorDialog->setAttribute(Qt::WA_DeleteOnClose);
       QObject::connect(colorDialog, &QColorDialog::currentColorChanged, [setter](const QColor& color) {
         setter(color);
       });
