@@ -29,25 +29,25 @@ DesignerPropertyEditor::DesignerPropertyEditor(QWidget *parent)
   this->initRegistry();
 }
 
-// idk why this is not working 
 void DesignerPropertyEditor::clearEditor(QLayout *layoutToClear) {
   if (!layoutToClear) {
     layoutToClear = m_scrollLayout;
   }
 
   QLayoutItem* item;
-
-  while ((item = m_scrollLayout->takeAt(0)) != nullptr) {
-    if (QWidget* widget = item->widget()) {
-      widget->hide();
-      widget->deleteLater();
+  /*
+  I have used this here:
+  https://runebook.dev/en/docs/qt/qlayout/removeItem
+  */
+  while ((item = layoutToClear->takeAt(0)) != nullptr) {
+    if (item->layout()) {
+      clearEditor(item->layout());
+      delete item->layout();
+    } else if (item->widget()) {
+      delete item->widget();
     }
-    else if (QLayout* childLayout = item->layout()) {
-      clearEditor(childLayout);
-      childLayout->deleteLater();
-    }
-    delete item;
   }
+  delete item;
 }
 
 static void getProperties(const QMetaObject *metaObject, QList<QMetaProperty> &properties) {

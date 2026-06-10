@@ -68,29 +68,10 @@ void DesignerView::dropEvent(QDropEvent *event) {
       rawItem->setFlag(QGraphicsItem::ItemIsMovable, false);
       rawItem->setFlag(QGraphicsItem::ItemIsSelectable, false);
 
-      connect(wrapperItem->m_signal, &ItemSignalProxy::resizedItem, rawItem, &AbstractDesignerItem::resizeRect);
+      wrapperItem->setWrappedItem(rawItem);
 
-      connect(wrapperItem->m_signal, &ItemSignalProxy::movedItem, rawItem, [rawItem]() {
-        const int xIdx = rawItem->metaObject()->indexOfProperty("x");
-        const int yIdx = rawItem->metaObject()->indexOfProperty("y");
-
-        emit rawItem->propertyUpdated(xIdx);
-        emit rawItem->propertyUpdated(yIdx);
-      });
-
-      static int xIdx = rawItem->metaObject()->indexOfProperty("x");
-      static int yIdx = rawItem->metaObject()->indexOfProperty("y");
-      static int wIdx = rawItem->metaObject()->indexOfProperty("width");
-      static int hIdx = rawItem->metaObject()->indexOfProperty("height");
-
-      connect(rawItem, &AbstractDesignerItem::propertyUpdated, m_scene, [wrapperItem, rawItem](const int propIndex) {
-        if (propIndex == wIdx || propIndex == hIdx) {
-          wrapperItem->setRect(rawItem->boundingRect());
-        }
-        else if (propIndex == xIdx || propIndex == yIdx) {
-          wrapperItem->setPos(rawItem->scenePos());
-        }
-      });
+      connect(wrapperItem->m_signal, &ItemSignalProxy::resizeFinished, rawItem, &AbstractDesignerItem::finishGeometryChange);
+      connect(wrapperItem->m_signal, &ItemSignalProxy::moveFinished, rawItem, &AbstractDesignerItem::finishGeometryChange);
 
       this->m_scene->addItem(wrapperItem);
     } else {

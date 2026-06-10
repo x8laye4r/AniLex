@@ -5,7 +5,7 @@
 
 DesignerWrapperItem::DesignerWrapperItem(QGraphicsItem *parent)
   : QGraphicsRectItem(parent), m_signal(new ItemSignalProxy()) {
-  this->setFlags(ItemIsMovable | ItemIsSelectable | ItemStacksBehindParent | ItemSendsGeometryChanges);
+  this->setFlags(ItemIsMovable | ItemIsSelectable | ItemStacksBehindParent);
   this->setAcceptHoverEvents(true);
 }
 
@@ -39,6 +39,10 @@ void DesignerWrapperItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     painter->restore();
   }
+}
+
+void DesignerWrapperItem::setWrappedItem(AbstractDesignerItem *wrappedItem) {
+  m_wrappedItem = wrappedItem;
 }
 
 QRectF DesignerWrapperItem::getResizeButtonRect(ResizeDirection direction) const {
@@ -126,12 +130,15 @@ void DesignerWrapperItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
         break;
     }
 
-
     resizedRect = resizedRect.normalized();
 
     this->prepareGeometryChange();
     this->setRect(resizedRect);
-    emit m_signal->resizedItem(resizedRect);
+
+    if (m_wrappedItem) {
+      m_wrappedItem->resizeRect(resizedRect);
+    }
+
     event->accept();
   } else {
     QGraphicsRectItem::mouseMoveEvent(event);
@@ -148,11 +155,20 @@ void DesignerWrapperItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
       m_startRect = this->rect();
       return;
     }
+    m_startPos = this->pos();
   }
   QGraphicsRectItem::mousePressEvent(event);
 }
 
 void DesignerWrapperItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+  if (event->button() == Qt::LeftButton) {
+    if (m_resizeDirection != ResizeDirection::None) {
+      emit m_signal->resizeFinished(this->rect());
+      m_resizeDirection = ResizeDirection::None;
+    } else if (this->pos() != m_startPos) {
+      emit m_signal->moveFinished();
+    }
+  }
   QGraphicsRectItem::mouseReleaseEvent(event);
 }
 
@@ -173,12 +189,4 @@ QPainterPath DesignerWrapperItem::shape() const {
   }
 
   return path;
-}
-
-QVariant DesignerWrapperItem::itemChange(GraphicsItemChange change, const QVariant &value) {
-  if (change == ItemPositionHasChanged) {
-    emit m_signal->movedItem();
-  }
-
-  return QGraphicsRectItem::itemChange(change, value);
 }

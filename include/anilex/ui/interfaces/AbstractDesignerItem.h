@@ -26,7 +26,9 @@ public slots:
   void resizeRect(const QRectF &resizedRect) {
     this->setPos(resizedRect.topLeft());
     this->resize(resizedRect.width(), resizedRect.height());
+  }
 
+  void finishGeometryChange() {
     const int xIdx = this->metaObject()->indexOfProperty("x");
     const int yIdx = this->metaObject()->indexOfProperty("y");
     const int widthIdx = this->metaObject()->indexOfProperty("width");
@@ -121,10 +123,6 @@ protected:
     if (m_drag && event->button() == Qt::LeftButton) {
       QPointF newPos = event->scenePos() - m_dragOffset;
       setPos(newPos);
-
-      emit xChanged();
-      emit yChanged();
-
       event->accept();
       return;
     }
@@ -154,7 +152,7 @@ public:
       this->setPos(x, this->scenePos().y());
     }
     const int idx = this->metaObject()->indexOfProperty("x");
-    emit propertyUpdated(idx);
+    // emit propertyUpdated(idx);
   }
 
   int getY() const { return this->scenePos().y(); }
@@ -165,7 +163,7 @@ public:
       this->setPos(this->scenePos().y(), y);
     }
     const int idx = this->metaObject()->indexOfProperty("y");
-    emit propertyUpdated(idx);
+    // emit propertyUpdated(idx);
   }
 
   int getWidth() const { return this->widget()->rect().width(); }
@@ -179,7 +177,7 @@ public:
       this->widget()->resize(w, this->widget()->rect().height());
     }
     const int idx = this->metaObject()->indexOfProperty("width");
-    emit propertyUpdated(idx);
+    // emit propertyUpdated(idx);
   }
 
   int getHeight() const { return this->widget()->rect().height(); }
@@ -193,6 +191,6 @@ public:
       this->widget()->resize(this->widget()->rect().width(), h);
     }
     const int idx = this->metaObject()->indexOfProperty("height");
-    emit propertyUpdated(idx);
+    // emit propertyUpdated(idx);
   }
 };
