@@ -152,7 +152,7 @@ public:
       this->setPos(x, this->scenePos().y());
     }
     const int idx = this->metaObject()->indexOfProperty("x");
-    // emit propertyUpdated(idx);
+    emit propertyUpdated(idx);
   }
 
   int getY() const { return this->scenePos().y(); }
@@ -160,10 +160,10 @@ public:
     if (this->parentItem()) {
       this->parentItem()->setPos(this->scenePos().x(), y);
     } else {
-      this->setPos(this->scenePos().y(), y);
+      this->setPos(this->scenePos().x(), y);
     }
     const int idx = this->metaObject()->indexOfProperty("y");
-    // emit propertyUpdated(idx);
+    emit propertyUpdated(idx);
   }
 
   int getWidth() const { return this->widget()->rect().width(); }
@@ -177,7 +177,7 @@ public:
       this->widget()->resize(w, this->widget()->rect().height());
     }
     const int idx = this->metaObject()->indexOfProperty("width");
-    // emit propertyUpdated(idx);
+    emit propertyUpdated(idx);
   }
 
   int getHeight() const { return this->widget()->rect().height(); }
@@ -191,6 +191,6 @@ public:
       this->widget()->resize(this->widget()->rect().width(), h);
     }
     const int idx = this->metaObject()->indexOfProperty("height");
-    // emit propertyUpdated(idx);
+    emit propertyUpdated(idx);
   }
 };

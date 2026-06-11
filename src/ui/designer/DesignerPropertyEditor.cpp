@@ -63,7 +63,13 @@ static void getProperties(const QMetaObject *metaObject, QList<QMetaProperty> &p
 }
 
 void DesignerPropertyEditor::widgetChanged(AbstractDesignerItem *item) {
+  if (m_selectedItem) {
+    disconnect(m_selectedItem, &AbstractDesignerItem::propertyUpdated, this, nullptr);
+  }
+
   if (item == nullptr) {
+    m_selectedItem = nullptr;
+    clearEditor();
     return;
   }
   clearEditor();
@@ -78,9 +84,11 @@ void DesignerPropertyEditor::widgetChanged(AbstractDesignerItem *item) {
   getProperties(parentClass, writeableProperties);
 
   connect(m_selectedItem, &AbstractDesignerItem::propertyUpdated, this, [this](const int propIdx) {
-    QMetaProperty property = m_selectedItem->metaObject()->property(propIdx);
-    QVariant newValue = property.read(m_selectedItem);
-
+    if (!m_propertyUpdaters.contains(propIdx) || !m_propertyUpdaters[propIdx]) {
+      qInfo() << "No Index";
+      return;
+    }
+    const QVariant newValue = m_selectedItem->metaObject()->property(propIdx).read(m_selectedItem);
     m_propertyUpdaters[propIdx](newValue);
   });
 
@@ -102,16 +110,34 @@ void DesignerPropertyEditor::initRegistry() {
   };
 
   m_editorRegistries[QMetaType::Int] = [](QWidget* parent, const QVariant& val, auto setter) -> EditorComponent {
-    auto* spin = new QSpinBox(parent);
+    auto* spin = new QDoubleSpinBox(parent);
     spin->setRange(-9999, 9999);
     spin->setValue(val.toInt());
-    QObject::connect(spin, &QSpinBox::valueChanged, [setter](const int i) {
+    spin->setDecimals(2);
+    QObject::connect(spin, &QDoubleSpinBox::valueChanged, [setter](const int i) {
       setter(i);
     });
 
     auto updater = [spin](const QVariant &value) {
       const QSignalBlocker blocker(spin);
       spin->setValue(value.toInt());
+    };
+
+    return {spin, updater};
+  };
+
+  m_editorRegistries[QMetaType::Double] = [](QWidget* parent, const QVariant& val, auto setter) -> EditorComponent {
+    auto* spin = new QDoubleSpinBox(parent);
+    spin->setRange(-9999.0, 9999.0);
+    spin->setSingleStep(0.5);
+    spin->setValue(val.toDouble());
+    QObject::connect(spin, &QDoubleSpinBox::valueChanged, [setter](const int i) {
+      setter(i);
+    });
+
+    auto updater = [spin](const QVariant &value) {
+      const QSignalBlocker blocker(spin);
+      spin->setValue(value.toDouble());
     };
 
     return {spin, updater};
@@ -134,20 +160,36 @@ void DesignerPropertyEditor::initRegistry() {
 
   m_editorRegistries[QMetaType::QColor] = [](QWidget* parent, const QVariant& val, auto setter) -> EditorComponent {
     auto* button = new QPushButton(parent);
-    button->setText(QObject::tr("Choose Color"));
-    QObject::connect(button, &QPushButton::clicked, [parent, val, setter] {
+
+    auto updateButtonUI = [button](const QColor& color) {
+      QString cName = color.name(QColor::HexArgb);
+      button->setText(cName);
+      button->setStyleSheet(QString("background-color: %1; color: %2; font-weight: bold;")
+                                .arg(cName)
+                                .arg(color.lightness() < 128 ? "white" : "black"));
+    };
+
+    updateButtonUI(val.value<QColor>());
+
+    QObject::connect(button, &QPushButton::clicked, [parent, val, setter, updateButtonUI, button] {
       QColorDialog *colorDialog = new QColorDialog(parent);
       colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
-      colorDialog->setCurrentColor(val.value<QColor>());
-      colorDialog->show();
+
+      QColor startColor = QColor(button->text());
+      if (!startColor.isValid()) startColor = val.value<QColor>();
+      colorDialog->setCurrentColor(startColor);
+
       colorDialog->setAttribute(Qt::WA_DeleteOnClose);
-      QObject::connect(colorDialog, &QColorDialog::currentColorChanged, [setter](const QColor& color) {
+
+      QObject::connect(colorDialog, &QColorDialog::currentColorChanged, [setter, updateButtonUI](const QColor& color) {
         setter(color);
+        updateButtonUI(color);
       });
+      colorDialog->show();
     });
 
-    auto updater = [](const QVariant &value) {
-      // nothing should happen there
+    auto updater = [updateButtonUI](const QVariant &value) {
+      updateButtonUI(value.value<QColor>());
     };
 
     return {button, updater};

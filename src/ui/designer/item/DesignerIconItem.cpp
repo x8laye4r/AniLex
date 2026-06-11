@@ -1,82 +1,75 @@
 #include "anilex/ui/designer/item/DesignerIconItem.h"
 #include "anilex/ui/designer/DesignerItemFactory.h"
 
+#include <QLabel>
+#include <QPixmap>
+
 DesignerIconItem::DesignerIconItem() {
   m_designerType = DesignerType::DesignerItemType::BOOLEAN;
+  m_text = "Icon";
+
+  m_label = new QLabel();
+  m_label->setAttribute(Qt::WA_TranslucentBackground);
+  m_label->setAlignment(Qt::AlignCenter);
+  m_label->setText(m_text);
+
+  this->setWidget(m_label);
+
   m_pixmap = new QPixmap();
   m_pixmap->fill(Qt::transparent);
-  m_label = new QLabel();
+
+  this->DesignerIconItem::updateGeometry();
 }
+
+/*
+ * Credits to Umbral Reaper and dtech in this StackOverflow post:
+ * https://stackoverflow.com/questions/29196610/qt-drawing-a-filled-rounded-rectangle-with-border
+*/
 
 void DesignerIconItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
   Q_UNUSED(option); Q_UNUSED(widget);
   painter->save();
 
-  painter->setRenderHint(QPainter::Antialiasing);
+  painter->setRenderHints(QPainter::Antialiasing);
 
-  QRectF rect = this->boundingRect();
+  QPainterPath path = QPainterPath();
 
-  if (m_backgroundColor.isValid() && m_backgroundColor != Qt::transparent) {
-    painter->setBrush(QBrush(m_backgroundColor));
-  } else {
-    painter->setBrush(Qt::NoBrush);
-  }
+  QPen pen = QPen(m_borderColor, m_borderWidth);
+  painter->setPen(pen);
 
-  if (m_borderColor.isValid() && m_borderColor != Qt::transparent) {
-    QPen pen(m_borderColor);
-    pen.setWidth(2);
-    painter->setPen(pen);
-  } else {
-    painter->setPen(Qt::NoPen);
-  }
+  QBrush brush = QBrush(m_backgroundColor);
+  painter->setBrush(brush);
 
-  if (m_borderRadius > 0) {
-    painter->drawRoundedRect(rect, m_borderRadius, m_borderRadius);
-  } else {
-    painter->drawRect(rect);
-  }
+  QRectF rect = QRectF(this->rect());
+  rect.adjust(m_borderWidth / 2.0, m_borderWidth / 2.0, -m_borderWidth / 2.0, -m_borderWidth / 2.0);
 
-  painter->setFont(m_label->font());
-  painter->setPen(Qt::black);
+  path.addRoundedRect(rect, m_borderRadius, m_borderRadius);
+  painter->setClipPath(path);
 
-  double currentX = m_padding;
-  double centerY = rect.height() / 2.0;
-
-  if (m_pixmap && !m_pixmap->isNull()) {
-    double pixmapY = centerY - (m_pixmap->height() / 2.0);
-    painter->drawPixmap(currentX, pixmapY, *m_pixmap);
-    currentX += m_pixmap->width() + 8;
-  }
-
-  if (!m_labelText.isEmpty()) {
-    QFontMetrics metrics(m_label->font());
-    double textY = centerY + (metrics.ascent() - metrics.descent()) / 2.0;
-    painter->drawText(currentX, textY, m_labelText);
-  }
+  painter->fillPath(path, painter->brush());
+  painter->strokePath(path, painter->pen());
+  painter->drawText(rect, Qt::AlignCenter, m_text);
 
   painter->restore();
-
   AbstractDesignerItem::paint(painter, option, widget);
 }
 
 void DesignerIconItem::updateGeometry() {
-  QFontMetrics metrics(m_label->font());
+  if (!m_label) return;
 
-  const int pixmapWidth = m_pixmap->width();
-  const int pixmapHeight = m_pixmap->height();
+  const QFont font = m_label->font();
+  const QFontMetrics fontMetrics(font);
 
-  const int textWidth = metrics.horizontalAdvance(m_labelText);
-  const int textHeight = metrics.height();
+  const qint32 width = fontMetrics.horizontalAdvance(m_text) + (m_padding * 2);
+  const qint32 height = fontMetrics.height() + (m_padding * 2);
 
-  int spacing = pixmapWidth > 0 && textWidth > 0 ? 8 : 0;
-  m_width = (m_padding * 2) + pixmapWidth + spacing + textWidth;
-  m_height = (m_padding * 2) + qMax(pixmapHeight, textHeight);
+  m_label->resize(width, height);
 
-  prepareGeometryChange();
+  AbstractDesignerItem::updateGeometry();
 }
 
 QRectF DesignerIconItem::boundingRect() const {
-  return QRectF(0, 0, m_width, m_height);
+  return AbstractDesignerItem::boundingRect();
 }
 
 QColor DesignerIconItem::color() const {
@@ -85,34 +78,53 @@ QColor DesignerIconItem::color() const {
 
 void DesignerIconItem::setColor(const QColor &color) {
   m_color = color;
+  update();
 }
 
 QColor DesignerIconItem::backgroundColor() const {
   return m_backgroundColor;
 }
 
-void DesignerIconItem::setBackgroundColor(const QColor &color) {
-  m_backgroundColor = color;
-}
-
-QColor DesignerIconItem::borderColor() const {
-  return m_borderColor;
-}
-
-void DesignerIconItem::setBorderColor(const QColor &color) {
-  m_borderColor = color;
+void DesignerIconItem::setBackgroundColor(const QColor &backgroundColor) {
+  m_backgroundColor = backgroundColor;
+  update();
 }
 
 qreal DesignerIconItem::borderRadius() const {
   return m_borderRadius;
 }
 
-void DesignerIconItem::setBorderRadius(qreal radius) {
-  m_borderRadius = radius;
+void DesignerIconItem::setBorderRadius(const qreal borderRadius) {
+  m_borderRadius = borderRadius;
+  update();
 }
 
-void DesignerIconItem::setText(const QString &text) {
-  m_labelText = text;
+QColor DesignerIconItem::borderColor() const {
+  return m_borderColor;
+}
+
+void DesignerIconItem::setBorderColor(const QColor &borderColor) {
+  m_borderColor = borderColor;
+  update();
+}
+
+qreal DesignerIconItem::borderWidth() const {
+  return m_borderWidth;
+}
+
+void DesignerIconItem::setBorderWidth(const qreal borderWidth) {
+  m_borderWidth = borderWidth;
+  update();
+}
+
+qreal DesignerIconItem::padding() const {
+  return m_padding;
+}
+
+void DesignerIconItem::setPadding(const qreal padding) {
+  m_padding = padding;
+  update();
+  updateGeometry();
 }
 
 REGISTER_DESIGNER_ITEM(DesignerIconItem, "BOOLEAN")

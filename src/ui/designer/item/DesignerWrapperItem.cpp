@@ -106,25 +106,25 @@ void DesignerWrapperItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
   if (event->buttons() & Qt::LeftButton && m_resizeDirection != ResizeDirection::None) {
     QPointF delta = event->pos() - m_startDragPosition;
 
-    const qreal minSize = 20.0f;
+    constexpr qreal minSize = 20.0f;
 
     QRectF resizedRect = m_startRect;
     switch (m_resizeDirection) {
       case ResizeDirection::TopLeft:
-        resizedRect.setLeft(std::min(m_startRect.left() + delta.x(), m_startRect.right() - minSize));
-        resizedRect.setTop(std::min(m_startRect.top() + delta.y(), m_startRect.bottom() - minSize));
+        resizedRect.setLeft(qMin(m_startRect.left() + delta.x(), m_startRect.right() - minSize));
+        resizedRect.setTop(qMin(m_startRect.top() + delta.y(), m_startRect.bottom() - minSize));
         break;
       case ResizeDirection::TopRight:
-        resizedRect.setRight(std::max(m_startRect.right() + delta.x(), m_startRect.left() + minSize));
-        resizedRect.setTop(std::min(m_startRect.top() + delta.y(), m_startRect.bottom() - minSize));
+        resizedRect.setRight(qMax(m_startRect.right() + delta.x(), m_startRect.left() + minSize));
+        resizedRect.setTop(qMin(m_startRect.top() + delta.y(), m_startRect.bottom() - minSize));
         break;
       case ResizeDirection::BottomLeft:
-        resizedRect.setLeft(std::min(m_startRect.left() + delta.x(), m_startRect.right() - minSize));
-        resizedRect.setBottom(std::max(m_startRect.bottom() + delta.y(), m_startRect.top() + minSize));
+        resizedRect.setLeft(qMin(m_startRect.left() + delta.x(), m_startRect.right() - minSize));
+        resizedRect.setBottom(qMax(m_startRect.bottom() + delta.y(), m_startRect.top() + minSize));
         break;
       case ResizeDirection::BottomRight:
-        resizedRect.setRight(std::max(m_startRect.right() + delta.x(), m_startRect.left() + minSize));
-        resizedRect.setBottom(std::max(m_startRect.bottom() + delta.y(), m_startRect.top() + minSize));
+        resizedRect.setRight(qMax(m_startRect.right() + delta.x(), m_startRect.left() + minSize));
+        resizedRect.setBottom(qMax(m_startRect.bottom() + delta.y(), m_startRect.top() + minSize));
         break;
       case ResizeDirection::None:
         break;

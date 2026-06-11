@@ -117,7 +117,7 @@ void Designer::showCustomContextMenu(const QPoint &pos) {
   connect(deleteSelectedAction, &QAction::triggered, this, &Designer::deleteSelectedWidgets);
   connect(clearAllAction, &QAction::triggered, this, &Designer::clearView);
 
-  MenuRClickFilter *eventFilter = new MenuRClickFilter();
+  MenuRClickFilter *eventFilter = new MenuRClickFilter(&contextMenu);
   contextMenu.installEventFilter(eventFilter);
 
   contextMenu.addAction(deleteSelectedAction);
@@ -125,7 +125,7 @@ void Designer::showCustomContextMenu(const QPoint &pos) {
   contextMenu.exec(m_designerView->viewport()->mapToGlobal(pos));
 }
 
-void Designer::exportWidgetsAsJson(DesignerType::DesignerCreatorItems cardToExportFor) const {
+void Designer::exportWidgetsAsJson(const DesignerType::DesignerCreatorItems cardToExportFor) const {
   QJsonObject json;
   QList<QGraphicsItem*> widgets = m_designerView->scene()->items();
   QJsonArray arrayOfWidgets;
