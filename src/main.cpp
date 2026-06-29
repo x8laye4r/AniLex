@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     tabs.append((TabMeta){.name = "PROFILE", .icon = QString(":/icons/Profile.svg")});
 
     MainWindow widget(tabs);
-
+    /*
     AuthServer server;
     const Authenticator authenticator;
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
         }
     });
     Authenticator::startAuth();
-
+    */
     widget.show();
 
     return QApplication::exec();

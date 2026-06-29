@@ -12,7 +12,7 @@
 class Section : public QWidget {
     Q_OBJECT
 public:
-    explicit Section(const QString & title = "", const int animationDuration = 100, QWidget* parent = 0);
+    explicit Section(const QString & title = "", const int animationDuration = 100, QWidget* parent = nullptr);
     void setContentLayout(QLayout & contentLayout);
 
 private:

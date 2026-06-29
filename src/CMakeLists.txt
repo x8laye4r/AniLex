@@ -15,6 +15,10 @@ add_library(anilex_sources SHARED
         ./CMakeLists.txt
         ./utils/AppPaths.cpp
         ./main.cpp
+        ./ui/designer/DesignerPropertyEditor.cpp
+        ./ui/designer/DesignerWidgetsList.cpp
+        ./ui/designer/DesignerCanvas.cpp
+        ./ui/designer/DesignerWidgetListItem.cpp
 
         ../include/version.h
         ../include/version.h.in
@@ -36,6 +40,10 @@ add_library(anilex_sources SHARED
         ../include/anilex/ui/TabBar.h
         ../include/anilex/ui/TabButtonSimple.h
         ../include/anilex/utils/AppPaths.h
+        ../include/anilex/ui/designer/DesignerPropertyEditor.h
+        ../include/anilex/ui/designer/DesignerWidgetsList.h
+        ../include/anilex/ui/designer/DesignerCanvas.h
+        ../include/anilex/ui/designer/DesignerWidgetListItem.h
 )
 
 target_include_directories(anilex_sources PUBLIC
