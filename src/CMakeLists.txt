@@ -44,6 +44,11 @@ add_library(anilex_sources SHARED
         ../include/anilex/ui/designer/DesignerWidgetsList.h
         ../include/anilex/ui/designer/DesignerCanvas.h
         ../include/anilex/ui/designer/DesignerWidgetListItem.h
+        ../include/anilex/ui/designer/Types.h
+        ../include/anilex/utils/EnumConverter.h
+        ui/designer/item/DesignerTextItem.cpp
+        ../include/anilex/ui/designer/items/DesignerTextItem.h
+        ../include/anilex/ui/designer/DesignerItemFactory.h
 )
 
 target_include_directories(anilex_sources PUBLIC
