@@ -1,1 +1,381 @@
-{ }
+{
+   "Image": {
+      "BannerImage": {
+         "dataSource": "data.MediaListCollection.lists.media.bannerImage",
+         "desc": "The background banner image of the media",
+         "displayName": "Banner Image",
+         "graphqlQuery": "bannerImage",
+         "type": "IMAGE"
+      },
+      "CoverImage": {
+         "dataSource": "data.MediaListCollection.lists.media.coverImage",
+         "desc": "The primary cover image of the media",
+         "displayName": "Cover Image",
+         "graphqlQuery": "coverImage { extraLarge }",
+         "type": "IMAGE"
+      }
+   },
+   "Labels": {
+      "AverageScoreLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.averageScore",
+         "desc": "The overall average score of the media",
+         "displayName": "Average Score",
+         "graphqlQuery": "averageScore",
+         "type": "TEXT"
+      },
+      "CompletedAtLabel": {
+         "dataSource": "data.MediaListCollection.lists.completedAt",
+         "desc": "The date the user finished the entry",
+         "displayName": "Completed At",
+         "graphqlQuery": "completedAt { year month day }",
+         "type": "DATE_TEXT"
+      },
+      "CountryOfOriginLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.countryOfOrigin",
+         "desc": "The country where the media originated",
+         "displayName": "Origin",
+         "graphqlQuery": "countryOfOrigin",
+         "type": "TEXT"
+      },
+      "CreatedAtLabel": {
+         "dataSource": "data.MediaListCollection.lists.createdAt",
+         "desc": "The date the entry was created",
+         "displayName": "Created At",
+         "graphqlQuery": "createdAt",
+         "type": "DATE_TEXT"
+      },
+      "DescriptionLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.description",
+         "desc": "A brief overview or summary of the media",
+         "displayName": "Description",
+         "graphqlQuery": "description",
+         "type": "TEXT"
+      },
+      "DurationLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.duration",
+         "desc": "The total length of the media",
+         "displayName": "Duration",
+         "graphqlQuery": "duration",
+         "type": "TEXT"
+      },
+      "EndDateLabel": {
+         "dataSource": "data.MediaListCollection.lists.endDate",
+         "desc": "The final official release date of the media",
+         "displayName": "End Date",
+         "graphqlQuery": "endDate { year month day }",
+         "type": "DATE_TEXT"
+      },
+      "FavouritesLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.favourites",
+         "desc": "Total number of users who favorited the media",
+         "displayName": "Favorites",
+         "graphqlQuery": "favourites",
+         "type": "TEXT"
+      },
+      "FormatHashtag": {
+         "dataSource": "data.MediaListCollection.lists.media.hashtag",
+         "desc": "The official social media hashtag",
+         "displayName": "Hashtag",
+         "graphqlQuery": "hashtag",
+         "type": "TEXT"
+      },
+      "FormatLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.format",
+         "desc": "The release format of the media",
+         "displayName": "Format",
+         "graphqlQuery": "format",
+         "type": "TEXT"
+      },
+      "IdLabel": {
+         "dataSource": "data.MediaListCollection.lists.id",
+         "desc": "The unique global identifier for the media",
+         "displayName": "Global ID",
+         "graphqlQuery": "id",
+         "type": "TEXT"
+      },
+      "MeanscoreLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.meanscore",
+         "desc": "The mean score calculated for the media",
+         "displayName": "Mean Score",
+         "graphqlQuery": "meanscore",
+         "type": "TEXT"
+      },
+      "MediaIdLabel": {
+         "dataSource": "data.MediaListCollection.lists.mediaId",
+         "desc": "The user-specific identifier for the media",
+         "displayName": "Media ID",
+         "graphqlQuery": "mediaId",
+         "type": "TEXT"
+      },
+      "NextAiringEpisodeLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.nextAiringEpisode.timeUntilAiring",
+         "desc": "Information regarding the next scheduled episode",
+         "displayName": "Next Episode",
+         "graphqlQuery": "nextAiringEpisode { timeUntilAiring }",
+         "type": "TEXT"
+      },
+      "NotesLabel": {
+         "dataSource": "data.MediaListCollection.lists.notes",
+         "desc": "The user's personal notes regarding the media",
+         "displayName": "Notes",
+         "graphqlQuery": "notes",
+         "type": "TEXT"
+      },
+      "PopularityLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.popularity",
+         "desc": "The popularity ranking of the media",
+         "displayName": "Popularity",
+         "graphqlQuery": "popularity",
+         "type": "TEXT"
+      },
+      "PriorityLabel": {
+         "dataSource": "data.MediaListCollection.lists.priority",
+         "desc": "The priority level set by the user",
+         "displayName": "Priority",
+         "graphqlQuery": "priority",
+         "type": "TEXT"
+      },
+      "RepeatLabel": {
+         "dataSource": "data.MediaListCollection.lists.repeat",
+         "desc": "Number of times the user has repeated the media",
+         "displayName": "Repeats",
+         "graphqlQuery": "repeat",
+         "type": "TEXT"
+      },
+      "ScoreLabel": {
+         "dataSource": "data.MediaListCollection.lists.score",
+         "desc": "The rating given by the user",
+         "displayName": "Score",
+         "graphqlQuery": "score",
+         "type": "TEXT"
+      },
+      "SeasonLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.season",
+         "desc": "The release season of the media",
+         "displayName": "Season",
+         "graphqlQuery": "season",
+         "type": "TEXT"
+      },
+      "SeasonYearLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.seasonYear",
+         "desc": "The year the release season occurred",
+         "displayName": "Season Year",
+         "graphqlQuery": "seasonYear",
+         "type": "TEXT"
+      },
+      "SourceLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.source",
+         "desc": "The original source material of the media",
+         "displayName": "Source",
+         "graphqlQuery": "source",
+         "type": "TEXT"
+      },
+      "StartDateLabel": {
+         "dataSource": "data.MediaListCollection.lists.startDate",
+         "desc": "The first official release date of the media",
+         "displayName": "Start Date",
+         "graphqlQuery": "startDate { year month day }",
+         "type": "DATE_TEXT"
+      },
+      "StartedAtLabel": {
+         "dataSource": "data.MediaListCollection.lists.startedAt",
+         "desc": "The date the user started the entry",
+         "displayName": "Started At",
+         "graphqlQuery": "startedAt { year month day }",
+         "type": "DATE_TEXT"
+      },
+      "StatusLabel": {
+         "dataSource": "data.MediaListCollection.lists.status",
+         "desc": "The current status of the media for the user",
+         "displayName": "Status",
+         "graphqlQuery": "status",
+         "type": "TEXT"
+      },
+      "TitleLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.title.userPreferred",
+         "desc": "The user's preferred title for the media",
+         "displayName": "Title",
+         "graphqlQuery": "title { userPreferred }",
+         "type": "TEXT"
+      },
+      "TrailerLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.trailer.site",
+         "desc": "Link to the official media trailer",
+         "displayName": "Trailer",
+         "graphqlQuery": "trailer { site }",
+         "type": "TEXT"
+      },
+      "TrendingLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.trending",
+         "desc": "Current trending status based on posts per hour",
+         "displayName": "Trending",
+         "graphqlQuery": "trending",
+         "type": "TEXT"
+      },
+      "TypeLabel": {
+         "dataSource": "data.MediaListCollection.lists.media.type",
+         "desc": "The category or type of the media",
+         "displayName": "Type",
+         "graphqlQuery": "type",
+         "type": "TEXT"
+      },
+      "UpdatedAtLabel": {
+         "dataSource": "data.MediaListCollection.lists.updatedAt",
+         "desc": "The date the entry was last updated",
+         "displayName": "Updated At",
+         "graphqlQuery": "updatedAt",
+         "type": "DATE_TEXT"
+      }
+   },
+   "MediaFlags": {
+      "HiddenFromStatusListIcon": {
+         "dataSource": "data.MediaListCollection.lists.hiddenFromStatusLists",
+         "desc": "Whether the media is hidden from the status list",
+         "displayName": "Hidden",
+         "graphqlQuery": "hiddenFromStatusLists",
+         "type": "MEDIA_FLAGS"
+      },
+      "IsAdultIcon": {
+         "dataSource": "data.MediaListCollection.lists.media.isAdult",
+         "desc": "Whether the media is classified as adult content",
+         "displayName": "Adult",
+         "graphqlQuery": "isAdult",
+         "type": "MEDIA_FLAGS"
+      },
+      "IsFavoriteIcon": {
+         "dataSource": "data.MediaListCollection.lists.media.isFavourite",
+         "desc": "Whether the user has favorited this media",
+         "displayName": "Favorite",
+         "graphqlQuery": "isFavourite",
+         "type": "MEDIA_FLAGS"
+      },
+      "IsLicensedIcon": {
+         "dataSource": "data.MediaListCollection.lists.media.isLicensed",
+         "desc": "Whether the media is officially licensed",
+         "displayName": "Licensed",
+         "graphqlQuery": "isLicensed",
+         "type": "MEDIA_FLAGS"
+      },
+      "IsLockedIcon": {
+         "dataSource": "data.MediaListCollection.lists.media.isLocked",
+         "desc": "Whether the media entry is locked",
+         "displayName": "Locked",
+         "graphqlQuery": "isLocked",
+         "type": "MEDIA_FLAGS"
+      },
+      "IsRecommendationLockIcon": {
+         "dataSource": "data.MediaListCollection.lists.media.isRecommendationBlocked",
+         "desc": "Whether the media is blocked for recommendations",
+         "displayName": "Recommendation Blocked",
+         "graphqlQuery": "isRecommendationBlocked",
+         "type": "MEDIA_FLAGS"
+      },
+      "IsReviewBlockedIcon": {
+         "dataSource": "data.MediaListCollection.lists.media.isReviewBlocked",
+         "desc": "Whether reviews are blocked for this media",
+         "displayName": "Review Blocked",
+         "graphqlQuery": "isReviewBlocked",
+         "type": "MEDIA_FLAGS"
+      },
+      "PrivateIcon": {
+         "dataSource": "data.MediaListCollection.lists.private",
+         "desc": "Whether the entry is hidden from public view",
+         "displayName": "Private",
+         "graphqlQuery": "private",
+         "type": "MEDIA_FLAGS"
+      }
+   },
+   "Scrollareas": {
+      "AdvancedScoreScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.advancedScores",
+         "desc": "Detailed user-specific scores",
+         "displayName": "Advanced Scores",
+         "graphqlQuery": "advancedScores",
+         "type": "SCROLLABLE"
+      },
+      "AiringScheduleScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.airingSchedule.nodes.timeUntilAiring",
+         "desc": "Release dates and times for all episodes",
+         "displayName": "Airing Schedule",
+         "graphqlQuery": "airingSchedule { nodes { timeUntilAiring episode } }",
+         "type": "SCROLLABLE"
+      },
+      "CustomListsScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.customLists",
+         "desc": "Custom user lists containing this media",
+         "displayName": "Custom Lists",
+         "graphqlQuery": "customLists",
+         "type": "SCROLLABLE"
+      },
+      "ExternalLinksScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.externalLinks.site",
+         "desc": "All associated external links for the media",
+         "displayName": "External Links",
+         "graphqlQuery": "externalLinks { site }",
+         "type": "SCROLLABLE"
+      },
+      "GenresScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.genres",
+         "desc": "All genres associated with the media",
+         "displayName": "Genres",
+         "graphqlQuery": "genres",
+         "type": "SCROLLABLE"
+      },
+      "RankingsScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.rankings.context;media.rankings.rank;media.rankings.season;media.rankings.year",
+         "desc": "Global and seasonal rankings of the media",
+         "displayName": "Rankings",
+         "graphqlQuery": "rankings { allTime context rank season year }",
+         "type": "SCROLLABLE"
+      },
+      "RelationsScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.relations.nodes.title.userPreferred",
+         "desc": "All related media entries",
+         "displayName": "Relations",
+         "graphqlQuery": "relations { nodes { id title { userPreferred } } }",
+         "type": "SCROLLABLE"
+      },
+      "ScoreDistributionScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.scoreStats.scoreDistribution.score;media.scoreStats.scoreDistribution.amount",
+         "desc": "The global distribution of user scores",
+         "displayName": "Score Distribution",
+         "graphqlQuery": "scoreStats: stats { scoreDistribution { amount score } }",
+         "type": "SCROLLABLE"
+      },
+      "StaffScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.staff.nodes.name.full",
+         "desc": "The production staff of the media",
+         "displayName": "Staff",
+         "graphqlQuery": "staff { nodes { name { full } } }",
+         "type": "SCROLLABLE"
+      },
+      "StatusDistributionScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.statusStats.statusDistribution.status;media.statusStats.statusDistribution.amount",
+         "desc": "The global distribution of media statuses",
+         "displayName": "Status Distribution",
+         "graphqlQuery": "statusStats: stats { statusDistribution { amount status } }",
+         "type": "SCROLLABLE"
+      },
+      "StudiosScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.studios.nodes.name",
+         "desc": "The names of the involved production studios",
+         "displayName": "Studios",
+         "graphqlQuery": "studios { nodes { name } }",
+         "type": "SCROLLABLE"
+      },
+      "SynonymsScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.synonyms",
+         "desc": "Alternative titles for the media",
+         "displayName": "Synonyms",
+         "graphqlQuery": "synonyms",
+         "type": "SCROLLABLE"
+      },
+      "TagsScrollarea": {
+         "dataSource": "data.MediaListCollection.lists.media.tags.name",
+         "desc": "Metadata tags associated with the media",
+         "displayName": "Tags",
+         "graphqlQuery": "tags { name }",
+         "type": "SCROLLABLE"
+      }
+   }
+}

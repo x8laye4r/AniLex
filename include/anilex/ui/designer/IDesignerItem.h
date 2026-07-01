@@ -1,20 +1,20 @@
 #pragma once
 #include <QWidget>
-#include "anilex/ui/designer/Types.h"
+#include "anilex/ui/designer/DesignerHelpers.h"
 
 namespace DesignerTypes = anilex_designer_helpers;
 
 class IDesignerItem {
 public:
-  explicit IDesignerItem();
+  explicit IDesignerItem() = default;
   virtual ~IDesignerItem() = default;
 
   virtual QJsonObject toJson() = 0;
   virtual void fromJson(const QJsonObject& jsonObject) = 0;
   virtual void installEventFilters_(QObject* eventFilterObject) = 0;
 
-  virtual DesignerTypes::Types type() const = 0;
-  virtual void setType(DesignerTypes::Types type) = 0;
+  virtual DesignerTypes::DesignerHelpers type() const = 0;
+  virtual void setType(DesignerTypes::DesignerHelpers type) = 0;
 
   virtual QString graphqlSource() const = 0;
   virtual QString setGraphqlSource(const QString &source) = 0;
@@ -31,7 +31,7 @@ protected:
   /// GraphQL query what the graphql-builder puts later. @note should be not empty and not edited after first set
   QString m_graphqlQuery = "";
   /// type of the widget which gets used
-  DesignerTypes::Types m_type = DesignerTypes::Types::NONE;
+  DesignerTypes::DesignerHelpers m_type = DesignerTypes::DesignerHelpers::NONE;
   /// the state in which it is (selected or not selected)
   bool m_isSelected = false; // defaults to be not selected
 };

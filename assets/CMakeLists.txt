@@ -10,10 +10,9 @@ qt_add_resources(${PROJECT_NAME} "anilex_assets"
             script.js
             styles.css
             CMakeLists.txt
-            images/ShiinaV2.jpg
-            images/Shiina.jpg
             index.html
             designer_presets.jsonnet
+            designer_presets.json
             styles/main.qss
 )
 

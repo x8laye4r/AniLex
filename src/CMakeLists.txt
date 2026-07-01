@@ -19,6 +19,7 @@ add_library(anilex_sources SHARED
         ./ui/designer/DesignerWidgetsList.cpp
         ./ui/designer/DesignerCanvas.cpp
         ./ui/designer/DesignerWidgetListItem.cpp
+        ./ui/designer/Designer.cpp
 
         ../include/version.h
         ../include/version.h.in
@@ -44,7 +45,8 @@ add_library(anilex_sources SHARED
         ../include/anilex/ui/designer/DesignerWidgetsList.h
         ../include/anilex/ui/designer/DesignerCanvas.h
         ../include/anilex/ui/designer/DesignerWidgetListItem.h
-        ../include/anilex/ui/designer/Types.h
+        ../include/anilex/ui/designer/DesignerHelpers.h
+        ../include/anilex/ui/designer/Designer.h
         ../include/anilex/utils/EnumConverter.h
         ui/designer/item/DesignerTextItem.cpp
         ../include/anilex/ui/designer/items/DesignerTextItem.h
@@ -64,7 +66,9 @@ target_link_libraries(anilex_sources PUBLIC
         Qt6Keychain::Qt6Keychain
 )
 
-qt_add_executable(${PROJECT_NAME} main.cpp)
+qt_add_executable(${PROJECT_NAME} main.cpp
+        ui/designer/DesignerDragableLabel.cpp
+        ../include/anilex/ui/designer/DesignerDragableLabel.h)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE anilex_sources)
 

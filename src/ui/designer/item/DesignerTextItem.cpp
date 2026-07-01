@@ -4,7 +4,7 @@
 
 DesignerTextItem::DesignerTextItem(QWidget *parent)
   : QLabel(parent) {
-  m_type = DesignerTypes::Types::TEXT;
+  m_type = DesignerTypes::DesignerHelpers::TEXT;
 }
 
 void DesignerTextItem::fromJson(const QJsonObject &jsonObject) {
@@ -42,11 +42,11 @@ void DesignerTextItem::setSelected(const bool selected) {
   m_isSelected = selected;
 }
 
-void DesignerTextItem::setType(const DesignerTypes::Types type) {
+void DesignerTextItem::setType(const DesignerTypes::DesignerHelpers type) {
   m_type = type;
 }
 
-DesignerTypes::Types DesignerTextItem::type() const {
+DesignerTypes::DesignerHelpers DesignerTextItem::type() const {
   return m_type;
 }
 

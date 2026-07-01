@@ -14,6 +14,7 @@ class Section : public QWidget {
 public:
     explicit Section(const QString & title = "", const int animationDuration = 100, QWidget* parent = nullptr);
     void setContentLayout(QLayout & contentLayout);
+    void setTitle(const QString &title) const;
 
 private:
     QGridLayout* mainLayout = nullptr;

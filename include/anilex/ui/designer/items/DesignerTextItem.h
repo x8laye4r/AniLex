@@ -26,8 +26,8 @@ public:
   bool isSelected() const override;
   void setSelected(bool selected) override;
 
-  void setType(DesignerTypes::Types type) override;
-  DesignerTypes::Types type() const override;
+  void setType(DesignerTypes::DesignerHelpers type) override;
+  DesignerTypes::DesignerHelpers type() const override;
 
   QColor backgroundColor() const;
   void setBackgroundColor(const QColor& color);

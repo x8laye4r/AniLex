@@ -51,7 +51,7 @@ void DesignerCanvas::dropEvent(QDropEvent *event) {
     IDesignerItem *designerItem = item.release();
 
     // set needed values from the JSON object
-    designerItem->setType(EnumConverter::convertTo<DesignerHelpers::Types>(type)); // set to the correct type
+    designerItem->setType(EnumConverter::convertTo<DesignerHelpers::DesignerHelpers>(type)); // set to the correct type
     designerItem->installEventFilters_(this);
     designerItem->setGraphqlQuery(json.value("graphQL").toString(""));
     designerItem->setGraphqlSource(json.value("dataSource").toString(""));

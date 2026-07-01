@@ -2,6 +2,7 @@
 
 #include "anilex/ui/TabBarSimple.h"
 #include "anilex/ui/VerticalTabBar.h"
+#include "anilex/ui/designer/Designer.h"
 
 #define MINIMUM_HEIGHT 400
 #define MINIMUM_WIDTH 600
@@ -42,12 +43,15 @@ void MainWindow::setupUI(const QList<TabMeta> &tabs) {
         delete this->centralWidget()->layout();
     }
 
+    this->designerButton = new QPushButton(tr("Open Designer"), this->centralWidget());
+
     if (direction == "vertical") {
         QHBoxLayout *hLayout = new QHBoxLayout(this->centralWidget());
         hLayout->setContentsMargins(0, 0, 0, 0);
         hLayout->setSpacing(0);
         hLayout->addWidget(this->tabBar);
         hLayout->addLayout(this->stackedLayout, 1);
+        hLayout->addWidget(this->designerButton);
         this->layout = hLayout;
     } else {
         QVBoxLayout *vLayout = new QVBoxLayout(this->centralWidget());
@@ -55,6 +59,7 @@ void MainWindow::setupUI(const QList<TabMeta> &tabs) {
         vLayout->setSpacing(0);
         vLayout->addWidget(this->tabBar);
         vLayout->addLayout(this->stackedLayout, 1);
+        vLayout->addWidget(this->designerButton);
         this->layout = vLayout;
     }
 
@@ -65,6 +70,19 @@ void MainWindow::setupUI(const QList<TabMeta> &tabs) {
 
 void MainWindow::setupConnections() {
     connect(this->tabBar, &AbstractTabBar::tabChanged, this->stackedLayout, &QStackedLayout::setCurrentIndex);
+    connect(this->designerButton, &QPushButton::clicked, this, &MainWindow::openDesigner);
+}
+
+void MainWindow::openDesigner() {
+    if (!this->designerWindow) {
+        this->designerWindow = new Designer();
+        connect(this->designerWindow, &QObject::destroyed, this, [this] {
+            this->designerWindow = nullptr;
+        });
+    }
+    this->designerWindow->show();
+    this->designerWindow->raise();
+    this->designerWindow->activateWindow();
 }
 
 QWidget* MainWindow::createPage(const QString &text) {

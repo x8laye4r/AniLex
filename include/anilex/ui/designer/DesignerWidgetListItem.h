@@ -1,9 +1,11 @@
 #pragma once
+#include "DesignerHelpers.h"
 #include "anilex/ui/Collapsable.h"
+using namespace anilex_designer_helpers;
 
 class DesignerWidgetListItem : public Section {
   Q_OBJECT
 public:
-  explicit DesignerWidgetListItem(const QString &title, QWidget *parent = nullptr);
-  void setWidgets(QStringList &widgetNames);
+  explicit DesignerWidgetListItem(QWidget *parent = nullptr);
+  void setWidget(DesignerCategory category);
 };

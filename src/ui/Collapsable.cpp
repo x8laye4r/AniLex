@@ -48,7 +48,7 @@ Section::Section(const QString & title, const int animationDuration, QWidget* pa
     });
 }
 
-void Section::setContentLayout(QLayout & contentLayout)
+void Section::setContentLayout(QLayout &contentLayout)
 {
     delete contentArea->layout();
     contentArea->setLayout(&contentLayout);
@@ -67,4 +67,8 @@ void Section::setContentLayout(QLayout & contentLayout)
     contentAnimation->setDuration(animationDuration);
     contentAnimation->setStartValue(0);
     contentAnimation->setEndValue(contentHeight);
+}
+
+void Section::setTitle(const QString &title) const {
+    toggleButton->setText(title);
 }
