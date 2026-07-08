@@ -7,8 +7,6 @@ qt_add_resources(${PROJECT_NAME} "anilex_assets"
             icons/Browse.svg
             icons/Lists.svg
             icons/Search.svg
-            script.js
-            styles.css
             CMakeLists.txt
             images/ShiinaV2.jpg
             images/Shiina.jpg
