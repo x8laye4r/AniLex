@@ -46,6 +46,7 @@ int main(int argc, char *argv[]) {
     app_anilex.setApplicationDisplayName("AniLex - AniList Tracker");
     app_anilex.setApplicationVersion(VERSION_STR);
 
+
     // app_anilex.setDesktopFileName("com.example.anilex");
 
     /*

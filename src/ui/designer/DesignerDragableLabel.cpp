@@ -5,6 +5,8 @@
 #include <QMimeData>
 #include <QJsonDocument>
 
+#include "anilex/ui/designer/DesignerItemFactory.h"
+
 DesignerDragableLabel::DesignerDragableLabel(const QString &text, DesignerItem item, QWidget *parent)
   : QLabel(text, parent), m_properties(std::move(item)) {
   this->setFrameShape(QFrame::Box);
@@ -34,17 +36,8 @@ void DesignerDragableLabel::mouseMoveEvent(QMouseEvent *event) {
 
   if ((event->position() - m_dragStartPos).manhattanLength() < QApplication::startDragDistance()) return;
 
-  QDrag *drag = new QDrag(this);
-  QMimeData *mimeData = new QMimeData();
+  QDrag *drag = this->createDrag();
 
-  const QJsonObject json = designerItemToJsonObject(&m_properties);
-  const QJsonDocument doc(json);
-  const QByteArray data = doc.toJson(QJsonDocument::Compact);
-
-  mimeData->setData("anilex/designer-data", data);
-  drag->setMimeData(mimeData);
-
-  drag->setPixmap(this->grab());
   drag->setHotSpot(event->position().toPoint());
   drag->exec(Qt::CopyAction);
 
@@ -56,3 +49,25 @@ void DesignerDragableLabel::mouseMoveEvent(QMouseEvent *event) {
 
   QLabel::mouseMoveEvent(event);
 }
+
+QDrag * DesignerDragableLabel::createDrag() {
+  QDrag *drag = new QDrag(this);
+  QMimeData *mimeData = new QMimeData();
+
+  const QJsonObject json = designerItemToJsonObject(&m_properties);
+  const QJsonDocument doc(json);
+  const QByteArray data = doc.toJson(QJsonDocument::Compact);
+
+  mimeData->setData("anilex/designer-data", data);
+  drag->setMimeData(mimeData);
+
+  const QString type = json.value("type").toString("NONE");
+
+  if (auto item = DesignerItemFactory::instance().getItem(type)) {
+    item->fromJson(json);
+    drag->setPixmap(item->asWidget()->grab());
+  }
+
+  return drag;
+}
+
