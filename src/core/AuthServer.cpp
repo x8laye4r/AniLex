@@ -56,20 +56,12 @@ void AuthServer::handleRequest(QTcpSocket *socket) {
     return;
   }
 
-  QString filePath = ":/index.html";
-  QString contentType = "text/html";
-
-  if (requestLine.contains("/styles.css")) {
-    filePath = ":/styles.css";
-    contentType = "text/css";
-  } else if (requestLine.contains("/script.js")) {
-    filePath = ":/script.js";
-    contentType = "text/javascript";
-  }
+  constexpr auto filePath = ":/index.html";
+  constexpr auto contentType = "text/html";
 
   QFile file(filePath);
   if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    sendResponse(socket, file.readAll(), contentType.toUtf8());
+    sendResponse(socket, file.readAll(), contentType);
   } else {
     qWarning() << "Failed to open file" << filePath << ":" << file.errorString();
     socket->disconnectFromHost();
