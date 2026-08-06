@@ -1,0 +1,21 @@
+query GetMediaCharactersQuery($id: Int, $page: Int, $perPage: Int) {
+    Media(id: $id) {
+        characters(page: $page, perPage: $perPage) {
+            edges {
+                role
+                node {
+                    id
+                    name {
+                        full
+                    }
+                    image {
+                        medium
+                    }
+                }
+            }
+            pageInfo {
+                ...PageInfo
+            }
+        }
+    }
+}

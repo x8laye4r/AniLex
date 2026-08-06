@@ -1,0 +1,5 @@
+mutation DeleteThreadMutation($id: Int) {
+    DeleteThread(id: $id) {
+        deleted
+    }
+}

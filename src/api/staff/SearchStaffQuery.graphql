@@ -1,0 +1,14 @@
+query SearchStaffQuery($page: Int, $perPage: Int, $search: String, $sort: [StaffSort]) {
+    Page(page: $page, perPage: $perPage) {
+        staff(search: $search, sort: $sort) {
+            id
+            name {
+                full
+                userPreferred
+            }
+            image {
+                medium
+            }
+        }
+    }
+}

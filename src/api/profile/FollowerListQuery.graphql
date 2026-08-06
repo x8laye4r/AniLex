@@ -1,0 +1,14 @@
+query FollowerListQuery($userId: Int!, $page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+        followers(userId: $userId) {
+            id
+            name
+            avatar {
+                medium
+            }
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}

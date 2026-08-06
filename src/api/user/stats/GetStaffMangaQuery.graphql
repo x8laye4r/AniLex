@@ -1,0 +1,21 @@
+query GetStaffMangaQuery($id: Int, $sort: [UserStatisticsSort]) {
+    User(id: $id){
+        statistics {
+            manga {
+                staff(sort: $sort) {
+                    staff {
+                        name {
+                            userPreferred
+                        }
+                        image {
+                            medium
+                        }
+                    }
+                    count
+                    meanScore
+                    minutesWatched
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,11 @@
+query GetReleasingMoreQuery($page: Int, $perPage: Int, $type: MediaType) {
+    Page(page: $page, perPage: $perPage) {
+        media(status: RELEASING, sort: POPULARITY_DESC, type: $type) {
+            id
+            __replace_custom_rela_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}

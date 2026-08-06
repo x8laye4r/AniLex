@@ -1,0 +1,9 @@
+query MediaTagCollectionQuery {
+    MediaTagCollection {
+        id
+        name
+        category
+        description
+        isAdult
+    }
+}

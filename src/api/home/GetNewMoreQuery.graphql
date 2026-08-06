@@ -1,0 +1,11 @@
+query GetNewMoreQuery($page: Int, $perPage: Int, $type: MediaType) {
+    Page(page: $page, perPage: $perPage) {
+        media(type: $type, sort: ID_DESC) {
+            id
+            __replace_custom_newa_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}

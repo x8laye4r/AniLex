@@ -1,0 +1,5 @@
+mutation DeleteActivityCommentMutation($id: Int) {
+    DeleteActivityReply(id: $id) {
+        deleted
+    }
+}

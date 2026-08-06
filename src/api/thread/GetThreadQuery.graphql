@@ -1,0 +1,33 @@
+query GetThreadsQuery($page: Int, $perPage: Int, $sort: [ThreadSort] = [ID_DESC], $search: String, $subscribed: Boolean = false) {
+    Page(page: $page, perPage: $perPage) {
+        threads(sort: $sort, search: $search, subscribed: $subscribed) {
+            ...ThreadInfo
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}
+
+fragment ThreadInfo on Thread {
+    id
+    title
+    body
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    isSubscribed
+    createdAt
+    categories {
+        id
+        name
+    }
+    user {
+        id
+        name
+        avatar {
+            medium
+        }
+    }
+}

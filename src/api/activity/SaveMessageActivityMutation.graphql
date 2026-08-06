@@ -1,0 +1,5 @@
+mutation SaveMessageActivityMutation($id: Int, $message: String, $recipientId: Int, $private: Boolean, $locked: Boolean = false) {
+    SaveMessageActivity(id: $id, message: $message, recipientId: $recipientId, private: $private, locked: $locked) {
+        ...MessageActivityFragment
+    }
+}

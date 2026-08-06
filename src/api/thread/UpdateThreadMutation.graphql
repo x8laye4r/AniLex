@@ -1,0 +1,5 @@
+mutation UpdateThreadMutation($id: Int, $title: String, $body: String, $categories: [Int], $mediaCategories: [Int]) {
+    SaveThread(id: $id, title: $title, body: $body, categories: $categories, mediaCategories: $mediaCategories) {
+        ...ThreadInfo
+    }
+}

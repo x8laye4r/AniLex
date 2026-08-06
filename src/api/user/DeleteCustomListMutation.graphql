@@ -1,0 +1,5 @@
+mutation DeleteCustomListMutation($toDelete: String) {
+    DeleteCustomList(customList: $toDelete) {
+        deleted
+    }
+}

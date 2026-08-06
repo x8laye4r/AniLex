@@ -1,0 +1,28 @@
+query GetStaffCharactersQuery($staffId: Int, $onList: Boolean, $page: Int, $perPage: Int) {
+    Staff(id: $staffId) {
+        characterMedia(page: $page, perPage: $perPage, sort: [START_DATE_DESC], onList: $onList) {
+            edges {
+                id # Id of the edge
+                node {
+                    id # Anime Id
+                    title {
+                        userPreferred
+                    }
+                }
+                characters {
+                    id # id of the character
+                    image {
+                        large
+                    }
+                    name {
+                        userPreferred
+                    }
+                }
+            }
+            pageInfo {
+                ...PageInfo
+                total
+            }
+        }
+    }
+}

@@ -1,0 +1,11 @@
+query GetSeasonMoreQuery($page: Int, $perPage: Int, $seasonYear: Int, $season: MediaSeason, $type: MediaType) {
+    Page(page: $page, perPage: $perPage) {
+        media(seasonYear: $seasonYear, season: $season, type: $type, sort: POPULARITY_DESC) {
+            id
+            __replace_custom_seaa_entries__
+        }
+        pageInfo {
+            ...PageInfo
+        }
+    }
+}

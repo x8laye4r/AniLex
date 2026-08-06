@@ -1,0 +1,52 @@
+mutation SaveMediaListMutation(
+    $id: Int,
+    $mediaId: Int
+    $status: MediaListStatus,
+    $rawScore: Int,
+    $progess: Int,
+    $repeat: Int,
+    $priority: Int,
+    $private: Boolean,
+    $notes: String,
+    $hiddenFromStatusList: Boolean,
+    $customLists: [String],
+    $advancedScores: [Float],
+    $startedAt: FuzzyDateInput,
+    $compledtedAt: FuzzyDateInput
+) {
+    SaveMediaListEntry(
+        id: $id,
+        mediaId: $mediaId,
+        status: $status,
+        scoreRaw: $rawScore,
+        progress: $progess,
+        repeat: $repeat,
+        priority: $priority,
+        private: $private,
+        notes: $notes,
+        hiddenFromStatusLists: $hiddenFromStatusList,
+        customLists: $customLists,
+        advancedScores: $advancedScores,
+        startedAt: $startedAt,
+        completedAt: $compledtedAt
+    ){
+        id
+        mediaId
+        status
+        progress
+        progressVolumes
+        repeat
+        priority
+        private
+        notes
+        hiddenFromStatusLists
+        customLists(asArray: true)
+        advancedScores
+        startedAt {
+            ...FuzzyDate
+        }
+        completedAt {
+            ...FuzzyDate
+        }
+    }
+}

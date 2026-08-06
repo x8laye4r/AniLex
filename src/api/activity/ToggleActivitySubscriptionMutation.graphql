@@ -1,0 +1,13 @@
+mutation ToggleActivitySubscriptionMutation($id: Int) {
+    ToggleActivitySubscription(activityId: $id) {
+        ...on MessageActivity {
+            ...MessageActivityFragment
+        }
+        ...on TextActivity {
+            ...TextActivityFragment
+        }
+        ...on ListActivity {
+            ...ListActivityFragment
+        }
+    }
+}

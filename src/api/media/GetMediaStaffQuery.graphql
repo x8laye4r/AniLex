@@ -1,0 +1,24 @@
+query GetMediaStaffQuery($id: Int, $page: Int, $perPage: Int) {
+    Media(id: $id) {
+        staff(page: $page, perPage: $perPage) {
+            edges {
+                role
+                node {
+                    id
+                    image {
+                        medium
+                    }
+                    name {
+                        full
+                    }
+                    image {
+                        medium
+                    }
+                }
+            }
+            pageInfo {
+                ...PageInfo
+            }
+        }
+    }
+}
