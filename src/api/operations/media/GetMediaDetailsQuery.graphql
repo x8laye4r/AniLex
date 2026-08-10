@@ -1,0 +1,100 @@
+query GetMediaDetailsQuery($id: Int) {
+    Media (id: $id) {
+        ...BasicMediaDetails
+        format
+        type
+        startDate {
+            day
+            month
+            year
+        }
+        endDate {
+            day
+            month
+            year
+        }
+        season
+        seasonYear
+        episodes
+        duration
+        chapters
+        volumes
+        countryOfOrigin
+        source
+        hasOfficial Twitter hashtags for htag
+        studios {
+            edges {
+                isMain
+                node {
+                    id
+                    name
+                    isAnimationStudio
+                }
+            }
+        }
+        trailer {
+            id
+            site
+            thumbnail
+        }
+        genres
+        synonyms
+        averageScore
+        meanScore
+        popularity
+        favourites
+        tags {
+            name
+            description
+        }
+        isAdult
+        externalLinks {
+            site
+            type
+            icon
+            isDisabled
+            url
+        }
+        isReviewBlocked
+        mediaListEntry {
+            ...UserMediaInfo
+        }
+    }
+}
+
+fragment BasicMediaDetails on Media {
+    id
+    title {
+        userPreferred
+    }
+    coverImage {
+        large
+    }
+    bannerImage
+    status
+}
+
+fragment UserMediaInfo on MediaList {
+    mediaId
+    private
+    progress
+    progressVolumes
+    score
+    advancedScores
+    priority
+    status
+    customLists
+    hiddenFromStatusLists
+    repeat
+    notes
+    completedAt {
+        day
+        month
+        year
+    }
+    startedAt {
+        day
+        month
+        year
+    }
+}

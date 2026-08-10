@@ -1,0 +1,100 @@
+mutation ToggleLikeMutation($toggleLikeV2Id: Int, $type: LikeableType) {
+    ToggleLikeV2(id: $toggleLikeV2Id, type: $type) {
+        ...on ListActivity {
+            ...ListActivityFragment
+        }
+        ... on TextActivity {
+            ...TextActivityFragment
+        }
+        ...on MessageActivity {
+            ...MessageActivityFragment
+        }
+        ... on ActivityReply {
+            ...ReplyFragment
+        }
+        ... on Thread {
+            id
+            isLiked
+        }
+        ... on ThreadComment {
+            isLiked
+        }
+    }
+}
+
+fragment ListActivityFragment on ListActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    type
+    progress
+    status
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+    media {
+        id
+        title {
+            userPreferred
+        }
+        coverImage {
+            medium
+        }
+    }
+}
+
+fragment MessageActivityFragment on MessageActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    message
+    messengerId
+    messenger {
+        name
+        avatar {
+            medium
+        }
+    }
+}
+
+fragment TextActivityFragment on TextActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    text
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+}
+
+fragment ReplyFragment on ActivityReply {
+    id
+    createdAt
+    isLiked
+    likeCount
+    text
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+}

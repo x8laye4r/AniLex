@@ -1,0 +1,17 @@
+query GetUserFavoriteStudioQuery($userId: Int, $page: Int, $perPage: Int) {
+    User(id: $userId) {
+        favourites {
+            studios {
+                nodes {
+                    id
+                    name
+                    isAnimationStudio
+                }
+                pageInfo {
+                    currentPage
+                    hasNextPage
+                }
+            }
+        }
+    }
+}

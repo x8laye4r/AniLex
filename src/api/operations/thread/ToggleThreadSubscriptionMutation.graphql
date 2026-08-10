@@ -1,0 +1,28 @@
+mutation ToggleThreadSubscriptionMutation($threadId: Int) {
+    ToggleThreadSubscription(threadId: $threadId) {
+        ...ThreadInfo
+    }
+}
+
+fragment ThreadInfo on Thread {
+    id
+    title
+    body
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    isSubscribed
+    createdAt
+    categories {
+        id
+        name
+    }
+    user {
+        id
+        name
+        avatar {
+            medium
+        }
+    }
+}

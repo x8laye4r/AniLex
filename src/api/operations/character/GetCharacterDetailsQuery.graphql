@@ -1,0 +1,26 @@
+query GetCharacterDetailsQuery($id: Int) {
+    Character(id: $id) {
+        id
+        name {
+            userPreferred
+            native
+            alternative
+            alternativeSpoiler
+        }
+        image {
+            large
+        }
+        description
+        gender
+        dateOfBirth {
+            day
+            month
+            year
+        }
+        age
+        bloodType
+        favourites
+        isFavourite
+        siteUrl
+    }
+}

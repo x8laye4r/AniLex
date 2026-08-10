@@ -1,5 +1,0 @@
-mutation ToggleThreadSubscriptionMutation($threadId: Int) {
-    ToggleThreadSubscription(threadId: $threadId) {
-        ...ThreadInfo
-    }
-}

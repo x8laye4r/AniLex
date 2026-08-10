@@ -1,0 +1,13 @@
+query SearchStudioQuery($page: Int, $perPage: Int, $search: String, $sort: [StudioSort]) {
+    Page(page: $page, perPage: $perPage) {
+        studios(search: $search, sort: $sort) {
+            id
+            name
+            isAnimationStudio
+        }
+        pageInfo {
+            currentPage
+            hasNextPage
+        }
+    }
+}

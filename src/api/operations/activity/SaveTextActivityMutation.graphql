@@ -1,0 +1,22 @@
+mutation SaveTextActivityMutation($id: Int, $text: String, $locked: Boolean = false) {
+    SaveTextActivity(id: $id, text: $text, locked: $locked) {
+        ...TextActivityFragment
+    }
+}
+
+fragment TextActivityFragment on TextActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    text
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+}

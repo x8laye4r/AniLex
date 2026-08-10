@@ -1,5 +1,0 @@
-mutation ActivityUpdateReplyMutation($commendId: Int, $text: String) {
-    SaveActivityReply(id: $commendId, text: $text) {
-        ...ReplyFragment
-    }
-}

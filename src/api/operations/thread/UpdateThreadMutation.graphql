@@ -1,0 +1,28 @@
+mutation UpdateThreadMutation($id: Int, $title: String, $body: String, $categories: [Int], $mediaCategories: [Int]) {
+    SaveThread(id: $id, title: $title, body: $body, categories: $categories, mediaCategories: $mediaCategories) {
+        ...ThreadInfo
+    }
+}
+
+fragment ThreadInfo on Thread {
+    id
+    title
+    body
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    isSubscribed
+    createdAt
+    categories {
+        id
+        name
+    }
+    user {
+        id
+        name
+        avatar {
+            medium
+        }
+    }
+}

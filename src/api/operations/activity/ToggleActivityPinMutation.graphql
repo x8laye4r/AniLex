@@ -1,0 +1,75 @@
+mutation ToggleActivityPinMutation($id: Int) {
+    ToggleActivityPin(id: $id) {
+        ...on MessageActivity {
+            ...MessageActivityFragment
+        }
+        ...on TextActivity {
+            ...TextActivityFragment
+        }
+        ...on ListActivity {
+            ...ListActivityFragment
+        }
+    }
+}
+
+fragment ListActivityFragment on ListActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    type
+    progress
+    status
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+    media {
+        id
+        title {
+            userPreferred
+        }
+        coverImage {
+            medium
+        }
+    }
+}
+
+fragment MessageActivityFragment on MessageActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    message
+    messengerId
+    messenger {
+        name
+        avatar {
+            medium
+        }
+    }
+}
+
+fragment TextActivityFragment on TextActivity {
+    id
+    createdAt
+    isLiked
+    likeCount
+    replyCount
+    isLocked
+    text
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+}

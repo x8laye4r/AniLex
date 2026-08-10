@@ -1,0 +1,20 @@
+mutation ActivityUpdateReplyMutation($commendId: Int, $text: String) {
+    SaveActivityReply(id: $commendId, text: $text) {
+        ...ReplyFragment
+    }
+}
+
+fragment ReplyFragment on ActivityReply {
+    id
+    createdAt
+    isLiked
+    likeCount
+    text
+    userId
+    user {
+        name
+        avatar {
+            medium
+        }
+    }
+}
