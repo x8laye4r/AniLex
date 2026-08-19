@@ -9,13 +9,13 @@ query GetUserStatsQuery($id: Int) {
                 standardDeviation
                 minutesWatched
                 episodesWatched
-                genres(limit: 10, sort: COUNT_DESC) {
+                genres(limit: 10, sort: [COUNT_DESC]) {
                     genre
                     count
                     meanScore
                     minutesWatched
                 }
-                tags (limit: 10, sort: COUNT_DESC) {
+                tags (limit: 10, sort: [COUNT_DESC]) {
                     tag {
                         name
                     }
@@ -30,13 +30,13 @@ query GetUserStatsQuery($id: Int) {
                 standardDeviation
                 chaptersRead
                 volumesRead
-                genres(limit: 10, sort: COUNT_DESC) {
+                genres(limit: 10, sort: [COUNT_DESC]) {
                     genre
                     count
                     meanScore
                     minutesWatched
                 }
-                tags(limit: 10, sort: COUNT_DESC) {
+                tags(limit: 10, sort: [COUNT_DESC]) {
                     tag {
                         name
                     }

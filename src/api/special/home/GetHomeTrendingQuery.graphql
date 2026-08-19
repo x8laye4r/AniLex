@@ -1,6 +1,6 @@
-query GetTrendingMoreQuery($page: Int, $perPage: Int, $type: MediaType) {
+query GetHomeTrendingQuery($page: Int, $perPage: Int, $type: MediaType) {
     Page(page: $page, perPage: $perPage) {
-        media(sort: TRENDING_DESC, type: $type) {
+        media(sort: [TRENDING_DESC], type: $type) {
             id
             __replace_custom_trea_entries__
         }

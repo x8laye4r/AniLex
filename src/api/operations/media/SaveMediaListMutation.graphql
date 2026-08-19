@@ -1,6 +1,6 @@
 mutation SaveMediaListMutation(
     $id: Int,
-    $mediaId: Int
+    $mediaId: Int,
     $status: MediaListStatus,
     $rawScore: Int,
     $progess: Int,

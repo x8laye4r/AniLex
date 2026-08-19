@@ -1,6 +1,6 @@
-query GetPopularMoreQuery($page: Int, $perPage: Int, $type: MediaType) {
+query GetHomePopularQuery($page: Int, $perPage: Int, $type: MediaType) {
     Page(page: $page, perPage: $perPage) {
-        media(sort: POPULARITY_DESC, type: $type) {
+        media(sort: [POPULARITY_DESC], type: $type) {
             id
             __replace_custom_popa_entries__
         }

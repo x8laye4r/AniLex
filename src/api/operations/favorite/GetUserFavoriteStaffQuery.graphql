@@ -1,7 +1,7 @@
 query GetUserFavoriteStaffQuery($userId: Int, $page: Int, $perPage: Int) {
     User(id: $userId) {
         favourites {
-            staff {
+            staff(page: $page, perPage: $perPage) {
                 nodes {
                     id
                     name {

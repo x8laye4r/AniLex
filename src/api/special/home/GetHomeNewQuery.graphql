@@ -1,6 +1,6 @@
-query GetNewMoreQuery($page: Int, $perPage: Int, $type: MediaType) {
+query GetHomeNewQuery($page: Int, $perPage: Int, $type: MediaType) {
     Page(page: $page, perPage: $perPage) {
-        media(type: $type, sort: ID_DESC) {
+        media(sort: [ID_DESC], type: $type) {
             id
             __replace_custom_newa_entries__
         }

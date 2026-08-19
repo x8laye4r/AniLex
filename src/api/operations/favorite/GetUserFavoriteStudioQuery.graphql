@@ -1,7 +1,7 @@
 query GetUserFavoriteStudioQuery($userId: Int, $page: Int, $perPage: Int) {
     User(id: $userId) {
         favourites {
-            studios {
+            studios(page: $page, perPage: $perPage) {
                 nodes {
                     id
                     name

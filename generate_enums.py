@@ -1,39 +1,41 @@
-import re
 from pathlib import Path
+from graphql import parse, EnumTypeDefinitionNode, EnumTypeExtensionNode
 
-# This file is for generating the C++ Qt Namespace enums
+def parse_graphql_enums(graphql_content: str) -> dict[str, list[tuple[str, str | None]]]:
+    ast = parse(graphql_content)
+    enums: dict[str, list[tuple[str, str | None]]] = {}
 
-def parse_graphql_enums(graphql_content: str) -> dict[str, list[str]]:
-    enum_pattern = re.compile(r"enum\s+(\w+)\s*\{([^}]*)\}", re.DOTALL)
-    enums = {}
+    for definition in ast.definitions:
+        if isinstance(definition, (EnumTypeDefinitionNode, EnumTypeExtensionNode)):
+            enum_name = definition.name.value
+            values = []
 
-    for match in enum_pattern.finditer(graphql_content):
-        enum_name = match.group(1)
-        body = match.group(2)
+            for val in definition.values:
+                val_name = val.name.value
+                deprecation_reason = None
 
-        body_cleaned = re.sub(r'"[^"\\]*(?:\\.[^"\\]*)*"', "", body)
-        body_cleaned = re.sub(
-            r"@[a-zA-Z_]+\s*(\([^)]*\))?", "", body_cleaned
-        )
+                if val.directives:
+                    for directive in val.directives:
+                        if directive.name.value == "deprecated":
+                            deprecation_reason = "No longer supported"
+                            if directive.arguments:
+                                for arg in directive.arguments:
+                                    if arg.name.value == "reason":
+                                        deprecation_reason = arg.value.value
+                                        break
+                            break
 
-        values = []
-        for line in body_cleaned.splitlines():
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
+                values.append((val_name, deprecation_reason))
 
-            val_match = re.match(r"([A-Za-z_][A-Za-z0-9_]*)", line)
-            if val_match:
-                values.append(val_match.group(1))
-
-        if values:
-            enums[enum_name] = values
+            if enum_name in enums:
+                enums[enum_name].extend(values)
+            else:
+                enums[enum_name] = values
 
     return enums
 
-
 def generate_qt_enum_header(
-        enums: dict[str, list[str]],
+        enums: dict[str, list[tuple[str, str | None]]],
         namespace: str = "anilist_enums",
         output_path: str = "include/generated/anilist_enums.h",
 ) -> None:
@@ -53,9 +55,13 @@ def generate_qt_enum_header(
 
     for enum_name, values in enums.items():
         lines.append(f"    enum class {enum_name} {{")
-        for i, val in enumerate(values):
+        for i, (val, reason) in enumerate(values):
             comma = "," if i < len(values) - 1 else ""
-            lines.append(f"        {val}{comma}")
+            if reason:
+                safe_reason = reason.replace('"', '\\"')
+                lines.append(f"        {val} [[deprecated(\"{safe_reason}\")]]{comma}")
+            else:
+                lines.append(f"        {val}{comma}")
         lines.append("    };")
         lines.append(f"    Q_ENUM_NS({enum_name})")
         lines.append("")
@@ -65,7 +71,6 @@ def generate_qt_enum_header(
     out_file = Path(output_path)
     out_file.parent.mkdir(parents=True, exist_ok=True)
     out_file.write_text("\n".join(lines), encoding="utf-8")
-
 
 def main():
     schema_file = Path("src/api/operations/schema.graphql")
@@ -78,10 +83,9 @@ def main():
     enums = parse_graphql_enums(content)
     generate_qt_enum_header(
         enums,
-        namespace="anilist_enums",
-        output_path="include/generated/anilist_enums.h",
+        namespace="graphql::enums",
+        output_path="include/generated/GraphQLEnums.h",
     )
-
 
 if __name__ == "__main__":
     main()

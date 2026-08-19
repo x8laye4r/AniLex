@@ -1,0 +1,12 @@
+query GetHomeNextSeasonQuery($page: Int, $perPage: Int, $seasonYear: Int, $nextSeason: MediaSeason, $type: MediaType) {
+    Page(page: $page, perPage: $perPage) {
+        media(seasonYear: $seasonYear, season: $nextSeason, type: $type) {
+            id
+            __replace_custom_nsea_entries__
+        }
+        pageInfo {
+            currentPage
+            hasNextPage
+        }
+    }
+}
