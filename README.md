@@ -73,4 +73,4 @@ Any contribution, no matter how small, is welcome!
 
 Contact me via:
 - **Discord:** `x8laye4r`
-- **E-Mail:** [**contact@mail.x8laye4r.net**]([contact@mail.x8laye4r.net](mailto:contact@mail.x8laye4r.net))
+- **E-Mail:** [contact@mail.x8laye4r.net](mailto:contact@mail.x8laye4r.net)
