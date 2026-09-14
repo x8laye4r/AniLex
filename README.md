@@ -50,6 +50,7 @@ AniLex aims to fix that by being:
 - **Language:** [C++23](https://en.cppreference.com/cpp/23)
 - **Framework:** [Qt6](https://www.qt.io/development/qt-framework/qt6)
 - **Libraries:** [QtKeychain](https://github.com/frankosterfeld/qtkeychain)
+- **Python**: [CodeGen](https://www.python.org/)
 - **API:** [AniList GraphQL](https://docs.anilist.co/)
 
 ---
